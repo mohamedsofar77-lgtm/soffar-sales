@@ -390,7 +390,7 @@ const DEV_KEY = "";
 const APP_URL = "https://mohamedsofar77-lgtm.github.io/soffar-sales/";
 // نسخة التدريب: لو حد فتح التطبيق من غير رابط، بيدخل على وضع المراجعة والتدريب (قراءة بس)
 const PREVIEW_KEY = "";
-const APP_VERSION = "20261123005352";
+const APP_VERSION = "20261123145234";
 // رابط الدخول: الموظف بيفتح الرابط اللي فيه #k=... مرة واحدة، والتطبيق بيفتكره على الموبايل
 const KEY = (()=>{ let k=""; const m=(location.hash||"").match(/k=([A-Za-z0-9]+)/);
   if(m){ k=m[1]; try{ localStorage.setItem("soffar_key",k); }catch(e){} try{ history.replaceState(null,"",location.pathname+location.search); }catch(e){} }
@@ -983,20 +983,22 @@ async function viewWO(){
   const v=$("#view");
   v.innerHTML=header("أوامر التشغيل",refreshBtn())+`
   <div class="seg" id="wseg"><button data-k="1" aria-pressed="${S.woOpen}">المفتوحة</button><button data-k="0" aria-pressed="${!S.woOpen}">الكل</button></div>
+  <div class="seg" id="wtg" style="margin-top:8px"><button data-t="" aria-pressed="${!S.woTgt}">الخطتين</button><button data-t="greige" aria-pressed="${S.woTgt==="greige"}">خطة الخام</button><button data-t="finished" aria-pressed="${S.woTgt==="finished"}">خطة المجهز</button></div>
   <div class="search">${ICONS.search}<input type="search" id="wq" placeholder="ابحث برقم الأمر أو العميل أو الصنف"></div>
   <div class="card" id="wlist"><div class="state">بيحمّل…</div></div>`; bindHeader();
   $("#wseg").onclick=e=>{const b=e.target.closest("button");if(!b)return;S.woOpen=b.dataset.k==="1";viewWO()};
+  $("#wtg").onclick=e=>{const b=e.target.closest("button");if(!b)return;S.woTgt=b.dataset.t;viewWO()};
   $("#rf").onclick=()=>viewWO();
   let list; try{ list=await rpc("fx_work_orders",{p_open_only:S.woOpen}); }catch(e){ $("#wlist").innerHTML=`<div class="msg err">${esc(errText(e))}</div>`; return; }
   const canEdit = ["admin","warehouse","planning"].includes(S.me.role);
   const draw=()=>{
     const t=norm($("#wq").value).split(" ").filter(Boolean);
-    const rows=list.filter(w=>t.every(x=>norm([w.wo_no,w.customer_name,w.spec_name,w.spec_code,w.color].join(" ")).includes(x)));
+    const rows=list.filter(w=>(!S.woTgt||w.warehouse_target===S.woTgt)&&t.every(x=>norm([w.wo_no,w.customer_name,w.spec_name,w.spec_code,w.color].join(" ")).includes(x)));
     if(!rows.length){ $("#wlist").innerHTML=`<div class="state"><strong>مفيش أوامر هنا</strong></div>`; return; }
     $("#wlist").innerHTML=rows.map(w=>{const left=(+w.qty_required)-(+w.qty_delivered||0); return `<div class="item" data-id="${w.id}">
       <div class="item-top"><div class="item-title"><span class="num">${esc(w.wo_no)}</span> · ${esc(w.customer_name||"")} ${cd(w.customer_code)}</div><span class="row" style="gap:6px">${w.overdue?`<span class="chip st-returned">متأخر</span>`:""}<span class="chip st-${w.status}">${WO_ST[w.status]||w.status}</span></span></div>
       <div class="kv"><b>${esc(w.spec_name||"")}</b><span class="num">${esc(w.spec_code)}</span><span>${esc(w.color||"")}</span>${w.due_date?`<span class="${w.overdue?"badc":""}">التسليم ${new Date(w.due_date).toLocaleDateString("ar-EG",{day:"numeric",month:"short"})}</span>`:""}${w.images?`<span>${ICONS.camera} ${w.images}</span>`:""}${w.warehouse_target?`<span class="chip ${w.warehouse_target==="greige"?"g":"f"}">${w.warehouse_target==="greige"?"يتسلم خام":"يتسلم مجهز"}</span>`:""}</div>
-      <div class="kv"><span>المطلوب <b class="num">${fmt(w.qty_required)}</b></span><span>اتسلّم <b class="num">${fmt(w.qty_delivered)}</b></span><span>الباقي <b class="num">${fmt(left)}</b> كجم</span>${+w.qty_returned?`<span>مرتجع <b class="num badc">${fmt(w.qty_returned)}</b> كجم</span>`:""}${w.requested_by_name?`<span>${esc(w.requested_by_name)} · ${dt(w.created_at)}</span>`:""}</div>
+      <div class="kv"><span>المطلوب <b class="num">${fmt(w.qty_required)}</b></span><span>اتسلّم <b class="num">${fmt(w.qty_delivered)}</b></span><span>الباقي <b class="num">${fmt(left)}</b> كجم</span>${+w.qty_returned?`<span>مرتجع <b class="num badc">${fmt(w.qty_returned)}</b> كجم</span>`:""}${w.requested_by_name?`<span>${esc(w.requested_by_name)} · ${dt(w.created_at)}</span>`:`<span class="sub">${dt(w.created_at)}</span>`}</div>
       ${w.note?`<div class="kv">${esc(w.note)}</div>`:""}
       ${(w.returns||[]).length?`<div class="ret">${w.returns.map(r=>`<div><b class="num">${fmt2(r.qty)}</b> كجم · ${esc(r.reason)}${r.note?` · ${esc(r.note)}`:""} <span class="sub">${dt(r.at)}</span></div>`).join("")}</div>`:""}
       ${canEdit?`<div class="actions"><select data-st aria-label="حالة الأمر">${Object.entries(WO_ST).filter(([k])=>!["partial_return","returned"].includes(k)||k===w.status).map(([k,l])=>`<option value="${k}" ${k===w.status?"selected":""}>${l}</option>`).join("")}</select>${(+w.qty_returned)<(+w.qty_required)-0.001?`<button class="btn sm danger" data-ret>تسجيل مرتجع</button>`:""}</div><div data-m></div>`:""}
