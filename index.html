@@ -346,6 +346,27 @@ textarea{width:100%;font:inherit;border:1px solid var(--line);background:var(--s
 .ck{width:24px;height:24px;border-radius:7px;border:2px solid var(--line);display:grid;place-items:center;color:#fff;font-weight:700;flex:none}
 .picked-row .ck{background:var(--ok);border-color:var(--ok)}
 .picked-row{background:var(--ok-soft)}
+
+/* guide */
+.gp{margin:0;line-height:1.8}
+.flow{display:flex;flex-direction:column;align-items:stretch}
+.fstep{display:flex;gap:12px;background:var(--surface);border-radius:var(--radius);box-shadow:var(--shadow);padding:14px;border-inline-start:6px solid var(--gc)}
+.fnum{width:32px;height:32px;border-radius:50%;background:var(--gc);color:#fff;display:grid;place-items:center;font-weight:700;flex:none}
+.fbody{display:flex;flex-direction:column;gap:3px;min-width:0}
+.fwho{font-size:.78rem;font-weight:700;color:var(--gc)}
+.ft{font-family:var(--f-display);font-weight:500;font-size:1.02rem}
+.fb{font-size:.9rem;line-height:1.7}
+.fa{font-size:.8rem;color:var(--muted);background:var(--bg);border-radius:8px;padding:4px 8px;margin-top:4px}
+.farrow{text-align:center;color:var(--muted);font-size:1.3rem;line-height:1.6}
+.g-sales{--gc:#2f7d4f} .g-plan{--gc:#3f5cc7} .g-qual{--gc:#9a6a00} .g-wh{--gc:#7a4fb5} .g-dye{--gc:#c2410c} .g-cust{--gc:#0e7490} .g-mgmt{--gc:#475569}
+.chip.g-sales,.chip.g-plan,.chip.g-qual,.chip.g-wh,.chip.g-mgmt{background:var(--gc);color:#fff;font-size:.85rem;padding:3px 12px}
+.gdept summary{padding:14px 16px;cursor:pointer;display:flex;gap:10px;align-items:center;list-style:none}
+.gdept summary::-webkit-details-marker{display:none}
+.gdept summary::after{content:"⌄";margin-inline-start:auto;color:var(--muted)}
+.gdept[open] summary{border-bottom:1px solid var(--line)}
+.gsteps{margin:0;padding-inline-start:20px;display:flex;flex-direction:column;gap:10px}
+.gsteps li{line-height:1.7} .gsteps li b{display:block}
+.gsteps li span{color:var(--muted);font-size:.92rem}
 #toast{position:fixed;left:50%;bottom:calc(96px + env(safe-area-inset-bottom,0px));transform:translate(-50%,20px);opacity:0;pointer-events:none;background:var(--ink);color:var(--surface);padding:10px 16px;border-radius:12px;font-size:.9rem;z-index:20;transition:.2s;max-width:calc(100% - 32px)}
 #toast.show{opacity:1;transform:translate(-50%,0)}
 #toast.bad{background:var(--bad);color:#fff}
@@ -363,7 +384,7 @@ const DEV_KEY = "";
 const APP_URL = "https://mohamedsofar77-lgtm.github.io/soffar-sales/";
 // نسخة التدريب: لو حد فتح التطبيق من غير رابط، بيدخل على وضع المراجعة والتدريب (قراءة بس)
 const PREVIEW_KEY = "";
-const APP_VERSION = "20261123002421";
+const APP_VERSION = "20261123003000";
 // رابط الدخول: الموظف بيفتح الرابط اللي فيه #k=... مرة واحدة، والتطبيق بيفتكره على الموبايل
 const KEY = (()=>{ let k=""; const m=(location.hash||"").match(/k=([A-Za-z0-9]+)/);
   if(m){ k=m[1]; try{ localStorage.setItem("soffar_key",k); }catch(e){} try{ history.replaceState(null,"",location.pathname+location.search); }catch(e){} }
@@ -455,6 +476,7 @@ const ICONS = {
   bell:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M6 16V11a6 6 0 0112 0v5l2 2H4z"/><path d="M10 20a2 2 0 004 0"/></svg>',
   note:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 4h16v12H8l-4 4z"/><path d="M8 9h8M8 12h5"/></svg>',
   send:'<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M21 3L3 11l7 3 3 7z"/><path d="M10 14l11-11"/></svg>',
+  book:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 5a2 2 0 012-2h13v16H6a2 2 0 00-2 2z"/><path d="M4 19V5M8 7h7M8 11h7"/></svg>',
   back:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 6l6 6-6 6"/></svg>',
   check:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12l5 5 9-10"/></svg>',
   grid:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3.5" y="3.5" width="7" height="7" rx="2"/><rect x="13.5" y="3.5" width="7" height="7" rx="2"/><rect x="3.5" y="13.5" width="7" height="7" rx="2"/><rect x="13.5" y="13.5" width="7" height="7" rx="2"/></svg>'
@@ -555,7 +577,7 @@ function header(title, extra=""){
     <span class="role">${ICONS.user}${esc(S.me.department_name||ROLE_AR[S.me.realRole||S.me.role]||"")}${S.me.preview?" · مراجعة وتدريب":""}</span></div>
     <div class="row">${extra}<button class="icon-btn bell" data-bell aria-label="التنبيهات" title="التنبيهات">${ICONS.bell}<span class="bell-n" hidden></span></button><button class="icon-btn" data-fb aria-label="ملاحظة على التطبيق" title="ملاحظة على التطبيق">${ICONS.note}</button>${S.me.owner&&IN_CLAUDE()?"":`<button class="icon-btn" id="logout" aria-label="خروج" title="خروج">${ICONS.out}</button>`}</div>
   </div></header>
-  ${S.me.openTraining?`<div class="dev">نسخة التدريب: بتشوف بيانات المصنع الحقيقية وتقدر تجرب كل الشاشات، لكن مفيش حاجة بتتحفظ. عندك ملاحظة؟ دوس زرار الملاحظة فوق. ولو معاك حساب، دوس زرار الخروج وادخل بالإيميل.</div>`:S.me.preview?`<div class="dev">نسخة مراجعة وتدريب: تقدر تشوف كل الشاشات والبيانات الحقيقية وتجرب، لكن مفيش حاجة بتتحفظ. لو لقيت حاجة ناقصة دوس على زرار الملاحظة فوق.</div>`:S.me.owner?`<div class="dev">دخول برابط الإدارة الكامل. متبعتوش لحد، وابعت للموظفين روابط أقسامهم من الأساسيات ← الأقسام والروابط.</div>`:""}`;
+  ${S.me.openTraining?`<div class="dev">نسخة التدريب: بتشوف بيانات المصنع الحقيقية وتقدر تجرب كل الشاشات، لكن مفيش حاجة بتتحفظ. عندك ملاحظة؟ دوس زرار الملاحظة فوق. ولو معاك حساب، دوس زرار الخروج وادخل بالإيميل. <button class="linkbtn" data-go-guide>افتح دليل التشغيل</button></div>`:S.me.preview?`<div class="dev">نسخة مراجعة وتدريب: تقدر تشوف كل الشاشات والبيانات الحقيقية وتجرب، لكن مفيش حاجة بتتحفظ. لو لقيت حاجة ناقصة دوس على زرار الملاحظة فوق.</div>`:S.me.owner?`<div class="dev">دخول برابط الإدارة الكامل. متبعتوش لحد، وابعت للموظفين روابط أقسامهم من الأساسيات ← الأقسام والروابط.</div>`:""}`;
 }
 const refreshBtn = () => `<button class="icon-btn" id="rf" aria-label="تحديث" title="تحديث">${ICONS.refresh}</button>`;
 function busyBtn(b,on){ if(!b) return; b.disabled=on; b.classList.toggle("spin",on); }
@@ -563,11 +585,12 @@ function bindHeader(){
   const b=$("#logout"); if(b) b.onclick=async()=>{ if(S.me&&S.me.openTraining){ S.me=null; S.stock=null; return renderLogin(); } if(KEY){ try{ localStorage.removeItem("soffar_key"); }catch(e){} S.me=null; S.stock=null; location.hash=""; return renderLogin("خرجت. افتح رابط الدخول تاني عشان تدخل."); } await sb.auth.signOut(); S.stock=null; renderLogin(); };
   document.querySelectorAll("[data-bell]").forEach(x=>x.onclick=()=>goTab("inbox"));
   document.querySelectorAll("[data-fb]").forEach(x=>x.onclick=()=>openFeedback());
+  document.querySelectorAll("[data-go-guide]").forEach(x=>x.onclick=()=>goTab("guide"));
   paintBell();
 }
 function openMaterial(mc){ S.f={wh:"all",own:"free",q:"",limit:40,mat:mc,spec:"",season:"",sort:"av"}; goTab("stock",true); }
 function goTab(k,keep){ if(k==="stock"&&!keep){ S.f.mat=""; S.f.spec=""; S.f.season=""; } S.tab=k; app.querySelectorAll("[data-tab]").forEach(x=>{ if(x.dataset.tab===k) x.setAttribute("aria-current","page"); else x.removeAttribute("aria-current"); }); show(); }
-function show(){ const v=$("#view"); if(v) v.onclick=null; ({home:viewHome, inbox:viewInbox, warehouse:viewWarehouse, reports:viewReports, stock:viewStock, new:viewNew, res:viewRes, wo:viewWO, basics:viewBasics}[S.tab]||viewStock)(); window.scrollTo(0,0); }
+function show(){ const v=$("#view"); if(v) v.onclick=null; ({home:viewHome, guide:viewGuide, inbox:viewInbox, warehouse:viewWarehouse, reports:viewReports, stock:viewStock, new:viewNew, res:viewRes, wo:viewWO, basics:viewBasics}[S.tab]||viewStock)(); window.scrollTo(0,0); }
 
 /* ============ home ============ */
 async function viewHome(){
@@ -582,6 +605,7 @@ async function viewHome(){
   </section>
   <div class="section-h"><h2>اختصارات</h2></div>
   <section class="quick">
+    <button data-go="guide"><span class="qi">${ICONS.book}</span>دليل التشغيل</button>
     <button data-go="stock"><span class="qi">${ICONS.stock}</span>الرصيد</button>
     ${canSell?`<button data-go="new"><span class="qi">${ICONS.new}</span>طلب تشغيل</button>`:""}
     <button data-go="res"><span class="qi">${ICONS.res}</span>الحجوزات</button>
@@ -1866,6 +1890,96 @@ async function bDepts(box){
   };
   $("#kadd").onclick=async()=>{ try{ const x=await rpc("fx_key_create",{p_department:$("#kd").value,p_label:$("#kl").value}); toast("الرابط اتعمل"); await bDepts(box);
       $("#knew").innerHTML=base?`<div class="msg ok">الرابط الجديد: <span class="num linkline">${esc(link(x.key))}</span></div>`:""; }catch(err){ toast(errText(err),true); } };
+}
+
+/* ============ user guide & operations map ============ */
+const DEPT_CLR={sales:"g-sales",planning:"g-plan",quality:"g-qual",warehouse:"g-wh",dye:"g-dye",customer:"g-cust",management:"g-mgmt"};
+const FLOW=[
+  {d:"sales",who:"المبيعات",t:"العميل طلب قماش",b:"لو الصنف موجود يحجزه من «الرصيد». لو مش موجود أو ناقص يعمل «طلب تشغيل».",alert:"المخزن بيوصله «حجز جديد جهّزه» · التخطيط بيوصله «طلب تشغيل جديد»"},
+  {d:"planning",who:"التخطيط والإنتاج",t:"يحوّل الطلب لشغل",b:"يفتح الطلب من «التشغيل»، يحدد تاريخ التسليم، ويغيّر الحالة لـ «على المكن» أول ما يدخل الماكينة.",alert:"المبيعات بتتابع الحالة من «التشغيل»"},
+  {d:"quality",who:"الجودة",t:"تفحص وتسجّل كل توب",b:"من «الجودة» تختار الصنف والماكينة والدرجة، تكتب وزن كل توب، وتطبع ملصق الباركود وتلزقه على التوب.",alert:"المخزن بيوصله «دفعة من الجودة مستنية استلام»"},
+  {d:"warehouse",who:"المخزن",t:"يستلم الخام",b:"من «المخزن ← استلام من الجودة» يعمل سكان لكل توب داخل، ويكتب المكان، ويدوس استلم.",alert:"التوب بقى في رصيد الخام وظاهر للمبيعات"},
+  {d:"warehouse",who:"المخزن",t:"يبعت للمصبغة",b:"من «المخزن ← صرف ← للمصبغة» يختار المصبغة ويعمل سكان للأتواب الخارجة.",alert:"التخطيط بيوصله «أتواب اتبعتت للمصبغة» · والتخطيط يغيّر الأمر لـ «في المصبغة»"},
+  {d:"dye",who:"المصبغة (برا المصنع)",t:"صباغة وتجهيز",b:"التخطيط بيتابع مع المصبغة على واتساب من زرار «ابعت لقسم» أو رسالة الواتساب الجاهزة.",alert:"لما المصبغة تخلّص، التخطيط يغيّر الأمر لـ «جاهز»"},
+  {d:"warehouse",who:"المخزن",t:"يستلم المجهز",b:"من «المخزن ← وارد ← مجهز» يختار الصنف واللون والمصبغة ويكتب الأوزان، ويطبع ملصقات للأتواب الجديدة.",alert:"المبيعات بيوصلها «الأمر بقى جاهز» واللون بيظهر متاح في الرصيد"},
+  {d:"warehouse",who:"المخزن",t:"يسلّم للعميل",b:"من «المخزن ← صرف ← للعميل على حجز» يختار الحجز ويعمل سكان للأتواب. الحجز بيتحول لأمر بيع والرصيد بيتخصم.",alert:"المبيعات بيوصلها «الحجز اتسلّم للعميل»"},
+  {d:"customer",who:"العميل",t:"استلم البضاعة",b:"لو فيه مرتجع، المخزن أو التخطيط يسجله من تفاصيل الأمر ← «تسجيل مرتجع» مع السبب والصور.",alert:"المبيعات والإدارة بيوصلهم «مرتجع على أمر»"}
+];
+const DEPT_GUIDE=[
+  {code:"sales",name:"المبيعات",role:"إنت وش المصنع قدام العميل. بتعرف المتاح، وبتحجز، وبتطلب تشغيل لو الكمية مش موجودة.",
+   steps:[
+    ["تعرف المتاح","من «الرصيد» اختار «مخزون صفار»، وابحث بالصنف أو اللون. الرقم الأخضر هو اللي تقدر تبيعه فعلًا بعد الحجوزات."],
+    ["تحجز لعميل","دوس «احجز» جنب اللون، اختار العميل واكتب الكمية ونسبة السماح. لو عندك صورة العينة ضيفها. الحجز بيقعد 7 أيام، وتقدر تمده من «الحجوزات»."],
+    ["تحجز كذا لون مرة واحدة","على كارت الصنف دوس «حجز ألوان» واكتب كمية كل لون."],
+    ["الكمية مش كفاية","التطبيق هيسألك: تحجز المتاح وتطلب تشغيل الباقي، ولا تطلب الكمية كلها تشغيل."],
+    ["صنف مش موجود خالص","من الرئيسية ← «طلب تشغيل»، اختار العميل والصنف واللون والكمية وتاريخ التسليم المطلوب."],
+    ["تبعت عرض للعميل","زرار «شارك» على الصنف أو الخامة بيجهزلك رسالة واتساب فيها المتاح بالألوان."],
+    ["تتابع","من «التشغيل» تشوف كل أمر وصل لفين، والجرس بيقولك لما أمر يبقى جاهز أو حجز يتسلّم أو ينتهي."]],
+   gets:"الأمر بقى جاهز · دخل المصبغة · اتلغى · مرتجع · الحجز اتسلّم · الحجز انتهى",
+   sends:"التخطيط (طلبات التشغيل) · المخزن (تجهيز الحجوزات)"},
+  {code:"planning",name:"التخطيط والإنتاج",role:"إنت اللي بتحوّل طلبات المبيعات لشغل على المكن، وبتتابع مع المصابغ لحد ما القماش يرجع جاهز.",
+   steps:[
+    ["تستلم الطلبات الجديدة","الجرس بيقولك «طلب تشغيل جديد». افتحه من «التشغيل» (هتلاقيه بحالة «طلب جديد»)."],
+    ["تحدد التسليم","افتح تفاصيل الأمر واكتب «مطلوب يتسلّم يوم». لو التاريخ عدّى، الأمر بيتعلّم عليه «متأخر» باللون الأحمر."],
+    ["تحدّث الحالة أول بأول","من قايمة الحالة في كارت الأمر: على المكن ← خلص خام ← في المصبغة ← جاهز. كل تغيير بيتسجل بتاريخه وبيبعت تنبيه للقسم المعني."],
+    ["تتابع مع المصبغة","من تفاصيل الأمر ← «ابعت لقسم» أو رسالة الواتساب الجاهزة."],
+    ["مرتجع","من تفاصيل الأمر ← «تسجيل مرتجع»: الكمية (كلها أو جزء)، السبب، المصبغة المسؤولة، وصورة العيب."]],
+   gets:"طلب تشغيل جديد · أتواب اتبعتت للمصبغة · تحويلات من المبيعات",
+   sends:"المخزن (الأمر جاهز للاستلام) · المبيعات (حالة الأمر)"},
+  {code:"quality",name:"الجودة",role:"إنت أول حد بيدّي التوب هوية. من غير ملصقك المخزن مش هيقدر يستلم.",
+   steps:[
+    ["تسجّل الأتواب","من «الجودة» اختار الصنف، واكتب الماكينة وأمر الشغل، واختار الدرجة A أو B أو C."],
+    ["تكتب الأوزان","اكتب وزن كل توب ودوس «ضيف توب». كل توب ليه سطر لوحده عشان ياخد باركود لوحده."],
+    ["تطبع الملصقات","دوس «سجّل واطبع الملصقات»، والطباعة هتفتح على طول. الزق كل ملصق على التوب بتاعه."],
+    ["تتابع","تحت الشاشة هتلاقي الأتواب اللي لسه المخزن ماستلمهاش."]],
+   gets:"تحويلات من التخطيط",
+   sends:"المخزن (دفعة مستنية استلام — بيتبعت لوحده)"},
+  {code:"warehouse",name:"المخزن",role:"كل توب داخل أو خارج لازم يعدّي عليك بسكان. إنت اللي بتخلي الرصيد اللي في التطبيق هو نفسه اللي على الأرض.",
+   steps:[
+    ["تستلم من الجودة","«المخزن ← استلام من الجودة» ← «سكان بالكاميرا»، امسح الأتواب ورا بعض، اكتب المكان، ودوس «استلم»."],
+    ["تبعت للمصبغة","«صرف ← للمصبغة» ← اختار المصبغة ← سكان للأتواب ← «سجّل الصرف»."],
+    ["تستلم من المصبغة","«وارد ← مجهز»: الصنف واللون والمصبغة ورقم أمر المصبغة، واكتب وزن كل توب، وبعدين اطبع الملصقات."],
+    ["تسلّم لعميل","«صرف ← للعميل (على حجز)» ← اختار الحجز ← سكان. التطبيق بيرفض أي توب مش من نفس الصنف واللون، وبيقولك لو الوزن برا نسبة السماح."],
+    ["بضاعة عميل أو تالف","«صرف» واختار «تسليم بضاعة عميل» أو «تالف»."],
+    ["تدوّر على توب","«بحث توب» ← سكان، يطلعلك مكانه وحالته وكل حركاته."],
+    ["الأتواب القديمة","من «ملصقات» اكتب أرقامها واطبعلها باركود."]],
+   gets:"حجز جديد جهّزه · دفعة من الجودة · الأمر جاهز للاستلام · حجز اتلغى",
+   sends:"المبيعات (التسليم — لوحده) · التخطيط (الصرف للمصبغة — لوحده)"},
+  {code:"management",name:"الإدارة",role:"إنت شايف كل حاجة، وبتظبط الأساسيات والصلاحيات وبتراجع الأداء.",
+   steps:[
+    ["الأكواد","«الأساسيات»: عملاء وموردين وخامات وأصناف وألوان. الكود الجديد بيتعمل لوحده، والكود المؤقت بيتصلح بزرار «كوّده»."],
+    ["الموظفين","«الأساسيات ← المستخدمين»: كل موظف بإيميله وقسمه. «الأقسام والروابط»: أرقام واتساب الأقسام ووضع التدريب."],
+    ["الملاحظات","«ملاحظات المراجعة»: كل اللي الموظفين كتبوه ناقص أو غلط."],
+    ["التقارير","من الرئيسية ← «التقارير»: أكتر الأصناف والعملاء سحبًا، البضاعة الراكدة، المرتجعات حسب السبب والمصبغة، وأداء المندوبين."]],
+   gets:"كل التنبيهات · المرتجعات",
+   sends:"أي قسم"}
+];
+async function viewGuide(){
+  const v=$("#view"); const mine=S.me.department;
+  const order=[...DEPT_GUIDE].sort((a,b)=>(b.code===mine)-(a.code===mine));
+  v.innerHTML=header("دليل التشغيل",`<button class="icon-btn" id="back" aria-label="رجوع">${ICONS.back}</button>`)+`
+  <section class="card pad stack"><h2>الفكرة في سطرين</h2>
+   <p class="gp">كل الأقسام شغالة على نفس البيانات في نفس اللحظة. أي حاجة قسم يعملها، باقي الأقسام بتشوفها على طول، والقسم اللي عليه الدور بيوصله تنبيه على الجرس 🔔.</p>
+   <p class="gp">التوب بياخد باركود عند الجودة، ومن ساعتها أي حركة ليه (استلام، مصبغة، عميل) بتبقى بسكان. كده الرصيد في التطبيق هو هو اللي على الأرض.</p></section>
+  <section class="stack"><div class="dsec">خريطة التشغيل: رحلة الطلب من العميل للعميل</div>
+   <div class="flow">${FLOW.map((f,i)=>`<div class="fstep ${DEPT_CLR[f.d]}"><div class="fnum num">${i+1}</div><div class="fbody"><div class="fwho">${esc(f.who)}</div><div class="ft">${esc(f.t)}</div><div class="fb">${esc(f.b)}</div><div class="fa">🔔 ${esc(f.alert)}</div></div></div>${i<FLOW.length-1?`<div class="farrow" aria-hidden="true">↓</div>`:""}`).join("")}</div></section>
+  <section class="card pad stack"><h2>إزاي الأقسام بتكلم بعض</h2>
+   <div class="gl"><div class="gk">الجرس 🔔</div><div>أي حاجة تخص قسمك بتظهر هنا لوحدها. الرقم الأحمر هو عدد الجديد.</div></div>
+   <div class="gl"><div class="gk">ابعت لقسم</div><div>في تفاصيل أي أمر أو حجز أو صنف. تختار القسم وتكتب المطلوب، فيوصله تنبيه، ويرد بـ «استلمت» أو «خلصت» أو «رفض»، والرد بيرجعلك.</div></div>
+   <div class="gl"><div class="gk">واتساب</div><div>بعد أي تحويل يظهر زرار يبعت الرسالة جاهزة لرقم القسم على واتساب.</div></div>
+   <div class="gl"><div class="gk">الملاحظة</div><div>الزرار اللي جنب الجرس. أي حاجة ناقصة أو غلط اكتبها، بتوصل للإدارة على طول.</div></div></section>
+  <div class="dsec">دور كل قسم</div>
+  ${order.map(g=>`<details class="card gdept" ${g.code===mine?"open":""}><summary><span class="chip ${DEPT_CLR[g.code]}">${esc(g.name)}</span>${g.code===mine?`<span class="sub">قسمك</span>`:""}</summary>
+    <div class="pad stack"><p class="gp"><b>دورك:</b> ${esc(g.role)}</p>
+    <ol class="gsteps">${g.steps.map(([h,t])=>`<li><b>${esc(h)}</b><span>${esc(t)}</span></li>`).join("")}</ol>
+    <div class="gl"><div class="gk">بيوصلك</div><div>${esc(g.gets)}</div></div><div class="gl"><div class="gk">بتبعت لـ</div><div>${esc(g.sends)}</div></div></div></details>`).join("")}
+  <section class="card pad stack"><h2>أسئلة بتتكرر</h2>
+   <div class="gl"><div class="gk">الرقم الأخضر في الرصيد</div><div>ده «المتاح للبيع» = الموجود ناقص المحجوز. البضاعة اللي باسم عميل مش بتتحسب فيه.</div></div>
+   <div class="gl"><div class="gk">الحجز اختفى</div><div>غالبًا مدته خلصت (7 أيام) فرجع متاح. هتلاقيه في «الحجوزات ← انتهت». المرة الجاية دوس «مد 7 أيام».</div></div>
+   <div class="gl"><div class="gk">السكان مش شغال</div><div>اسمح للمتصفح يستخدم الكاميرا من إعدادات الموبايل، وخلي الإضاءة كويسة. ولو مفيش، اكتب رقم التوب بإيدك.</div></div>
+   <div class="gl"><div class="gk">التطبيق اتغير شكله</div><div>التحديثات بتنزل لوحدها. لو في حاجة مش فاهمها اسأل الإدارة أو ابعت ملاحظة.</div></div>
+   <div class="gl"><div class="gk">أضيف التطبيق للموبايل</div><div>آيفون: Safari ← زرار المشاركة ← «إضافة إلى الشاشة الرئيسية». أندرويد: Chrome ← القايمة ⋮ ← «إضافة إلى الشاشة الرئيسية».</div></div></section>`;
+  bindHeader(); $("#back").onclick=()=>goTab("home");
 }
 
 if (sb) sb.auth.onAuthStateChange((ev)=>{ if(ev==="SIGNED_OUT"){ S.me=null; S.stock=null; renderLogin(); } });
