@@ -369,7 +369,7 @@ textarea{width:100%;font:inherit;border:1px solid var(--line);background:var(--s
 .gsteps li span{color:var(--muted);font-size:.92rem}
 
 /* intro */
-.intro{position:fixed;inset:0;z-index:100;background:#0d1330;transition:opacity .45s ease}
+.intro{position:fixed;inset:0;z-index:100;background:#f2b544;transition:opacity .45s ease}
 .intro.out{opacity:0}
 .intro canvas{display:block}
 .intro-skip{position:absolute;top:calc(14px + env(safe-area-inset-top,0px));left:max(14px,env(safe-area-inset-left,0px));border:1px solid rgba(255,255,255,.35);background:rgba(255,255,255,.1);color:#fff;border-radius:99px;padding:6px 16px;font:500 .9rem var(--f-body)}
@@ -390,7 +390,7 @@ const DEV_KEY = "";
 const APP_URL = "https://mohamedsofar77-lgtm.github.io/soffar-sales/";
 // نسخة التدريب: لو حد فتح التطبيق من غير رابط، بيدخل على وضع المراجعة والتدريب (قراءة بس)
 const PREVIEW_KEY = "";
-const APP_VERSION = "20261123003940";
+const APP_VERSION = "20261123004820";
 // رابط الدخول: الموظف بيفتح الرابط اللي فيه #k=... مرة واحدة، والتطبيق بيفتكره على الموبايل
 const KEY = (()=>{ let k=""; const m=(location.hash||"").match(/k=([A-Za-z0-9]+)/);
   if(m){ k=m[1]; try{ localStorage.setItem("soffar_key",k); }catch(e){} try{ history.replaceState(null,"",location.pathname+location.search); }catch(e){} }
@@ -489,187 +489,63 @@ const ICONS = {
 };
 document.documentElement.setAttribute("dir","rtl"); document.documentElement.setAttribute("lang","ar");
 
-/* Soffar Group intro — yarn → circular knitting → garments → logo. Pure draw(ctx, t, W, H), t in seconds. */
+/* Concept C — Bold Type: big knit-filled words on color blocks, social-media pace */
 (function(root){
-const DUR = 9.2;
-const C = { bg1:"#0d1330", bg2:"#1c2b6b", cotton:"#f4f1ea", yarn:"#f2b544", yarn2:"#e08a2e", indigo:"#5b7cf0", indigoD:"#2f45a8", coral:"#ff7a59", ink:"#ffffff", mute:"rgba(255,255,255,.62)" };
-const FD = '"Readex Pro","Readex Latin","IBM Plex Sans Arabic",system-ui,sans-serif';
-function spaced(ctx,txt,x,y,sp){ const ws=[...txt].map(ch=>ctx.measureText(ch).width); const tot=ws.reduce((a,b)=>a+b,0)+sp*(ws.length-1); let xx=x-tot/2; const al=ctx.textAlign; ctx.textAlign="left"; [...txt].forEach((ch,i)=>{ ctx.fillText(ch,xx,y); xx+=ws[i]+sp; }); ctx.textAlign=al; }
-const clamp=(v,a=0,b=1)=>Math.max(a,Math.min(b,v));
-const seg=(t,a,b)=>clamp((t-a)/(b-a));
-const ease=x=>x<.5?4*x*x*x:1-Math.pow(-2*x+2,3)/2;
-const easeOut=x=>1-Math.pow(1-x,3);
-const lerp=(a,b,x)=>a+(b-a)*x;
-function rnd(i){ const x=Math.sin(i*127.1+311.7)*43758.5453; return x-Math.floor(x); }
-
-function bg(ctx,W,H,t){
-  const g=ctx.createLinearGradient(0,0,W*.4,H); g.addColorStop(0,C.bg2); g.addColorStop(1,C.bg1);
-  ctx.fillStyle=g; ctx.fillRect(0,0,W,H);
-  // slow knit-texture watermark
-  ctx.save(); ctx.globalAlpha=.06; ctx.strokeStyle="#fff"; ctx.lineWidth=Math.max(1,W/540);
-  const s=W/14, off=(t*s*.25)%s;
-  for(let y=-s;y<H+s;y+=s*.62){ for(let x=-s;x<W+s;x+=s*.5){ const yy=y+off; ctx.beginPath(); ctx.moveTo(x,yy); ctx.lineTo(x+s*.25,yy+s*.4); ctx.lineTo(x+s*.5,yy); ctx.stroke(); } }
-  ctx.restore();
+const DUR=9.0;
+const FD='"Readex Pro","Readex Latin",system-ui,sans-serif';
+const clamp=(v,a=0,b=1)=>Math.max(a,Math.min(b,v)), seg=(t,a,b)=>clamp((t-a)/(b-a));
+const easeOut=x=>1-Math.pow(1-x,3), ease=x=>x<.5?4*x*x*x:1-Math.pow(-2*x+2,3)/2, lerp=(a,b,x)=>a+(b-a)*x;
+const SC=[
+  {w:"YARN",s:"Spun from premium fibres",bg:"#f2b544",ink:"#1b1f3b",tex:"#c8861f"},
+  {w:"KNIT",s:"Circular knitting · 24/7",bg:"#2f45a8",ink:"#ffffff",tex:"#5b7cf0"},
+  {w:"DYE",s:"Colour that lasts",bg:"#ff6b4a",ink:"#1b1f3b",tex:"#d94a2b"},
+  {w:"WEAR",s:"Knitwear, ready to ship",bg:"#f4efe6",ink:"#1b1f3b",tex:"#c9bfae"}];
+const SLOT=1.75;
+function makeTex(ctx,s,base,line){
+  const c=(typeof OffscreenCanvas!=="undefined")?new OffscreenCanvas(Math.ceil(s),Math.ceil(s*.75)):(root.__mkCanvas?root.__mkCanvas(Math.ceil(s),Math.ceil(s*.75)):null);
+  if(!c) return base; const x=c.getContext("2d"), rh=s*.75;
+  x.fillStyle=base; x.fillRect(0,0,s,rh); x.strokeStyle=line; x.lineWidth=s*.16; x.lineCap="round";
+  x.beginPath(); x.moveTo(s*.1,0); x.quadraticCurveTo(s*.2,rh*.8,s*.5,rh); x.quadraticCurveTo(s*.8,rh*.8,s*.9,0); x.stroke();
+  return ctx.createPattern(c,"repeat");
 }
-function label(ctx,W,H,ar,en,a,yFrac){
-  if(a<=0) return; const u=Math.min(W,H)/100;
-  ctx.save(); ctx.globalAlpha=a; ctx.textAlign="center"; ctx.fillStyle=C.ink;
-  const dy=(1-a)*u*3;
-  ctx.direction="rtl"; ctx.font=`700 ${u*9}px ${FD}`; ctx.fillText(ar,W/2,H*yFrac+dy);
-  ctx.direction="ltr"; ctx.fillStyle=C.yarn; ctx.font=`500 ${u*3.2}px ${FD}`;
-  spaced(ctx,en.toUpperCase(),W/2,H*yFrac+u*6.2+dy,u*.9);
-  ctx.restore();
-}
-function cone(ctx,x,y,s,fill,rot){
-  // yarn cone (bobbin) with wound layers
-  ctx.save(); ctx.translate(x,y);
-  const top=s*.32, bot=s*.62, h=s;
-  ctx.fillStyle="#c9b28a"; ctx.beginPath(); ctx.moveTo(-top*.35,-h*.62); ctx.lineTo(top*.35,-h*.62); ctx.lineTo(bot*.4,h*.5); ctx.lineTo(-bot*.4,h*.5); ctx.closePath(); ctx.fill();
-  const f=clamp(fill);
-  if(f>0){ const yTop=lerp(h*.5,-h*.5,f);
-    ctx.save(); ctx.beginPath(); ctx.moveTo(-top,-h*.5); ctx.lineTo(top,-h*.5); ctx.lineTo(bot,h*.5); ctx.lineTo(-bot,h*.5); ctx.closePath(); ctx.clip();
-    const g=ctx.createLinearGradient(-bot,0,bot,0); g.addColorStop(0,C.yarn2); g.addColorStop(.45,C.yarn); g.addColorStop(1,C.yarn2);
-    ctx.fillStyle=g; ctx.fillRect(-bot,yTop,bot*2,h);
-    ctx.strokeStyle="rgba(120,60,10,.35)"; ctx.lineWidth=Math.max(1,s/90);
-    for(let i=0;i<40;i++){ const yy=h*.5-i*h/40+((rot||0)*h*.05)%(h/40); if(yy<yTop) break; ctx.beginPath(); ctx.moveTo(-bot,yy+s*.02); ctx.lineTo(bot,yy-s*.02); ctx.stroke(); }
-    ctx.restore(); }
-  ctx.restore();
-}
-function knitPattern(ctx,x,y,w,h,s,scroll,color,colorD){
-  ctx.save(); ctx.beginPath(); ctx.rect(x,y,w,h); ctx.clip();
-  ctx.fillStyle=colorD; ctx.fillRect(x,y,w,h);
-  ctx.lineWidth=s*.28; ctx.lineCap="round"; ctx.strokeStyle=color;
-  const rowH=s*.72, off=scroll%rowH;
-  for(let yy=y-rowH+off; yy<y+h+rowH; yy+=rowH){ for(let xx=x-s; xx<x+w+s; xx+=s){
-      ctx.beginPath(); ctx.moveTo(xx+s*.08,yy); ctx.quadraticCurveTo(xx+s*.22,yy+rowH*.75,xx+s*.5,yy+rowH*.95); ctx.stroke();
-      ctx.beginPath(); ctx.moveTo(xx+s*.92,yy); ctx.quadraticCurveTo(xx+s*.78,yy+rowH*.75,xx+s*.5,yy+rowH*.95); ctx.stroke(); } }
-  const g=ctx.createLinearGradient(x,0,x+w,0); g.addColorStop(0,"rgba(0,0,0,.35)"); g.addColorStop(.35,"rgba(255,255,255,.08)"); g.addColorStop(.7,"rgba(0,0,0,0)"); g.addColorStop(1,"rgba(0,0,0,.35)");
-  ctx.fillStyle=g; ctx.fillRect(x,y,w,h);
-  ctx.restore();
-}
-function shirtPath(ctx,cx,cy,w,m){
-  // m: 0 = plain rectangle (fabric), 1 = t-shirt
-  const h=w*1.12, sl=lerp(0,w*.28,m), sh=lerp(0,w*.3,m), nk=lerp(0,w*.13,m);
-  const L=cx-w/2, R=cx+w/2, T=cy-h/2, B=cy+h/2;
-  ctx.beginPath();
-  ctx.moveTo(cx-nk*1.4,T);
-  ctx.quadraticCurveTo(cx,T+nk*1.5,cx+nk*1.4,T);
-  ctx.lineTo(R-w*.06*m,T); ctx.lineTo(R+sl,T+sh*.55); ctx.lineTo(R+sl-sl*.35,T+sh); ctx.lineTo(R,T+sh*.78);
-  ctx.lineTo(R,B); ctx.lineTo(L,B); ctx.lineTo(L,T+sh*.78); ctx.lineTo(L-sl+sl*.35,T+sh); ctx.lineTo(L-sl,T+sh*.55); ctx.lineTo(L+w*.06*m,T);
-  ctx.closePath();
-}
-
+const texCache={};
 function draw(ctx,t,W,H){
-  const u=Math.min(W,H)/100, cx=W/2, portrait=H>W;
-  ctx.save(); ctx.clearRect(0,0,W,H); bg(ctx,W,H,t);
-
-  /* ---------- Scene 1: spinning (0 – 2.6) ---------- */
-  const s1=seg(t,0,2.4), s1out=seg(t,2.3,2.9);
-  const coneX=lerp(cx, cx-W*.34, ease(seg(t,2.4,3.4))), coneY=lerp(H*.6, H*.17, ease(seg(t,2.4,3.4))), coneS=lerp(u*30,u*12,ease(seg(t,2.4,3.4)));
-  const gather={x:cx,y:H*.3};
-  if(t<3.6){
-    // cotton fibers swirl into a point
-    const n=90; ctx.save();
-    for(let i=0;i<n;i++){
-      const a0=rnd(i)*Math.PI*2, r0=(0.35+rnd(i+9)*0.5)*Math.min(W,H)*.5;
-      const k=easeOut(clamp(s1*1.25-rnd(i+3)*.25));
-      const ang=a0+k*4.2, r=r0*(1-k);
-      const x=gather.x+Math.cos(ang)*r*1.2, y=gather.y+Math.sin(ang)*r*.75;
-      ctx.globalAlpha=(1-k*.85)*(1-s1out); ctx.fillStyle=C.cotton;
-      ctx.beginPath(); ctx.arc(x,y,u*(1.1+rnd(i+5)*1.6)*(1-k*.6),0,Math.PI*2); ctx.fill();
-    }
+  const u=Math.min(W,H)/100, cx=W/2; ctx.save();
+  const i=Math.min(SC.length-1,Math.floor(t/SLOT)), lt=t-i*SLOT;
+  const end=t>=SC.length*SLOT-.05;
+  if(!end){
+    const sc=SC[i], prev=SC[i-1];
+    // wipe from previous color
+    ctx.fillStyle=prev?prev.bg:sc.bg; ctx.fillRect(0,0,W,H);
+    const wp=prev?easeOut(seg(lt,0,.35)):1; ctx.fillStyle=sc.bg; ctx.fillRect(0,H*(1-wp),W,H*wp);
+    // giant knit texture stripe band
+    const key=i+"|"+Math.round(u*6); texCache[key]=texCache[key]||makeTex(ctx,u*6,sc.tex,sc.bg);
+    // word filled with knit texture
+    const sz=Math.min(W*.92/(sc.w.length*.72), H*.3); const a=easeOut(seg(lt,.15,.55)), sl=(1-a)*u*12;
+    ctx.save(); ctx.translate(cx, H*.48+sl); const sk=lerp(1.25,1,easeOut(seg(lt,.15,.7))); ctx.scale(sk,sk);
+    ctx.textAlign="center"; ctx.textBaseline="middle"; ctx.font=`700 ${sz}px ${FD}`;
+    ctx.globalAlpha=a; ctx.fillStyle=sc.ink; ctx.fillText(sc.w,u*1.1,u*1.1);
+    ctx.fillStyle=texCache[key]; ctx.fillText(sc.w,0,0);
     ctx.restore();
-    // twisted thread from gather point to cone top
-    const th=seg(t,0.5,1.3);
-    if(th>0){
-      const x1=gather.x,y1=gather.y, x2=coneX, y2=coneY-coneS*.5;
-      ctx.save(); ctx.globalAlpha=1-seg(t,3.0,3.5); ctx.lineWidth=u*.55; ctx.lineCap="round";
-      for(let strand=0;strand<2;strand++){
-        ctx.strokeStyle=strand?C.yarn:C.yarn2; ctx.beginPath();
-        const steps=60;
-        for(let j=0;j<=steps*th;j++){ const p=j/steps; const x=lerp(x1,x2,p)+Math.sin(p*28+t*14+strand*Math.PI)*u*.9; const y=lerp(y1,y2,p); j?ctx.lineTo(x,y):ctx.moveTo(x,y); }
-        ctx.stroke(); }
-      ctx.restore();
-    }
-  }
-  const coneFill=seg(t,0.9,2.6);
-  if(t<5) { ctx.save(); ctx.globalAlpha=1-seg(t,4.4,5); cone(ctx,coneX,coneY,coneS,coneFill,t*3); ctx.restore(); }
-  label(ctx,W,H,"الغزل","Spinning",seg(t,0.4,0.9)*(1-seg(t,2.2,2.6)),portrait?.8:.86);
-
-  /* ---------- Scene 2: circular knitting (2.6 – 5.0) ---------- */
-  const s2in=seg(t,2.6,3.3), s2out=seg(t,4.7,5.2);
-  const R=Math.min(W*.3,H*.16), ringY=portrait?H*.33:H*.32;
-  if(t>2.5 && t<5.4){
-    ctx.save(); ctx.globalAlpha=s2in*(1-s2out);
-    // thread from cone into the machine
-    ctx.strokeStyle=C.yarn; ctx.lineWidth=u*.45; ctx.beginPath(); ctx.moveTo(coneX,coneY-coneS*.5); ctx.quadraticCurveTo(cx-R*.9,ringY-R*.9,cx-R*.55,ringY-R*.32); ctx.stroke();
-    // needle cylinder (top view, tilted)
-    const rot=t*2.4, n=36;
-    ctx.translate(cx,ringY); ctx.scale(1,.42);
-    ctx.lineWidth=u*.9; ctx.strokeStyle="rgba(255,255,255,.25)"; ctx.beginPath(); ctx.arc(0,0,R*1.08,0,Math.PI*2); ctx.stroke();
-    for(let i=0;i<n;i++){ const a=rot+i*Math.PI*2/n; const front=Math.sin(a)>0;
-      ctx.strokeStyle=front?"#dfe6ff":"rgba(223,230,255,.35)"; ctx.lineWidth=u*.55;
-      ctx.beginPath(); ctx.moveTo(Math.cos(a)*R*.86,Math.sin(a)*R*.86); ctx.lineTo(Math.cos(a)*R*1.16,Math.sin(a)*R*1.16); ctx.stroke(); }
-    ctx.restore();
-    // knitted tube growing downward
-    const grow=easeOut(seg(t,2.9,4.6)), tubeW=R*1.7, tubeH=lerp(0,(portrait?H*.36:H*.42),grow);
-    ctx.save(); ctx.globalAlpha=s2in;
-    knitPattern(ctx,cx-tubeW/2,ringY+R*.15,tubeW,tubeH,u*3.2,t*u*6,C.indigo,C.indigoD);
-    ctx.restore();
-  }
-  label(ctx,W,H,"التريكو الدائري","Circular Knitting",seg(t,2.9,3.4)*(1-seg(t,4.6,5.0)),portrait?.8:.86);
-
-  /* ---------- Scene 3: garment (4.8 – 7.0) ---------- */
-  const s3=seg(t,4.8,5.9), s3out=seg(t,6.8,7.3);
-  if(t>4.7 && t<7.5){
-    const w=lerp(R*1.7,Math.min(W*.46,H*.28),ease(s3)), y=lerp(ringY+R*.15+H*.18,H*.42,ease(s3));
-    const sway=Math.sin(t*2.2)*u*.6*s3;
-    ctx.save(); ctx.globalAlpha=1-s3out; ctx.translate(sway,0);
-    shirtPath(ctx,cx,y,w,ease(seg(t,5.0,6.0))); ctx.save(); ctx.clip();
-    knitPattern(ctx,cx-w,y-w,w*2,w*2.2,u*3,t*u*2,C.indigo,C.indigoD); ctx.restore();
-    ctx.lineWidth=u*.5; ctx.strokeStyle="rgba(255,255,255,.55)"; shirtPath(ctx,cx,y,w,ease(seg(t,5.0,6.0))); ctx.stroke();
-    // rib collar + hem
-    const m=ease(seg(t,5.4,6.2)); if(m>0){ ctx.globalAlpha=(1-s3out)*m; ctx.strokeStyle=C.yarn; ctx.lineWidth=u*.9;
-      ctx.beginPath(); ctx.moveTo(cx-w*.18,y-w*.56); ctx.quadraticCurveTo(cx,y-w*.36,cx+w*.18,y-w*.56); ctx.stroke();
-      ctx.beginPath(); ctx.moveTo(cx-w*.5,y+w*.5); ctx.lineTo(cx+w*.5,y+w*.5); ctx.stroke(); }
-    ctx.restore();
-  }
-  label(ctx,W,H,"الملابس","Knitwear",seg(t,5.3,5.8)*(1-seg(t,6.7,7.1)),portrait?.8:.86);
-
-  /* ---------- Scene 4: logo (7.0 – 9.2) ---------- */
-  const s4=seg(t,7.0,7.8);
-  if(s4>0){
-    ctx.save();
-    // journey line with three marks
-    const lineY=portrait?H*.3:H*.26, span=Math.min(W*.6,u*70), x0=cx+span/2, x1=cx-span/2; // RTL: starts right
-    const p=easeOut(seg(t,7.0,8.0));
-    ctx.strokeStyle=C.yarn; ctx.lineWidth=u*.5; ctx.lineCap="round";
-    ctx.beginPath(); for(let j=0;j<=80*p;j++){ const q=j/80; const x=lerp(x0,x1,q), y=lineY+Math.sin(q*Math.PI*6)*u*1.2; j?ctx.lineTo(x,y):ctx.moveTo(x,y); } ctx.stroke();
-    const marks=[["خيط",0],["قماش",.5],["لبس",1]];
-    ctx.textAlign="center"; ctx.direction="rtl";
-    marks.forEach(([txt,q],i)=>{ const a=seg(t,7.1+i*.22,7.5+i*.22); if(!a) return; const x=lerp(x0,x1,q);
-      ctx.globalAlpha=a; ctx.fillStyle=i===0?C.yarn:i===1?C.indigo:C.coral; ctx.beginPath(); ctx.arc(x,lineY,u*2.2*easeOut(a),0,Math.PI*2); ctx.fill();
-      ctx.fillStyle=C.mute; ctx.font=`500 ${u*3.4}px ${FD}`; ctx.fillText(txt,x,lineY+u*7); });
-    // wordmark
-    const a=easeOut(seg(t,7.4,8.3)), dy=(1-a)*u*4;
-    ctx.globalAlpha=a; ctx.fillStyle=C.ink; ctx.direction="ltr";
-    const big=portrait?u*12.5:u*13;
-    ctx.font=`700 ${big}px ${FD}`;
-    const word="SOFFAR"; const sp=big*.08;
-    const ww=[...word].reduce((s,ch)=>s+ctx.measureText(ch).width+sp,-sp); let xx=cx-ww/2;
-    ctx.textAlign="left"; for(const ch of word){ ctx.fillText(ch,xx,H*.5+dy); xx+=ctx.measureText(ch).width+sp; }
-    ctx.textAlign="center"; ctx.fillStyle=C.yarn; ctx.font=`500 ${big*.34}px ${FD}`;
-    spaced(ctx,"GROUP",cx,H*.5+big*.62+dy,big*.16);
-    ctx.direction="rtl"; ctx.fillStyle=C.ink; ctx.font=`700 ${big*.48}px ${FD}`;
-    ctx.fillText("صفار جروب",cx,H*.5+big*1.42+dy);
-    const a2=easeOut(seg(t,8.1,8.8)); ctx.globalAlpha=a2; ctx.fillStyle=C.mute; ctx.font=`500 ${u*3.6}px ${FD}`;
-    ctx.fillText("من الخيط… للقماش… للبس",cx,H*.5+big*2.05);
-    ctx.restore();
+    // index + subline
+    const b=easeOut(seg(lt,.45,.8)); ctx.globalAlpha=b; ctx.fillStyle=sc.ink; ctx.textAlign="center";
+    ctx.font=`500 ${u*3}px ${FD}`; ctx.fillText(`0${i+1} / 04`,cx,H*.2);
+    ctx.font=`500 ${u*4.4}px ${FD}`; ctx.fillText(sc.s,cx,H*.48+sz*.62+(1-b)*u*3);
+    // progress bars
+    ctx.globalAlpha=1; for(let k=0;k<4;k++){ const bw=W*.18, x=cx-bw*2-u*3+k*(bw+u*2); ctx.fillStyle="rgba(0,0,0,.15)"; ctx.fillRect(x,H*.92,bw,u*.6);
+      ctx.fillStyle=sc.ink; ctx.fillRect(x,H*.92,bw*(k<i?1:k===i?clamp(lt/SLOT):0),u*.6); }
+  } else {
+    const lt2=t-SC.length*SLOT;
+    ctx.fillStyle="#1b1f3b"; ctx.fillRect(0,0,W,H);
+    // four color chips collapse into a line
+    const p=easeOut(clamp(lt2/.6+.4)); SC.forEach((sc,k)=>{ ctx.fillStyle=sc.bg; const bw=W*.12; ctx.fillRect(cx-bw*2-u*3+k*(bw+u*2),H*.32,bw,u*1.4*p); });
+    ctx.fillStyle="#fff"; ctx.textAlign="center"; ctx.font=`700 ${u*15}px ${FD}`; ctx.fillText("SOFFAR",cx,H*.5);
+    ctx.fillStyle="#f2b544"; ctx.font=`500 ${u*4.6}px ${FD}`; ctx.fillText("G R O U P",cx,H*.5+u*7);
+    ctx.fillStyle="rgba(255,255,255,.7)"; ctx.font=`500 ${u*3.4}px ${FD}`; ctx.fillText("Yarn. Knit. Dye. Wear.",cx,H*.5+u*16);
   }
   ctx.restore();
 }
-const api={draw,DUR};
-if(typeof module!=="undefined") module.exports=api; else root.SoffarIntro=api;
+const api={draw,DUR}; if(typeof module!=="undefined") module.exports=api; else root.SoffarIntro=api;
 })(typeof window!=="undefined"?window:globalThis);
 
 /* ============ app intro (Soffar Group) ============ */
