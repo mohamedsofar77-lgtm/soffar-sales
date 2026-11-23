@@ -411,6 +411,10 @@ textarea{width:100%;font:inherit;border:1px solid var(--line);background:var(--s
 .canmake summary{padding:12px 16px;cursor:pointer}
 .canmake .row-i{display:flex;align-items:center;gap:12px;padding:10px 16px;border-top:1px solid var(--line);width:100%;background:none;border-inline:0;border-bottom:0;text-align:right;color:var(--ink)}
 .c-nums .hl{color:var(--indigo);font-weight:600}
+.hnav{display:flex;gap:6px;margin-bottom:8px}
+.hnav button{display:inline-flex;align-items:center;gap:2px;border:0;border-radius:99px;padding:4px 10px 4px 8px;background:var(--hero-glass);color:var(--hero-ink);font-size:.78rem;font-weight:600}
+.hnav button svg{width:15px;height:15px}
+.hnav button:disabled{opacity:.35;cursor:default}
 </style>
 </head>
 <body>
@@ -424,7 +428,7 @@ const DEV_KEY = "";
 const APP_URL = "https://mohamedsofar77-lgtm.github.io/soffar-sales/";
 // نسخة التدريب: لو حد فتح التطبيق من غير رابط، بيدخل على وضع المراجعة والتدريب (قراءة بس)
 const PREVIEW_KEY = "";
-const APP_VERSION = "20261123151644";
+const APP_VERSION = "20261123152110";
 // رابط الدخول: الموظف بيفتح الرابط اللي فيه #k=... مرة واحدة، والتطبيق بيفتكره على الموبايل
 const KEY = (()=>{ let k=""; const m=(location.hash||"").match(/k=([A-Za-z0-9]+)/);
   if(m){ k=m[1]; try{ localStorage.setItem("soffar_key",k); }catch(e){} try{ history.replaceState(null,"",location.pathname+location.search); }catch(e){} }
@@ -519,6 +523,7 @@ const ICONS = {
   send:'<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M21 3L3 11l7 3 3 7z"/><path d="M10 14l11-11"/></svg>',
   book:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 5a2 2 0 012-2h13v16H6a2 2 0 00-2 2z"/><path d="M4 19V5M8 7h7M8 11h7"/></svg>',
   back:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 6l6 6-6 6"/></svg>',
+  fwd:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 6l-6 6 6 6"/></svg>',
   check:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12l5 5 9-10"/></svg>',
   grid:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3.5" y="3.5" width="7" height="7" rx="2"/><rect x="13.5" y="3.5" width="7" height="7" rx="2"/><rect x="3.5" y="13.5" width="7" height="7" rx="2"/><rect x="13.5" y="13.5" width="7" height="7" rx="2"/></svg>'
 };
@@ -693,7 +698,7 @@ function greet(){ const h=new Date().getHours(); return h<12?"صباح الخي�
 function header(title, extra=""){
   const today = new Date().toLocaleDateString("ar-EG",{weekday:"long",day:"numeric",month:"long"});
   return `<header class="hero"><div class="hero-in">
-    <div><div class="hello">${greet()}${S.me.dev?"":`، ${esc(S.me.full_name||"")}`} · ${today}</div><h1>${title}</h1>
+    <div><div class="hnav"><button type="button" id="navb" aria-label="الصفحة اللي قبلها" title="الصفحة اللي قبلها" ${NAV.i<=0?"disabled":""}>${ICONS.back}<span>رجوع</span></button><button type="button" id="navf" aria-label="الصفحة اللي بعدها" title="الصفحة اللي بعدها" ${NAV.i>=NAV.stack.length-1?"disabled":""}><span>قدّام</span>${ICONS.fwd}</button></div><div class="hello">${greet()}${S.me.dev?"":`، ${esc(S.me.full_name||"")}`} · ${today}</div><h1>${title}</h1>
     <span class="role">${ICONS.user}${esc(S.me.department_name||ROLE_AR[S.me.realRole||S.me.role]||"")}${S.me.preview?" · مراجعة وتدريب":""}</span></div>
     <div class="row">${extra}<button class="icon-btn bell" data-bell aria-label="التنبيهات" title="التنبيهات">${ICONS.bell}<span class="bell-n" hidden></span></button><button class="icon-btn" data-fb aria-label="ملاحظة على التطبيق" title="ملاحظة على التطبيق">${ICONS.note}</button>${S.me.owner&&IN_CLAUDE()?"":`<button class="icon-btn" id="logout" aria-label="خروج" title="خروج">${ICONS.out}</button>`}</div>
   </div></header>
@@ -702,6 +707,7 @@ function header(title, extra=""){
 const refreshBtn = () => `<button class="icon-btn" id="rf" aria-label="تحديث" title="تحديث">${ICONS.refresh}</button>`;
 function busyBtn(b,on){ if(!b) return; b.disabled=on; b.classList.toggle("spin",on); }
 function bindHeader(){
+  const nb=$("#navb"), nf=$("#navf"); if(nb) nb.onclick=()=>navGo(-1); if(nf) nf.onclick=()=>navGo(1);
   const b=$("#logout"); if(b) b.onclick=async()=>{ if(S.me&&S.me.openTraining){ S.me=null; S.stock=null; return renderLogin(); } if(KEY){ try{ localStorage.removeItem("soffar_key"); }catch(e){} S.me=null; S.stock=null; location.hash=""; return renderLogin("خرجت. افتح رابط الدخول تاني عشان تدخل."); } await sb.auth.signOut(); S.stock=null; renderLogin(); };
   document.querySelectorAll("[data-bell]").forEach(x=>x.onclick=()=>goTab("inbox"));
   document.querySelectorAll("[data-fb]").forEach(x=>x.onclick=()=>openFeedback());
@@ -709,7 +715,22 @@ function bindHeader(){
   paintBell();
 }
 function goTab(k,keep){ if(k==="stock"&&!keep){ S.f.mat=""; S.f.spec=""; S.f.fam=""; } S.tab=k; app.querySelectorAll("[data-tab]").forEach(x=>{ if(x.dataset.tab===k) x.setAttribute("aria-current","page"); else x.removeAttribute("aria-current"); }); show(); }
-function show(){ const v=$("#view"); if(v) v.onclick=null; ({home:viewHome, guide:viewGuide, inbox:viewInbox, warehouse:viewWarehouse, reports:viewReports, stock:viewStock, new:viewNew, res:viewRes, wo:viewWO, basics:viewBasics}[S.tab]||viewStock)(); window.scrollTo(0,0); }
+/* ---- back / forward between pages ---- */
+const NAV={stack:[],i:-1,restoring:false};
+function navSnap(){ const f=S.f||{}; return {tab:S.tab, fam:f.fam||"", mat:f.mat||"", spec:f.spec||"", bTab:S.tab==="basics"?(S.bTab||""):"", whTab:S.tab==="warehouse"?(S.whTab||""):""}; }
+function navRecord(){ if(NAV.restoring) return; const s=navSnap(), k=JSON.stringify(s), cur=NAV.stack[NAV.i];
+  if(cur&&JSON.stringify(cur)===k) return;
+  NAV.stack=NAV.stack.slice(0,NAV.i+1); NAV.stack.push(s); if(NAV.stack.length>80) NAV.stack.shift(); NAV.i=NAV.stack.length-1;
+  try{ if(!IN_CLAUDE()&&NAV.stack.length>1) history.pushState({soffarNav:NAV.i},""); }catch(e){} updNav(); }
+function updNav(){ const b=$("#navb"), f=$("#navf"); if(b) b.disabled=NAV.i<=0; if(f) f.disabled=NAV.i>=NAV.stack.length-1; }
+function navGo(d){ const j=NAV.i+d; if(j<0||j>=NAV.stack.length) return; NAV.i=j; const s=NAV.stack[j];
+  NAV.restoring=true;
+  try{ S.f.fam=s.fam; S.f.mat=s.mat; S.f.spec=s.spec; if(s.bTab) S.bTab=s.bTab; if(s.whTab) S.whTab=s.whTab; S.f.limit=40; closeSheet(); goTab(s.tab,true); }
+  finally{ NAV.restoring=false; } updNav(); }
+window.addEventListener("popstate",()=>{ if(!S.me) return;
+  if($("#sheet")&&$("#sheet").innerHTML){ closeSheet(); try{ history.pushState({soffarNav:NAV.i},""); }catch(e){} return; }
+  if(NAV.i>0) navGo(-1); });
+function show(){ navRecord(); const v=$("#view"); if(v) v.onclick=null; ({home:viewHome, guide:viewGuide, inbox:viewInbox, warehouse:viewWarehouse, reports:viewReports, stock:viewStock, new:viewNew, res:viewRes, wo:viewWO, basics:viewBasics}[S.tab]||viewStock)(); window.scrollTo(0,0); }
 
 /* ============ home ============ */
 async function viewHome(){
@@ -821,14 +842,13 @@ function rowPass(r, terms){ const f=S.f;
 function openMaterial(mc){ const fam=(S.cat&&S.cat.mats[mc]||{}).fam||""; S.f={...FDEF, ...pickKeep(S.f), mat:mc, fam}; goTab("stock",true); }
 function pickKeep(f){ f=f||{}; return {wh:f.wh||"all",own:f.own||"free",yt:f.yt||[],lyc:f.lyc||"",cnt:f.cnt||"",need:f.need||"",cf:f.cf||[],gr:f.gr||[],op:f.op||"",season:f.season||"",view:f.view||"cards"}; }
 async function viewStock(){
-  const v=$("#view"); S.f={...FDEF,...S.f};
+  const v=$("#view"); S.f={...FDEF,...S.f}; navRecord();
   if(!S.stock){ v.innerHTML=header("الرصيد",refreshBtn())+`<div class="state"><strong>بيحمّل الرصيد…</strong></div>`; bindHeader();
     try{ await loadStock(); }catch(e){ v.innerHTML=header("الرصيد",refreshBtn())+`<div class="msg err">${esc(errText(e))}</div>`; bindHeader(); $("#rf").onclick=()=>viewStock(); return; } }
   let title="الرصيد", backBtn="";
   if(S.f.mat&&!S.f.fam) S.f.fam=(S.cat.mats[S.f.mat]||{}).fam||"";
   if(S.f.mat){ const m=S.cat.mats[S.f.mat]||{}; title=`${esc(m.name||"خامة")} <span class="hcode num">${esc(S.f.mat)}</span>`; }
   else if(S.f.fam){ title=esc(S.f.fam); }
-  if(S.f.mat||S.f.fam) backBtn=`<button class="icon-btn" id="back" aria-label="رجوع" title="رجوع">${ICONS.back}</button>`;
   const crumbs = (S.f.fam||S.f.mat) ? `<nav class="crumbs"><button data-cr="root">كل العائلات</button>${S.f.fam?`<span>‹</span><button data-cr="fam" ${S.f.mat?"":"aria-current=\"page\""}>${esc(S.f.fam)}</button>`:""}${S.f.mat?`<span>‹</span><span aria-current="page">${esc((S.cat.mats[S.f.mat]||{}).name||S.f.mat)}</span>`:""}</nav>` : "";
   v.innerHTML = header(title, backBtn+`<button class="icon-btn" id="shr" aria-label="شارك المتاح" title="شارك المتاح على واتساب">${ICONS.share}</button>`+refreshBtn()) + crumbs + `
   <section class="totals"><div><span class="ic">${ICONS.kg}</span><span class="k">الموجود</span><span class="v"><span class="num" id="t1">—</span><small>كجم</small></span></div>
@@ -1305,7 +1325,7 @@ async function master(kind, force){ if(force||!S.m[kind]) S.m[kind]= kind==="col
 function dropMaster(...k){ k.forEach(x=>delete S.m[x]); delete S.m.guide; S.customers=null; S.specs=null; }
 
 async function viewBasics(){
-  const v=$("#view");
+  navRecord(); const v=$("#view");
   const subs=[["customers","العملاء"],["suppliers","الموردين"],["specs","الأصناف"],["materials","الخامات"],["colors","الألوان"],["guide","دليل التكويد"]];
   if(isAdmin()&&!S.me.preview) subs.push(["depts","الأقسام والروابط"],["feedback","ملاحظات المراجعة"],["users","المستخدمين"]);
   v.innerHTML = header("الأساسيات والتكويد") + `
@@ -1765,7 +1785,7 @@ function rollInput(box, onRoll, placeholder="اعمل سكان أو اكتب ر�
 /* ============ warehouse ============ */
 S.whTab="in";
 async function viewWarehouse(){
-  const v=$("#view");
+  navRecord(); const v=$("#view");
   const role=S.me.realRole||S.me.role;
   const subs = role==="quality" ? [["quality","تسجيل الجودة"],["find","بحث توب"],["labels","ملصقات"]]
     : role==="warehouse" ? [["accept","استلام من الجودة"],["out","صرف"],["in","وارد"],["find","بحث توب"],["moves","الحركات"],["labels","ملصقات"]]
@@ -1968,10 +1988,10 @@ async function whLabels(box){
 S.repDays=90;
 async function viewReports(){
   const v=$("#view");
-  v.innerHTML=header("التقارير",`<button class="icon-btn" id="back" aria-label="رجوع">${ICONS.back}</button>`)+`
+  v.innerHTML=header("التقارير",``)+`
    <div class="seg" id="rpd">${[[30,"آخر شهر"],[90,"آخر 3 شهور"],[365,"آخر سنة"]].map(([d,l])=>`<button data-k="${d}" aria-pressed="${S.repDays===d}">${l}</button>`).join("")}</div>
    <div class="stack" id="rpb"><div class="state">بيحسب…</div></div>`;
-  bindHeader(); $("#back").onclick=()=>goTab("home");
+  bindHeader();
   $("#rpd").onclick=e=>{const b=e.target.closest("button");if(!b)return;S.repDays=+b.dataset.k;viewReports()};
   let d; try{ d=await rpc("fx_reports",{p_days:S.repDays}); }catch(e){ $("#rpb").innerHTML=`<div class="msg err">${esc(errText(e))}</div>`; return; }
   const bars=(arr,label,val,unit="كجم",codeF)=>{ if(!arr||!arr.length) return `<div class="sub" style="padding:12px 16px">مفيش بيانات في الفترة دي.</div>`; const mx=Math.max(...arr.map(x=>+x[val]||0))||1;
@@ -2213,7 +2233,7 @@ const DEPT_GUIDE=[
 async function viewGuide(){
   const v=$("#view"); const mine=S.me.department;
   const order=[...DEPT_GUIDE].sort((a,b)=>(b.code===mine)-(a.code===mine));
-  v.innerHTML=header("دليل التشغيل",`<button class="icon-btn" id="back" aria-label="رجوع">${ICONS.back}</button>`)+`
+  v.innerHTML=header("دليل التشغيل",``)+`
   <section class="card pad stack"><h2>الفكرة في سطرين</h2>
    <p class="gp">كل الأقسام شغالة على نفس البيانات في نفس اللحظة. أي حاجة قسم يعملها، باقي الأقسام بتشوفها على طول، والقسم اللي عليه الدور بيوصله تنبيه على الجرس 🔔.</p>
    <p class="gp">التوب بياخد باركود عند الجودة، ومن ساعتها أي حركة ليه (استلام، مصبغة، عميل) بتبقى بسكان. كده الرصيد في التطبيق هو هو اللي على الأرض.</p></section>
@@ -2235,7 +2255,7 @@ async function viewGuide(){
    <div class="gl"><div class="gk">السكان مش شغال</div><div>اسمح للمتصفح يستخدم الكاميرا من إعدادات الموبايل، وخلي الإضاءة كويسة. ولو مفيش، اكتب رقم التوب بإيدك.</div></div>
    <div class="gl"><div class="gk">التطبيق اتغير شكله</div><div>التحديثات بتنزل لوحدها. لو في حاجة مش فاهمها اسأل الإدارة أو ابعت ملاحظة.</div></div>
    <div class="gl"><div class="gk">أضيف التطبيق للموبايل</div><div>آيفون: Safari ← زرار المشاركة ← «إضافة إلى الشاشة الرئيسية». أندرويد: Chrome ← القايمة ⋮ ← «إضافة إلى الشاشة الرئيسية».</div></div></section>`;
-  bindHeader(); $("#back").onclick=()=>goTab("home");
+  bindHeader();
   v.insertAdjacentHTML("beforeend",`<button class="btn" id="replay">▶ شوف افتتاحية صفار جروب</button>`); $("#replay").onclick=()=>playIntro(true);
 }
 
