@@ -89,7 +89,8 @@ label > span{font-weight:500}
 .reasons{display:flex;flex-wrap:wrap;gap:6px}
 .reasons button{border:1px solid var(--line);background:var(--surface);border-radius:99px;padding:5px 12px;font-size:.85rem}
 .reasons button[aria-pressed="true"]{background:var(--bad);border-color:var(--bad);color:#fff}
-.chip.st-on_machine,.chip.st-greige_done,.chip.st-at_dyehouse{background:var(--indigo-soft);color:var(--indigo)}
+.chip.st-on_machine,.chip.st-greige_done,.chip.st-at_dyehouse,.chip.st-at_quality{background:var(--indigo-soft);color:var(--indigo)}
+.chip.st-at_quality{background:#f3e8ff;color:#7e22ce}.chip.st-at_dyehouse{background:#feead6;color:#b54708}.chip.st-greige_done{background:var(--greige-soft);color:var(--greige)}
 .spec{background:var(--surface);border:1px solid var(--line);border-radius:14px;overflow:hidden}
 .spec-h{padding:12px 14px;display:flex;flex-direction:column;gap:3px;border-bottom:1px solid var(--line)}
 .spec-top{display:flex;align-items:baseline;gap:8px;flex-wrap:wrap}
@@ -458,6 +459,7 @@ textarea{width:100%;font:inherit;border:1px solid var(--line);background:var(--s
 .ptab{width:100%;border-collapse:collapse;font-size:.88rem}
 .ptab td{padding:6px 4px;border-bottom:1px solid var(--line)}
 .ptab td.num{text-align:left;font-weight:600}
+.ptab tr.th td{font-size:.75rem;color:var(--muted);font-weight:700;padding-top:12px;border-bottom:0}
 .ptab tr.bad td{color:var(--bad)} .ptab tr.ok td{color:var(--ok);font-weight:700}
 .pedit{display:flex;flex-direction:column;gap:10px}
 .chk{display:flex!important;flex-direction:row!important;align-items:center;gap:6px;font-size:.88rem}
@@ -477,7 +479,7 @@ const DEV_KEY = "";
 const APP_URL = "https://mohamedsofar77-lgtm.github.io/soffar-sales/";
 // نسخة التدريب: لو حد فتح التطبيق من غير رابط، بيدخل على وضع المراجعة والتدريب (قراءة بس)
 const PREVIEW_KEY = "";
-const APP_VERSION = "20261123154320";
+const APP_VERSION = "20261123154547";
 // رابط الدخول: الموظف بيفتح الرابط اللي فيه #k=... مرة واحدة، والتطبيق بيفتكره على الموبايل
 const KEY = (()=>{ let k=""; const m=(location.hash||"").match(/k=([A-Za-z0-9]+)/);
   if(m){ k=m[1]; try{ localStorage.setItem("soffar_key",k); }catch(e){} try{ history.replaceState(null,"",location.pathname+location.search); }catch(e){} }
@@ -488,7 +490,7 @@ const sb = !window.supabase ? null : window.supabase.createClient(SUPABASE_URL, 
 
 const ROLE_AR = {admin:"مدير", sales:"مبيعات", warehouse:"مخزن", planning:"تخطيط وإنتاج", quality:"الجودة", viewer:"مراجعة"};
 const RES_ST = {reserved:"محجوز", sold:"اتباع", cancelled:"ملغي", expired:"انتهى"};
-const WO_ST = {requested:"طلب جديد", on_machine:"على المكن", greige_done:"خلص خام", at_dyehouse:"في المصبغة", finished:"جاهز", delivered:"اتسلّم", partial_return:"مرتجع جزئي", returned:"مرتجع", closed:"مقفول", cancelled:"ملغي"};
+const WO_ST = {requested:"طلب جديد", on_machine:"على المكن", at_quality:"في الجودة", greige_done:"في مخزن الخام", at_dyehouse:"في المصبغة", finished:"في مخزن المجهز", delivered:"اتسلّم", partial_return:"مرتجع جزئي", returned:"مرتجع", closed:"مقفول", cancelled:"ملغي"};
 const RETURN_REASONS = ["عيب صباغة","اختلاف لون","عيب نسيج","اختلاف وزن أو عرض","تأخير في التسليم","العميل لغى","كمية زيادة"];
 const ERR_AR = {
   not_allowed:"مش مسموح لك تعمل الحركة دي.", bad_qty:"اكتب كمية صحيحة أكبر من صفر.", bad_customer:"اختار العميل من القائمة.",
@@ -1078,9 +1080,9 @@ async function loadPlan(force){
   const j=await rpc("fx_plan");
   const set=j.settings||{}; const big=+set.plan_big_kg||500, safety=(+set.plan_safety_pct||10)/100;
   const notes=j.notes||{};
-  const leaves=(j.rows||[]).map(a=>{ const [spec,cn,nm,gF,fF,gC,fC,rG,rF,dem,ready,om,dy,rq,orders]=a; const sp=(S.cat.specs[spec])||{name:"",mat:String(spec).slice(0,5),fam:"موديلات خاصة",season:"",text:""};
+  const leaves=(j.rows||[]).map(a=>{ const [spec,cn,nm,gF,fF,gC,fC,rG,rF,dem,ready,om,dy,rq,orders,qa,sg,sf]=a; const sp=(S.cat.specs[spec])||{name:"",mat:String(spec).slice(0,5),fam:"موديلات خاصة",season:"",text:""};
     const mat=sp.mat||String(spec).slice(0,5), fam=(S.cat.mats[mat]||{}).fam||sp.fam||"موديلات خاصة";
-    return {lvl:3, key:"c:"+spec+"|"+cn, spec, cn, name:nm||cn||"بدون لون", mat, fam, sp, gF:+gF, fF:+fF, gC:+gC, fC:+fC, rG:+rG, rF:+rF, dem:+dem, ready:+ready, om:+om, dy:+dy, rq:+rq, orders:orders||[]}; });
+    return {lvl:3, key:"c:"+spec+"|"+cn, spec, cn, name:nm||cn||"بدون لون", mat, fam, sp, gF:+gF, fF:+fF, gC:+gC, fC:+fC, rG:+rG, rF:+rF, dem:+dem, ready:+ready, om:+om, dy:+dy, rq:+rq, qa:+qa||0, sg:+sg||0, sf:+sf||0, orders:orders||[]}; });
   // spec-level free greige (to know if dyeing can cover a finished shortage)
   const specG=new Map(); leaves.forEach(l=>specG.set(l.spec,(specG.get(l.spec)||0)+Math.max(0,l.gF-l.rG)));
   leaves.forEach(l=>{ const n=notes[l.key]; const aF=l.fF-l.rF, aG=l.gF-l.rG; let need=l.rq + Math.max(0,-aF) + Math.max(0,-aG);
@@ -1096,14 +1098,14 @@ async function loadPlan(force){
     else if(l.avail>=big&&l.dem<0.5){ r="sell"; why=`${fmt(l.avail)} كجم حر ومفيش عليه طلبيات`; }
     l.rec=r; l.qty=q; l.why=why; l.note=n?n[1]:""; l.pin=!!(n&&n[3]); l.ign=!!(n&&n[2]); l.by=n?n[4]:""; });
   // build tree
-  const mk=(lvl,key,name,extra)=>({lvl,key,name,kids:[],gF:0,fF:0,gC:0,fC:0,rG:0,rF:0,dem:0,ready:0,om:0,dy:0,rq:0,avail:0,need:0,counts:{},...extra});
+  const mk=(lvl,key,name,extra)=>({lvl,key,name,kids:[],gF:0,fF:0,gC:0,fC:0,rG:0,rF:0,dem:0,ready:0,om:0,dy:0,rq:0,qa:0,sg:0,sf:0,avail:0,need:0,counts:{},...extra});
   const fams=new Map(), mats=new Map(), specs=new Map();
   leaves.forEach(l=>{
     let f=fams.get(l.fam); if(!f){ f=mk(0,"f:"+l.fam,l.fam,{}); fams.set(l.fam,f); }
     let m=mats.get(l.mat); if(!m){ m=mk(1,"m:"+l.mat,(S.cat.mats[l.mat]||{}).name||l.mat,{code:l.mat,fam:l.fam}); mats.set(l.mat,m); f.kids.push(m); }
     let s=specs.get(l.spec); if(!s){ s=mk(2,"s:"+l.spec,l.sp.name||l.spec,{code:l.spec,mat:l.mat,fam:l.fam,sp:l.sp}); specs.set(l.spec,s); m.kids.push(s); }
     s.kids.push(l);
-    for(const n of [f,m,s]){ for(const k of ["gF","fF","gC","fC","rG","rF","dem","ready","om","dy","rq","avail","need"]) n[k]+=l[k]; n.counts[l.rec]=(n.counts[l.rec]||0)+1; } });
+    for(const n of [f,m,s]){ for(const k of ["gF","fF","gC","fC","rG","rF","dem","ready","om","dy","rq","qa","sg","sf","avail","need"]) n[k]+=l[k]; n.counts[l.rec]=(n.counts[l.rec]||0)+1; } });
   const nodeRec=(n)=>{ const note=notes[n.key]; n.note=note?note[1]:""; n.pin=!!(note&&note[3]); n.min=note&&note[0]!=null?+note[0]:null; n.by=note?note[4]:"";
     if(note&&note[2]){ n.rec="ign"; n.why="المدير طلب تجاهل التوصية"; n.ign=true; return; }
     const worst=["produce","dye","cover","raise"].find(k=>n.counts[k]);
@@ -1152,7 +1154,7 @@ function findNode(key){ const P=S.plan; if(!P) return null; const [t,v]=[key.sli
   return P.leaves.find(l=>l.key===key); }
 function pMetrics(n){ const st=n.gF+n.gC, sf=n.fF+n.fC;
   const p=(l,v,c)=>v>=0.5?`<span class="pm ${c||""}">${l} <b class="num">${fmt(v)}</b></span>`:"";
-  return p("على المكن",n.om)+p("في المصبغة",n.dy)+p("مخزن خام",st)+p("مخزن مجهز",sf)+p("جاهز للعملاء",n.ready)+p("محجوز",n.rG+n.rF)+p("طلبيات مفتوحة",n.dem,"d")+p("لم يبدأ",n.rq,"bad"); }
+  return p("على المكن",n.om)+p("في الجودة",n.qa)+p("في المصبغة",n.dy)+p("مخزن خام",st)+p("مخزن مجهز",sf)+p("طلبيات في مخزن الخام",n.sg)+p("طلبيات في مخزن المجهز",n.sf)+p("محجوز",n.rG+n.rF)+p("طلبيات مفتوحة",n.dem,"d")+p("لم يبدأ",n.rq,"bad"); }
 function pNet(n){ const net=n.avail-n.need; return `<span class="pnet ${net<-0.5?"neg":net>0.5?"pos":""}"><span class="num">${net>0.5?"+":""}${fmt(net)}</span><small>${net<-0.5?"عجز":"حر للبيع"}</small></span>`; }
 function pRec(n){ const r=REC[n.rec]||REC.ok; return `<span class="rchip ${r.c}">${r.t}${n.qty&&["produce","dye","cover","raise"].includes(n.rec)?` <b class="num">${fmt(n.qty)}</b>`:""}</span>${n.pin?`<span class="rchip r-green">مثبّت للبيع</span>`:""}${n.note?`<span class="pnote" title="${esc(n.note)}">${ICONS.note}</span>`:""}`; }
 function pRow(n,depth){ const open=S.planOpen.has(n.key)||(!!(S.planQ||S.planRec)&&n.lvl<2);
@@ -1166,7 +1168,7 @@ function drawPlan(){
   const P=S.plan; if(!P||!$("#pbody")) return;
   const all=P.leaves; const tot=k=>all.reduce((a,l)=>a+l[k],0);
   const def=all.filter(l=>["produce","dye","cover"].includes(l.rec)), sell=sellList("");
-  $("#pk").innerHTML=[["على المكن",tot("om"),"t-w"],["في المصبغة",tot("dy"),"t-f"],["مخزن حر",tot("avail"),"t-g"],["طلبيات مفتوحة",tot("dem"),"t-r"],
+  $("#pk").innerHTML=[["على المكن",tot("om"),"t-w"],["في الجودة",tot("qa"),"t-w"],["في المصبغة",tot("dy"),"t-f"],["طلبيات في المخازن",tot("ready"),"t-g",`خام ${fmt(tot("sg"))} · مجهز ${fmt(tot("sf"))}`],["مخزن حر",tot("avail"),"t-g"],["طلبيات مفتوحة",tot("dem"),"t-r"],
      ["عجز محتاج قرار",def.reduce((a,l)=>a+l.need,0),"t-bad",`${def.length} لون/صنف`],["فائض للبيع",sell.reduce((a,s)=>a+Math.max(0,s.avail-s.need),0),"t-ok",`${sell.length} صنف`]]
     .map(([l,v,c,s])=>`<div class="kpi ${c}"><span class="k">${l}</span><span class="v"><span class="num">${fmt(v)}</span><small>كجم</small></span>${s?`<span class="s">${s}</span>`:""}</div>`).join("");
   const counts={}; all.forEach(l=>counts[l.rec]=(counts[l.rec]||0)+1);
@@ -1196,7 +1198,7 @@ function openPlanNode(n){
   sheet(`<div class="sheet-h"><h3>${esc(n.name)} ${n.code?cd(n.code):""}</h3><span class="chip s">${levels[n.lvl]}</span></div>
    ${n.lvl===3?`<div class="sub">${esc(n.sp.name||"")} ${cd(n.spec)} · ${esc((S.cat.mats[n.mat]||{}).name||"")}</div>`:n.lvl===2&&n.sp?`<div class="sub">${esc(n.sp.text||"")}</div>`:""}
    <div class="recbox ${REC[n.rec].c}"><b>${REC[n.rec].t}${recQ&&["produce","dye","cover","raise"].includes(n.rec)?` · <span class="num">${fmt(recQ)}</span> كجم`:""}</b><span>${esc(n.why||"")}</span></div>
-   <table class="ptab"><tbody>${tr("على المكن",n.om)}${tr("في المصبغة",n.dy)}${tr("مخزن خام (حر)",n.gF)}${tr("مخزن مجهز (حر)",n.fF)}${tr("مخزن بضاعة عملاء",n.gC+n.fC)}${tr("جاهز لطلبيات العملاء",n.ready)}${tr("محجوز",n.rG+n.rF)}${tr("طلبيات مفتوحة (الباقي)",n.dem)}${tr("طلبيات لسه ماتبدأتش",n.rq,n.rq>0.5?"bad":"")}${tr("الحر للبيع بعد الحجوزات",n.avail,"ok")}</tbody></table>
+   <table class="ptab"><tbody><tr class="th"><td colspan="2">الطلبيات المفتوحة فين دلوقتي</td></tr>${tr("على المكن",n.om)}${tr("في الجودة",n.qa)}${tr("في المصبغة",n.dy)}${tr("في مخزن الخام",n.sg)}${tr("في مخزن المجهز",n.sf)}${tr("لسه ماتبدأتش",n.rq,n.rq>0.5?"bad":"")}<tr class="th"><td colspan="2">المخزن</td></tr>${tr("مخزن خام (حر)",n.gF)}${tr("مخزن مجهز (حر)",n.fF)}${tr("بضاعة عملاء",n.gC+n.fC)}${tr("محجوز",n.rG+n.rF)}${tr("طلبيات مفتوحة (الباقي)",n.dem)}${tr("الحر للبيع بعد الحجوزات",n.avail,"ok")}</tbody></table>
    ${orders.length?`<details class="card"><summary><b>الطلبيات المفتوحة</b> · <span class="num">${orders.length}</span></summary>${orders.slice(0,60).map(({l,o})=>{const [cc,cn,tg,rem,ready,lines]=o; return `<div class="row-i"><div class="mid"><div class="t">${esc(cn||"")} ${cd(cc)}</div><div class="m">${n.lvl<3?esc(l.name)+" · ":""}${tg==="g"?"خام":"مجهز"} · أوامر ${(lines||[]).map(x=>`<span class="num">${esc(x[0])}</span> ${WO_ST[x[1]]||x[1]}`).join("، ")}${ready>0.5?` · جاهز له <span class="num">${fmt(ready)}</span>`:""}</div></div><div class="a"><span class="num">${fmt(rem)}</span><small>كجم باقي</small></div></div>`}).join("")}</details>`:""}
    ${canAct?`<div class="pedit">
      <div class="row"><label class="grow"><span>الحد الأدنى للرصيد الحر (كجم)</span><input type="number" id="pmin" min="0" inputmode="decimal" value="${n.min!=null?n.min:""}" placeholder="مثلاً 1000"></label></div>
@@ -1242,18 +1244,18 @@ function planSettings(){ const P=S.plan;
   $("#sgo").onclick=async()=>{ try{ await rpc("fx_set_setting",{p_key:"plan_big_kg",p_value:String(+$("#sbig").value||500)}); await rpc("fx_set_setting",{p_key:"plan_safety_pct",p_value:String(+$("#ssaf").value||0)});
     closeSheet(); toast("اتحفظ"); await loadPlan(); drawPlan(); }catch(e){ $("#sm").innerHTML=`<div class="msg err">${esc(errText(e))}</div>`; } };
 }
-function planRows(){ const P=S.plan, out=[]; const add=(n,path)=>{ out.push([["العائلة","الخامة","الصنف","اللون"][n.lvl], path.join(" › "), n.code||n.spec||"", n.lvl===3?n.name:"", n.om, n.dy, n.gF, n.fF, n.gC+n.fC, n.ready, n.rG+n.rF, n.dem, n.rq, n.avail, n.avail-n.need, REC[n.rec].t, n.qty||"", n.why||"", n.min??"", n.note||"" ]); (n.kids||[]).forEach(k=>add(k,[...path,k.name])); };
+function planRows(){ const P=S.plan, out=[]; const add=(n,path)=>{ out.push([["العائلة","الخامة","الصنف","اللون"][n.lvl], path.join(" › "), n.code||n.spec||"", n.lvl===3?n.name:"", n.om, n.qa, n.dy, n.sg, n.sf, n.gF, n.fF, n.gC+n.fC, n.rG+n.rF, n.dem, n.rq, n.avail, n.avail-n.need, REC[n.rec].t, n.qty||"", n.why||"", n.min??"", n.note||"" ]); (n.kids||[]).forEach(k=>add(k,[...path,k.name])); };
   P.tree.forEach(f=>add(f,[f.name])); return out; }
 function planExport(){
   if(IN_CLAUDE()) return toast("التصدير بيشتغل من نسخة الموبايل. هنا استخدم زرار المشاركة.",true);
-  const head=["المستوى","المسار","الكود","اللون","على المكن","في المصبغة","مخزن خام حر","مخزن مجهز حر","بضاعة عملاء","جاهز لطلبيات","محجوز","طلبيات مفتوحة","لم يبدأ","حر للبيع","الصافي","التوصية","الكمية المقترحة","السبب","الحد الأدنى","ملاحظة المدير"];
+  const head=["المستوى","المسار","الكود","اللون","على المكن","في الجودة","في المصبغة","طلبيات في مخزن الخام","طلبيات في مخزن المجهز","مخزن خام حر","مخزن مجهز حر","بضاعة عملاء","محجوز","طلبيات مفتوحة","لم يبدأ","حر للبيع","الصافي","التوصية","الكمية المقترحة","السبب","الحد الأدنى","ملاحظة المدير"];
   const csv=[head,...planRows()].map(r=>r.map(x=>{ const s=typeof x==="number"?String(Math.round(x*10)/10):String(x??""); return /[",\n]/.test(s)?`"${s.replace(/"/g,'""')}"`:s; }).join(",")).join("\r\n");
   const a=document.createElement("a"); a.href=URL.createObjectURL(new Blob(["﻿"+csv],{type:"text/csv;charset=utf-8"})); a.download=`تقرير_المتابعة_${new Date().toISOString().slice(0,10)}.csv`; document.body.appendChild(a); a.click(); a.remove(); }
 function planShare(){ const P=S.plan; if(!P) return; const L=P.leaves;
   const act=L.filter(l=>["produce","dye","cover","raise"].includes(l.rec)).sort((a,b)=>b.need-a.need).slice(0,10);
   const sell=sellList("").slice(0,10);
   const tot=k=>fmt(L.reduce((a,l)=>a+l[k],0));
-  const txt=`*تقرير المتابعة · صفار جروب*\n${new Date().toLocaleDateString("ar-EG")}\n\nعلى المكن: ${tot("om")} كجم\nفي المصبغة: ${tot("dy")} كجم\nمخزن حر: ${tot("avail")} كجم\nطلبيات مفتوحة: ${tot("dem")} كجم\n`+
+  const txt=`*تقرير المتابعة · صفار جروب*\n${new Date().toLocaleDateString("ar-EG")}\n\nعلى المكن: ${tot("om")} كجم\nفي الجودة: ${tot("qa")} كجم\nفي المصبغة: ${tot("dy")} كجم\nطلبيات في المخازن: ${tot("ready")} كجم\nمخزن حر: ${tot("avail")} كجم\nطلبيات مفتوحة: ${tot("dem")} كجم\n`+
     (act.length?`\n*محتاج قرار:*\n${act.map(l=>`• ${REC[l.rec].t}: ${l.sp.name||l.spec} (${l.spec}) ${l.name} — ${fmt(l.qty||l.need)} كجم`).join("\n")}\n`:"\nمفيش عجز محتاج قرار.\n")+
     (sell.length?`\n*أولويات البيع:*\n${sell.map((s,i)=>`${i+1}. ${s.name} (${s.code}) — ${fmt(s.avail)} كجم حر`).join("\n")}`:"");
   shareSheet("ملخص تقرير المتابعة", txt); }
@@ -1425,17 +1427,21 @@ async function viewWO(){
   const v=$("#view");
   v.innerHTML=header("أوامر التشغيل",refreshBtn())+`
   <div class="seg" id="wseg"><button data-k="1" aria-pressed="${S.woOpen}">المفتوحة</button><button data-k="0" aria-pressed="${!S.woOpen}">الكل</button></div>
+  <div class="bsubs" id="wloc">${[["","كل الأماكن"],["on_machine","على المكن"],["at_quality","في الجودة"],["greige_done","في مخزن الخام"],["at_dyehouse","في المصبغة"],["finished","في مخزن المجهز"],["requested","طلب جديد"]].map(([k,l])=>`<button data-k="${k}" aria-pressed="${(S.woLoc||"")===k}">${l}<span class="num" data-c="${k}"></span></button>`).join("")}</div>
   <div class="seg" id="wtg" style="margin-top:8px"><button data-t="" aria-pressed="${!S.woTgt}">الخطتين</button><button data-t="greige" aria-pressed="${S.woTgt==="greige"}">خطة الخام</button><button data-t="finished" aria-pressed="${S.woTgt==="finished"}">خطة المجهز</button></div>
   <div class="search">${ICONS.search}<input type="search" id="wq" placeholder="ابحث برقم الأمر أو العميل أو الصنف"></div>
   <div class="card" id="wlist"><div class="state">بيحمّل…</div></div>`; bindHeader();
   $("#wseg").onclick=e=>{const b=e.target.closest("button");if(!b)return;S.woOpen=b.dataset.k==="1";viewWO()};
+  $("#wloc").onclick=e=>{const b=e.target.closest("button");if(!b)return;S.woLoc=b.dataset.k;$("#wloc").querySelectorAll("button").forEach(x=>x.setAttribute("aria-pressed",x===b));draw()};
   $("#wtg").onclick=e=>{const b=e.target.closest("button");if(!b)return;S.woTgt=b.dataset.t;viewWO()};
   $("#rf").onclick=()=>viewWO();
   let list; try{ list=await rpc("fx_work_orders",{p_open_only:S.woOpen}); }catch(e){ $("#wlist").innerHTML=`<div class="msg err">${esc(errText(e))}</div>`; return; }
-  const canEdit = ["admin","warehouse","planning"].includes(S.me.role);
+  const canEdit = !S.me.preview && (S.me.realRole||S.me.role)!=="viewer";
   const draw=()=>{
     const t=norm($("#wq").value).split(" ").filter(Boolean);
-    const rows=list.filter(w=>(!S.woTgt||w.warehouse_target===S.woTgt)&&t.every(x=>norm([w.wo_no,w.customer_name,w.spec_name,w.spec_code,w.color].join(" ")).includes(x)));
+    const base=list.filter(w=>(!S.woTgt||w.warehouse_target===S.woTgt)); const cnt={}; base.forEach(w=>{ const k=w.status; cnt[k]=(cnt[k]||0)+Math.max(0,(+w.qty_required)-(+w.qty_delivered||0)); }); let all=0; Object.values(cnt).forEach(x=>all+=x);
+    $("#wloc").querySelectorAll("[data-c]").forEach(sp=>{ const k=sp.dataset.c; const v=k?cnt[k]||0:all; sp.textContent=v>=0.5?" "+fmt(v):""; });
+    const rows=base.filter(w=>(!S.woLoc||w.status===S.woLoc)&&t.every(x=>norm([w.wo_no,w.customer_name,w.spec_name,w.spec_code,w.color].join(" ")).includes(x)));
     if(!rows.length){ $("#wlist").innerHTML=`<div class="state"><strong>مفيش أوامر هنا</strong></div>`; return; }
     $("#wlist").innerHTML=rows.map(w=>{const left=(+w.qty_required)-(+w.qty_delivered||0); return `<div class="item" data-id="${w.id}">
       <div class="item-top"><div class="item-title"><span class="num">${esc(w.wo_no)}</span> · ${esc(w.customer_name||"")} ${cd(w.customer_code)}</div><span class="row" style="gap:6px">${w.overdue?`<span class="chip st-returned">متأخر</span>`:""}<span class="chip st-${w.status}">${WO_ST[w.status]||w.status}</span></span></div>
