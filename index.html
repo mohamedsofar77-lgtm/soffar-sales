@@ -415,6 +415,55 @@ textarea{width:100%;font:inherit;border:1px solid var(--line);background:var(--s
 .hnav button{display:inline-flex;align-items:center;gap:2px;border:0;border-radius:99px;padding:4px 10px 4px 8px;background:var(--hero-glass);color:var(--hero-ink);font-size:.78rem;font-weight:600}
 .hnav button svg{width:15px;height:15px}
 .hnav button:disabled{opacity:.35;cursor:default}
+/* plan report */
+.plan-k{grid-template-columns:repeat(3,minmax(0,1fr))}
+.plan-k .kpi{padding:12px}
+.plan-k .v{font-size:1.15rem}
+.t-bad .v{color:var(--bad)} .t-ok .v{color:var(--ok)}
+@media (max-width:520px){.plan-k{grid-template-columns:repeat(2,minmax(0,1fr))}}
+.ptree{padding:0;overflow:hidden}
+.prow{padding:10px 14px 10px calc(14px);padding-inline-start:calc(14px + var(--d,0)*16px);border-top:1px solid var(--line);display:flex;flex-direction:column;gap:6px;cursor:pointer}
+.prow:first-child{border-top:0}
+.prow.l0{background:var(--indigo-soft)}
+.prow.l0 .pr-n{font-weight:800}
+.prow.l1 .pr-n{font-weight:700}
+.prow:hover{background:color-mix(in srgb,var(--indigo-soft) 50%,transparent)}
+.pr-h{display:flex;align-items:center;gap:8px;min-width:0}
+.pr-n{flex:1;min-width:0;font-weight:600;overflow:hidden;text-overflow:ellipsis}
+.caret{display:inline-block;width:14px;color:var(--muted);transition:transform .15s}
+.caret.o{transform:rotate(-90deg)}
+.caret.leaf{font-size:.7rem;text-align:center}
+.pr-c{display:flex;gap:3px}
+.pr-m{display:flex;flex-wrap:wrap;gap:4px 10px;font-size:.76rem;color:var(--muted)}
+.pm b{color:var(--ink);font-weight:600}
+.pm.d b{color:var(--indigo)} .pm.bad b{color:var(--bad)}
+.pr-r{display:flex;flex-wrap:wrap;align-items:center;gap:6px}
+.pr-r .linkbtn{margin-inline-start:auto;font-size:.78rem}
+.pnet{display:flex;flex-direction:column;align-items:flex-end;font-family:var(--f-display);font-weight:700;line-height:1.1;white-space:nowrap}
+.pnet small{font-size:.62rem;color:var(--muted);font-weight:500}
+.pnet.pos{color:var(--ok)} .pnet.neg{color:var(--bad)}
+.rchip{font-size:.72rem;font-weight:700;padding:2px 9px;border-radius:99px;white-space:nowrap}
+.dot{display:inline-grid;place-items:center;min-width:18px;height:18px;border-radius:99px;font-size:.66rem;font-weight:700;padding:0 4px;color:#fff}
+#prf .dot{min-width:10px;height:10px;padding:0;margin-inline-end:6px;vertical-align:middle}
+.r-red{background:#fde3e1;color:#b42318} .dot.r-red{background:#d92d20}
+.r-orange{background:#feead6;color:#b54708} .dot.r-orange{background:#f79009}
+.r-yellow{background:#fef7c3;color:#854a0e} .dot.r-yellow{background:#eaaa08}
+.r-blue{background:#dbeafe;color:#1d4ed8} .dot.r-blue{background:#2563eb}
+.r-green{background:#dcfae6;color:#067647} .dot.r-green{background:#17b26a}
+.r-gray{background:var(--line);color:var(--muted)} .dot.r-gray{background:#98a2b3}
+.pnote svg{width:15px;height:15px;color:var(--warn);vertical-align:middle}
+.rank{min-width:22px;height:22px;border-radius:99px;background:var(--indigo-soft);color:var(--indigo);display:inline-grid;place-items:center;font-size:.75rem;font-weight:700}
+.recbox{border-radius:12px;padding:10px 12px;display:flex;flex-direction:column;gap:2px}
+.recbox span{font-size:.82rem;font-weight:500}
+.ptab{width:100%;border-collapse:collapse;font-size:.88rem}
+.ptab td{padding:6px 4px;border-bottom:1px solid var(--line)}
+.ptab td.num{text-align:left;font-weight:600}
+.ptab tr.bad td{color:var(--bad)} .ptab tr.ok td{color:var(--ok);font-weight:700}
+.pedit{display:flex;flex-direction:column;gap:10px}
+.chk{display:flex!important;flex-direction:row!important;align-items:center;gap:6px;font-size:.88rem}
+.wrapbtns{flex-wrap:wrap}
+details.card summary{padding:10px 14px;cursor:pointer}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .r-red{background:#55160c;color:#fda29b}:root:not([data-theme="light"]) .r-orange{background:#4e1d09;color:#fdb022}:root:not([data-theme="light"]) .r-yellow{background:#542c0d;color:#fde272}:root:not([data-theme="light"]) .r-blue{background:#172554;color:#93c5fd}:root:not([data-theme="light"]) .r-green{background:#053321;color:#75e0a7}}
 </style>
 </head>
 <body>
@@ -428,7 +477,7 @@ const DEV_KEY = "";
 const APP_URL = "https://mohamedsofar77-lgtm.github.io/soffar-sales/";
 // نسخة التدريب: لو حد فتح التطبيق من غير رابط، بيدخل على وضع المراجعة والتدريب (قراءة بس)
 const PREVIEW_KEY = "";
-const APP_VERSION = "20261123152110";
+const APP_VERSION = "20261123154320";
 // رابط الدخول: الموظف بيفتح الرابط اللي فيه #k=... مرة واحدة، والتطبيق بيفتكره على الموبايل
 const KEY = (()=>{ let k=""; const m=(location.hash||"").match(/k=([A-Za-z0-9]+)/);
   if(m){ k=m[1]; try{ localStorage.setItem("soffar_key",k); }catch(e){} try{ history.replaceState(null,"",location.pathname+location.search); }catch(e){} }
@@ -730,7 +779,7 @@ function navGo(d){ const j=NAV.i+d; if(j<0||j>=NAV.stack.length) return; NAV.i=j
 window.addEventListener("popstate",()=>{ if(!S.me) return;
   if($("#sheet")&&$("#sheet").innerHTML){ closeSheet(); try{ history.pushState({soffarNav:NAV.i},""); }catch(e){} return; }
   if(NAV.i>0) navGo(-1); });
-function show(){ navRecord(); const v=$("#view"); if(v) v.onclick=null; ({home:viewHome, guide:viewGuide, inbox:viewInbox, warehouse:viewWarehouse, reports:viewReports, stock:viewStock, new:viewNew, res:viewRes, wo:viewWO, basics:viewBasics}[S.tab]||viewStock)(); window.scrollTo(0,0); }
+function show(){ navRecord(); const v=$("#view"); if(v) v.onclick=null; ({home:viewHome, guide:viewGuide, inbox:viewInbox, warehouse:viewWarehouse, reports:viewReports, stock:viewStock, plan:viewPlan, new:viewNew, res:viewRes, wo:viewWO, basics:viewBasics}[S.tab]||viewStock)(); window.scrollTo(0,0); }
 
 /* ============ home ============ */
 async function viewHome(){
@@ -751,14 +800,17 @@ async function viewHome(){
     <button data-go="res"><span class="qi">${ICONS.res}</span>الحجوزات</button>
     <button data-go="wo"><span class="qi">${ICONS.wo}</span>التشغيل</button>
     ${S.me.role!=="sales"?`<button data-go="warehouse"><span class="qi">${ICONS.box}</span>المخزن</button>`:""}
+    <button data-go="plan"><span class="qi">${ICONS.wo}</span>تقرير المتابعة</button>
     <button data-go="reports"><span class="qi">${ICONS.chart}</span>التقارير</button>
     <button data-go="basics" data-sub="colors"><span class="qi">${ICONS.camera}</span>الألوان</button>
   </section>
+  <div class="section-h"><h2>أولويات البيع</h2><button class="linkbtn" data-go="plan" data-ptab="sell">القايمة كلها</button></div>
+  <section class="card top-list" id="prio"><div class="state">بيحسب…</div></section>
   <div class="section-h"><h2>أكتر خامات متاحة للبيع</h2><button class="linkbtn" data-go="stock">الرصيد كله</button></div>
   <section class="card top-list" id="top"><div class="state">بيحمّل…</div></section>`;
   bindHeader();
-  v.onclick=e=>{ const g=e.target.closest("[data-go]"); if(g){ if(g.dataset.sub){ S.bTab=g.dataset.sub; } if(g.dataset.wh){ S.f.wh=g.dataset.wh; S.f.own="free"; S.f.limit=40; } goTab(g.dataset.go); return; }
-    const mb=e.target.closest("[data-mat]"); if(mb){ openMaterial(mb.dataset.mat); return; }
+  v.onclick=e=>{ const g=e.target.closest("[data-go]"); if(g){ if(g.dataset.sub){ S.bTab=g.dataset.sub; } if(g.dataset.ptab){ S.planTab=g.dataset.ptab; } if(g.dataset.wh){ S.f.wh=g.dataset.wh; S.f.own="free"; S.f.limit=40; } goTab(g.dataset.go); return; }
+    const mb=e.target.closest("[data-mat]"); if(mb){ openMaterial(mb.dataset.mat); if(mb.dataset.pspec){ S.f.spec=mb.dataset.pspec; } return; }
     const b=e.target.closest("[data-reserve]"); if(b) openReserve(S.stock.rows[+b.dataset.reserve]); };
   const fill=async(force)=>{
     busyBtn($("#rf"),true);
@@ -787,9 +839,16 @@ async function viewHome(){
     }catch(e){ $("#top").innerHTML=`<div class="msg err">${esc(errText(e))}</div>`; }
     finally{ busyBtn($("#rf"),false); }
   };
-  $("#rf").onclick=()=>fill(true);
-  fill(false);
+  $("#rf").onclick=()=>{ S.plan=null; fill(true).then(fillPrio); };
+  fill(false).then(fillPrio);
 }
+async function fillPrio(){ const el=$("#prio"); if(!el) return;
+  try{ if(!S.plan) await loadPlan(); if(!$("#prio")) return;
+    const list=sellList("").slice(0,6);
+    el.innerHTML=list.length?list.map((s,i)=>`<div class="row-i click" data-mat="${esc(s.mat)}" data-pspec="${esc(s.code)}" role="button" tabindex="0"><span class="rank num">${i+1}</span><div class="mid"><div class="t">${esc(s.name)} ${cd(s.code)}</div>
+      <div class="m">${s.kids.filter(k=>k.avail>=0.5).sort((a,b)=>b.avail-a.avail).slice(0,3).map(k=>esc(k.name)).join("، ")}${s.pin?" · مثبّت من المدير":""}</div></div><div class="a"><span class="num">${fmt(s.avail)}</span><small>كجم حر</small></div><span class="chev">‹</span></div>`).join("")
+      :`<div class="state"><strong>مفيش أصناف عليها فائض كبير دلوقتي</strong></div>`;
+  }catch(e){ el.innerHTML=`<div class="msg err">${esc(errText(e))}</div>`; } }
 
 /* ============ stock ============ */
 const YT=[["قطن",/قطن/],["شانية",/شاني/],["مخلوط",/مخلوط/],["سيرو",/سيرو/],["جيسبي",/جيسب|جسب/],["فسكوز",/فسكوز/],["بوليستر",/بوليستر|مونوفل/],["اسبن",/اسبن/],["كتان ومودال",/كتان|مودال|مدال/]];
@@ -1005,6 +1064,200 @@ function drawCanMake(mode, idx){
   }
 }
 
+/* ============ follow-up & planning report ============ */
+const REC = {
+  produce:{t:"شغّل إنتاج", c:"r-red", o:0},
+  dye:{t:"اصبغ من الخام", c:"r-orange", o:1},
+  cover:{t:"غطّي من الرصيد", c:"r-yellow", o:2},
+  raise:{t:"زوّد · تحت الحد الأدنى", c:"r-blue", o:3},
+  sell:{t:"أولوية بيع", c:"r-green", o:4},
+  ok:{t:"متوازن", c:"r-gray", o:5},
+  ign:{t:"متجاهَلة", c:"r-gray", o:6}};
+async function loadPlan(force){
+  if(force||!S.stock) await loadStock();
+  const j=await rpc("fx_plan");
+  const set=j.settings||{}; const big=+set.plan_big_kg||500, safety=(+set.plan_safety_pct||10)/100;
+  const notes=j.notes||{};
+  const leaves=(j.rows||[]).map(a=>{ const [spec,cn,nm,gF,fF,gC,fC,rG,rF,dem,ready,om,dy,rq,orders]=a; const sp=(S.cat.specs[spec])||{name:"",mat:String(spec).slice(0,5),fam:"موديلات خاصة",season:"",text:""};
+    const mat=sp.mat||String(spec).slice(0,5), fam=(S.cat.mats[mat]||{}).fam||sp.fam||"موديلات خاصة";
+    return {lvl:3, key:"c:"+spec+"|"+cn, spec, cn, name:nm||cn||"بدون لون", mat, fam, sp, gF:+gF, fF:+fF, gC:+gC, fC:+fC, rG:+rG, rF:+rF, dem:+dem, ready:+ready, om:+om, dy:+dy, rq:+rq, orders:orders||[]}; });
+  // spec-level free greige (to know if dyeing can cover a finished shortage)
+  const specG=new Map(); leaves.forEach(l=>specG.set(l.spec,(specG.get(l.spec)||0)+Math.max(0,l.gF-l.rG)));
+  leaves.forEach(l=>{ const n=notes[l.key]; const aF=l.fF-l.rF, aG=l.gF-l.rG; let need=l.rq + Math.max(0,-aF) + Math.max(0,-aG);
+    l.avail=Math.max(0,aF)+Math.max(0,aG); l.need=need; l.min=n&&n[0]!=null?+n[0]:null;
+    let r="ok", q=0, why="";
+    if(n&&n[2]){ r="ign"; why="المدير طلب تجاهل التوصية"; }
+    else if(need>0.5){
+      if(Math.max(0,aF)>=need*0.9){ r="cover"; q=need; why=`فيه ${fmt(aF)} كجم مجهز حر من نفس اللون يغطي المطلوب`; }
+      else { const rest=need-Math.max(0,aF), g=specG.get(l.spec)||0;
+        if(g>=rest*0.9){ r="dye"; q=rest; why=`مفيش مجهز كفاية، بس فيه ${fmt(g)} كجم خام حر من نفس الصنف يتصبغ`; }
+        else { r="produce"; q=Math.ceil(rest*(1+safety)); why=`الطلبيات اللي لسه ماتبدأتش ${fmt(need)} كجم ومفيش رصيد حر يغطيها`; } } }
+    else if(l.min!=null&&l.avail<l.min){ r="raise"; q=Math.ceil(l.min-l.avail); why=`الحر ${fmt(l.avail)} كجم أقل من الحد الأدنى ${fmt(l.min)}`; }
+    else if(l.avail>=big&&l.dem<0.5){ r="sell"; why=`${fmt(l.avail)} كجم حر ومفيش عليه طلبيات`; }
+    l.rec=r; l.qty=q; l.why=why; l.note=n?n[1]:""; l.pin=!!(n&&n[3]); l.ign=!!(n&&n[2]); l.by=n?n[4]:""; });
+  // build tree
+  const mk=(lvl,key,name,extra)=>({lvl,key,name,kids:[],gF:0,fF:0,gC:0,fC:0,rG:0,rF:0,dem:0,ready:0,om:0,dy:0,rq:0,avail:0,need:0,counts:{},...extra});
+  const fams=new Map(), mats=new Map(), specs=new Map();
+  leaves.forEach(l=>{
+    let f=fams.get(l.fam); if(!f){ f=mk(0,"f:"+l.fam,l.fam,{}); fams.set(l.fam,f); }
+    let m=mats.get(l.mat); if(!m){ m=mk(1,"m:"+l.mat,(S.cat.mats[l.mat]||{}).name||l.mat,{code:l.mat,fam:l.fam}); mats.set(l.mat,m); f.kids.push(m); }
+    let s=specs.get(l.spec); if(!s){ s=mk(2,"s:"+l.spec,l.sp.name||l.spec,{code:l.spec,mat:l.mat,fam:l.fam,sp:l.sp}); specs.set(l.spec,s); m.kids.push(s); }
+    s.kids.push(l);
+    for(const n of [f,m,s]){ for(const k of ["gF","fF","gC","fC","rG","rF","dem","ready","om","dy","rq","avail","need"]) n[k]+=l[k]; n.counts[l.rec]=(n.counts[l.rec]||0)+1; } });
+  const nodeRec=(n)=>{ const note=notes[n.key]; n.note=note?note[1]:""; n.pin=!!(note&&note[3]); n.min=note&&note[0]!=null?+note[0]:null; n.by=note?note[4]:"";
+    if(note&&note[2]){ n.rec="ign"; n.why="المدير طلب تجاهل التوصية"; n.ign=true; return; }
+    const worst=["produce","dye","cover","raise"].find(k=>n.counts[k]);
+    if(worst){ n.rec=worst; n.qty=n.kids.reduce((a,k)=>a+(k.rec===worst?(k.qty||0):0),0); n.why=`${n.counts[worst]} لون/صنف تحته محتاج "${REC[worst].t}"`; return; }
+    if(n.min!=null&&n.avail<n.min){ n.rec="raise"; n.qty=Math.ceil(n.min-n.avail); n.why=`الحر ${fmt(n.avail)} كجم أقل من الحد الأدنى ${fmt(n.min)}`; return; }
+    if(n.avail>=big&&n.dem<0.5){ n.rec="sell"; n.why=`${fmt(n.avail)} كجم حر ومفيش عليه طلبيات`; return; }
+    if(n.avail>=big&&n.avail>n.dem*2){ n.rec="sell"; n.why=`الحر ${fmt(n.avail)} كجم أكبر بكتير من الطلبيات المفتوحة ${fmt(n.dem)}`; return; }
+    n.rec="ok"; n.why=n.dem>0.5?"الطلبيات المفتوحة ماشية في الإنتاج":""; };
+  const sortK=(a,b)=>REC[a.rec].o-REC[b.rec].o||(b.avail+b.dem)-(a.avail+a.dem);
+  specs.forEach(nodeRec); mats.forEach(nodeRec); fams.forEach(nodeRec);
+  specs.forEach(s=>s.kids.sort(sortK)); mats.forEach(m=>m.kids.sort(sortK)); fams.forEach(f=>f.kids.sort(sortK));
+  S.plan={at:j.at, big, safety, notes, leaves, tree:[...fams.values()].sort((a,b)=>(b.avail+b.dem+b.om)-(a.avail+a.dem+a.om)), specs, mats};
+}
+function planMatch(n,q,rf){ // node visible under search + rec filter?
+  const own=(!q||norm([n.name,n.code||"",n.spec||"",n.cn||""].join(" ")).includes(q));
+  const recOk=(!rf||n.rec===rf||(rf==="sell"&&n.pin));
+  if(n.kids) return (own&&recOk&&!q&&!rf) || n.kids.some(k=>planMatch(k,q,rf)) || (own&&recOk&&(q||rf)&&n.lvl>=1);
+  return own&&recOk; }
+async function viewPlan(){
+  navRecord(); const v=$("#view"); S.planOpen=S.planOpen||new Set(); S.planTab=S.planTab||"tree";
+  v.innerHTML=header("تقرير المتابعة", `<button class="icon-btn" id="pexp" aria-label="تصدير إكسيل" title="تصدير إكسيل">${ICONS.out}</button><button class="icon-btn" id="pshr" aria-label="ملخص واتساب" title="ملخص واتساب">${ICONS.share}</button>`+refreshBtn())+
+  `<section class="kpis plan-k" id="pk"><div class="state">بيحسب التقرير…</div></section>
+   <div class="seg" id="ptab"><button data-k="tree" aria-pressed="${S.planTab==="tree"}">شجرة الخامات</button><button data-k="sell" aria-pressed="${S.planTab==="sell"}">أولويات البيع</button><button data-k="act" aria-pressed="${S.planTab==="act"}">محتاج قرار</button></div>
+   <div class="bsubs" id="prf"></div>
+   <div class="fbar"><div class="search grow">${ICONS.search}<input type="search" id="pq" placeholder="ابحث بالخامة أو الصنف أو الكود أو اللون" value="${esc(S.planQ||"")}"></div>${isAdmin()?`<button class="btn" id="pset">الإعدادات</button>`:""}</div>
+   <div class="sub" id="pcnt"></div><div id="pbody" class="card ptree"></div>`;
+  bindHeader();
+  $("#ptab").onclick=e=>{const b=e.target.closest("button");if(!b)return;S.planTab=b.dataset.k;$("#ptab").querySelectorAll("button").forEach(x=>x.setAttribute("aria-pressed",x===b));drawPlan()};
+  $("#prf").onclick=e=>{const b=e.target.closest("button");if(!b)return;S.planRec=S.planRec===b.dataset.k?"":b.dataset.k;drawPlan()};
+  let t; $("#pq").oninput=e=>{clearTimeout(t);t=setTimeout(()=>{S.planQ=e.target.value;drawPlan()},200)};
+  $("#rf").onclick=async()=>{busyBtn($("#rf"),true);try{await loadPlan(true);drawPlan()}catch(e){toast(errText(e),true)}finally{busyBtn($("#rf"),false)}};
+  if($("#pset")) $("#pset").onclick=planSettings;
+  $("#pexp").onclick=planExport; $("#pshr").onclick=planShare;
+  $("#pbody").onclick=e=>{ const act=e.target.closest("[data-pact]"); const row=e.target.closest("[data-pk]"); if(!row) return;
+    const n=findNode(row.dataset.pk); if(!n) return;
+    if(act||n.lvl===3||S.planTab!=="tree"){ openPlanNode(n); return; }
+    S.planOpen.has(n.key)?S.planOpen.delete(n.key):S.planOpen.add(n.key); drawPlan(); };
+  if(!S.plan){ try{ await loadPlan(); }catch(e){ $("#pk").innerHTML=`<div class="msg err">${esc(errText(e))}</div>`; return; } }
+  drawPlan();
+}
+function sellList(q){ const P=S.plan; const pinned=s=>s.pin||s.kids.some(k=>k.pin);
+  return [...P.specs.values()].filter(s=>!s.ign&&(pinned(s)||s.avail-s.need>=P.big)&&(!q||norm(s.name+" "+s.code).includes(q)))
+    .sort((a,b)=>pinned(b)-pinned(a)||(b.avail-b.need)-(a.avail-a.need)); }
+function findNode(key){ const P=S.plan; if(!P) return null; const [t,v]=[key.slice(0,2),key.slice(2)];
+  if(t==="f:") return P.tree.find(f=>f.key===key); if(t==="m:") return P.mats.get(v); if(t==="s:") return P.specs.get(v);
+  return P.leaves.find(l=>l.key===key); }
+function pMetrics(n){ const st=n.gF+n.gC, sf=n.fF+n.fC;
+  const p=(l,v,c)=>v>=0.5?`<span class="pm ${c||""}">${l} <b class="num">${fmt(v)}</b></span>`:"";
+  return p("على المكن",n.om)+p("في المصبغة",n.dy)+p("مخزن خام",st)+p("مخزن مجهز",sf)+p("جاهز للعملاء",n.ready)+p("محجوز",n.rG+n.rF)+p("طلبيات مفتوحة",n.dem,"d")+p("لم يبدأ",n.rq,"bad"); }
+function pNet(n){ const net=n.avail-n.need; return `<span class="pnet ${net<-0.5?"neg":net>0.5?"pos":""}"><span class="num">${net>0.5?"+":""}${fmt(net)}</span><small>${net<-0.5?"عجز":"حر للبيع"}</small></span>`; }
+function pRec(n){ const r=REC[n.rec]||REC.ok; return `<span class="rchip ${r.c}">${r.t}${n.qty&&["produce","dye","cover","raise"].includes(n.rec)?` <b class="num">${fmt(n.qty)}</b>`:""}</span>${n.pin?`<span class="rchip r-green">مثبّت للبيع</span>`:""}${n.note?`<span class="pnote" title="${esc(n.note)}">${ICONS.note}</span>`:""}`; }
+function pRow(n,depth){ const open=S.planOpen.has(n.key)||(!!(S.planQ||S.planRec)&&n.lvl<2);
+  const code=n.lvl===1||n.lvl===2?` ${cd(n.code)}`:""; const caret=n.kids?`<span class="caret ${open?"o":""}">‹</span>`:`<span class="caret leaf">•</span>`;
+  const cnt=n.kids?Object.entries(n.counts).filter(([k])=>["produce","dye","cover","raise","sell"].includes(k)).map(([k,c])=>`<span class="dot ${REC[k].c}" title="${REC[k].t}">${c}</span>`).join(""):"";
+  return `<div class="prow l${n.lvl}" data-pk="${esc(n.key)}" style="--d:${depth}" role="button" tabindex="0">
+    <div class="pr-h">${caret}<span class="pr-n">${esc(n.name)}${code}</span>${n.lvl===2&&n.sp&&n.sp.season?`<span class="chip s">${esc(n.sp.season)}</span>`:""}<span class="pr-c">${cnt}</span>${pNet(n)}</div>
+    <div class="pr-m">${pMetrics(n)||`<span class="pm">مفيش حركة</span>`}</div>
+    <div class="pr-r">${pRec(n)}${n.lvl<3?`<button class="linkbtn" data-pact>تفاصيل وإجراء</button>`:""}</div></div>`; }
+function drawPlan(){
+  const P=S.plan; if(!P||!$("#pbody")) return;
+  const all=P.leaves; const tot=k=>all.reduce((a,l)=>a+l[k],0);
+  const def=all.filter(l=>["produce","dye","cover"].includes(l.rec)), sell=sellList("");
+  $("#pk").innerHTML=[["على المكن",tot("om"),"t-w"],["في المصبغة",tot("dy"),"t-f"],["مخزن حر",tot("avail"),"t-g"],["طلبيات مفتوحة",tot("dem"),"t-r"],
+     ["عجز محتاج قرار",def.reduce((a,l)=>a+l.need,0),"t-bad",`${def.length} لون/صنف`],["فائض للبيع",sell.reduce((a,s)=>a+Math.max(0,s.avail-s.need),0),"t-ok",`${sell.length} صنف`]]
+    .map(([l,v,c,s])=>`<div class="kpi ${c}"><span class="k">${l}</span><span class="v"><span class="num">${fmt(v)}</span><small>كجم</small></span>${s?`<span class="s">${s}</span>`:""}</div>`).join("");
+  const counts={}; all.forEach(l=>counts[l.rec]=(counts[l.rec]||0)+1);
+  $("#prf").innerHTML=Object.entries(REC).filter(([k])=>k!=="ok"&&k!=="ign"&&counts[k]).map(([k,r])=>`<button data-k="${k}" aria-pressed="${S.planRec===k}"><span class="dot ${r.c}"></span>${r.t} <span class="num">${counts[k]}</span></button>`).join("");
+  const q=norm(S.planQ||""), rf=S.planRec||"";
+  if(S.planTab==="sell"){
+    const list=sellList(q);
+    $("#pcnt").textContent=`${list.length} صنف عليه رصيد حر كبير أو مثبّت للبيع · مترتبين من الأهم`;
+    $("#pbody").innerHTML=list.length?list.slice(0,150).map((s,i)=>`<div class="prow l2 sellrow" data-pk="${esc(s.key)}" role="button" tabindex="0"><div class="pr-h"><span class="rank num">${i+1}</span><span class="pr-n">${esc(s.name)} ${cd(s.code)}</span>${pNet(s)}</div>
+      <div class="pr-m"><span class="pm">${esc((S.cat.mats[s.mat]||{}).name||"")}</span>${s.kids.filter(k=>k.avail>=0.5).sort((a,b)=>b.avail-a.avail).slice(0,4).map(k=>`<span class="pm">${esc(k.name)} <b class="num">${fmt(k.avail)}</b></span>`).join("")}</div><div class="pr-r">${pRec(s)}</div></div>`).join(""):`<div class="state"><strong>مفيش أصناف عليها فائض كبير</strong></div>`;
+    return; }
+  if(S.planTab==="act"){
+    const list=all.filter(l=>["produce","dye","cover","raise"].includes(l.rec)&&(!rf||l.rec===rf)&&(!q||norm([l.name,l.spec,l.sp.name].join(" ")).includes(q))).sort((a,b)=>REC[a.rec].o-REC[b.rec].o||b.need-a.need);
+    $("#pcnt").textContent=list.length?`${list.length} سطر محتاج قرار`:"";
+    $("#pbody").innerHTML=list.length?list.map(l=>pRow({...l,name:`${l.sp.name||l.spec} · ${l.name}`},0).replace('class="prow l3"','class="prow l3 actrow"')).join(""):`<div class="state"><strong>مفيش حاجة محتاجة قرار دلوقتي</strong>كل الطلبيات المفتوحة ماشية في الإنتاج أو متغطية من الرصيد.</div>`;
+    return; }
+  const out=[]; const walk=(n,d)=>{ if(!planMatch(n,q,rf)) return; out.push(pRow(n,d)); if(n.kids&&(S.planOpen.has(n.key)||((q||rf)&&n.lvl<2))) n.kids.forEach(k=>walk(k,d+1)); };
+  P.tree.forEach(f=>walk(f,0));
+  $("#pcnt").textContent=`${P.tree.length} عائلة · ${P.mats.size} خامة · ${P.specs.size} صنف · آخر تحديث ${dt(P.at)} · دوس على أي سطر يفتح اللي تحته`;
+  $("#pbody").innerHTML=out.join("")||`<div class="state"><strong>مفيش نتايج</strong></div>`;
+}
+function openPlanNode(n){
+  const levels=["عائلة","خامة","صنف","لون"]; const canAct=!(S.me.preview||S.me.realRole==="viewer");
+  const tr=(l,v,c)=>`<tr${c?` class="${c}"`:""}><td>${l}</td><td class="num">${fmt(v)}</td></tr>`;
+  const orders=(n.lvl===3?[n]:(n.lvl===2?n.kids:[])).flatMap(l=>(l.orders||[]).map(o=>({l,o})));
+  const recQ=n.qty||0;
+  sheet(`<div class="sheet-h"><h3>${esc(n.name)} ${n.code?cd(n.code):""}</h3><span class="chip s">${levels[n.lvl]}</span></div>
+   ${n.lvl===3?`<div class="sub">${esc(n.sp.name||"")} ${cd(n.spec)} · ${esc((S.cat.mats[n.mat]||{}).name||"")}</div>`:n.lvl===2&&n.sp?`<div class="sub">${esc(n.sp.text||"")}</div>`:""}
+   <div class="recbox ${REC[n.rec].c}"><b>${REC[n.rec].t}${recQ&&["produce","dye","cover","raise"].includes(n.rec)?` · <span class="num">${fmt(recQ)}</span> كجم`:""}</b><span>${esc(n.why||"")}</span></div>
+   <table class="ptab"><tbody>${tr("على المكن",n.om)}${tr("في المصبغة",n.dy)}${tr("مخزن خام (حر)",n.gF)}${tr("مخزن مجهز (حر)",n.fF)}${tr("مخزن بضاعة عملاء",n.gC+n.fC)}${tr("جاهز لطلبيات العملاء",n.ready)}${tr("محجوز",n.rG+n.rF)}${tr("طلبيات مفتوحة (الباقي)",n.dem)}${tr("طلبيات لسه ماتبدأتش",n.rq,n.rq>0.5?"bad":"")}${tr("الحر للبيع بعد الحجوزات",n.avail,"ok")}</tbody></table>
+   ${orders.length?`<details class="card"><summary><b>الطلبيات المفتوحة</b> · <span class="num">${orders.length}</span></summary>${orders.slice(0,60).map(({l,o})=>{const [cc,cn,tg,rem,ready,lines]=o; return `<div class="row-i"><div class="mid"><div class="t">${esc(cn||"")} ${cd(cc)}</div><div class="m">${n.lvl<3?esc(l.name)+" · ":""}${tg==="g"?"خام":"مجهز"} · أوامر ${(lines||[]).map(x=>`<span class="num">${esc(x[0])}</span> ${WO_ST[x[1]]||x[1]}`).join("، ")}${ready>0.5?` · جاهز له <span class="num">${fmt(ready)}</span>`:""}</div></div><div class="a"><span class="num">${fmt(rem)}</span><small>كجم باقي</small></div></div>`}).join("")}</details>`:""}
+   ${canAct?`<div class="pedit">
+     <div class="row"><label class="grow"><span>الحد الأدنى للرصيد الحر (كجم)</span><input type="number" id="pmin" min="0" inputmode="decimal" value="${n.min!=null?n.min:""}" placeholder="مثلاً 1000"></label></div>
+     <label><span>ملاحظة المدير</span><input type="text" id="pnote" value="${esc(n.note||"")}" placeholder="قرار أو تعليمات للأقسام"></label>
+     <div class="row"><label class="chk"><input type="checkbox" id="ppin" ${n.pin?"checked":""}> ثبّته في أولويات البيع</label><label class="chk"><input type="checkbox" id="pign" ${n.ign?"checked":""}> تجاهل التوصية</label></div>
+     ${n.by?`<div class="sub">آخر تعديل: ${esc(n.by)}</div>`:""}
+     <div id="pm"></div>
+     <div class="row wrapbtns"><button class="btn primary" id="psave">احفظ</button>
+       ${n.lvl>=2?`<button class="btn" id="pmake">اعمل طلب تشغيل</button>`:""}
+       <button class="btn" id="prec">ابعت توصية لقسم</button>
+       ${n.lvl>=1?`<button class="btn" id="pstock">افتح في الرصيد</button>`:""}</div></div>`:`<div class="sub">نسخة المراجعة: تقدر تشوف بس.</div>`}`);
+  if(!canAct) return;
+  $("#psave").onclick=async()=>{ const b=$("#psave"); b.disabled=true;
+    try{ const mn=$("#pmin").value.trim(); await rpc("fx_plan_note_save",{p_node:n.key,p_min:mn===""?null:+mn,p_note:$("#pnote").value.trim()||null,p_ignore:$("#pign").checked,p_pin:$("#ppin").checked});
+      closeSheet(); toast("اتحفظ"); await loadPlan(); drawPlan(); }catch(e){ $("#pm").innerHTML=`<div class="msg err">${esc(errText(e))}</div>`; b.disabled=false; } };
+  if($("#pmake")) $("#pmake").onclick=()=>{ const leaf=n.lvl===3?n:null; const sp=n.lvl===3?n.spec:n.code;
+    const firstOrder=leaf&&leaf.orders&&leaf.orders[0];
+    S.newPre={spec:sp, wh:(leaf&&leaf.fF+leaf.fC>leaf.gF+leaf.gC)||(firstOrder&&firstOrder[2]==="f")?"finished":"greige", color:leaf?leaf.name:"", qty:recQ||"", cust:n.rec==="produce"&&firstOrder?firstOrder[0]:"1040201010068",
+      note:`من تقرير المتابعة: ${REC[n.rec].t}${n.why?" · "+n.why:""}`};
+    closeSheet(); goTab("new"); };
+  $("#prec").onclick=()=>planRecommend(n);
+  if($("#pstock")) $("#pstock").onclick=()=>{ closeSheet(); const mat=n.lvl===1?n.code:n.mat; S.f={...FDEF,...pickKeep(S.f),mat,fam:n.fam,spec:n.lvl>=2?(n.spec||n.code):"",q:n.lvl===3?n.name:""}; goTab("stock",true); };
+}
+async function planRecommend(n){
+  let depts=[]; try{ depts=(await ensureDepts()).filter(d=>d.role!=="viewer"); }catch(e){}
+  const txt=`توصية من تقرير المتابعة: ${REC[n.rec].t}${n.qty?` (${fmt(n.qty)} كجم)`:""}\n${n.lvl===3?`${n.sp.name||""} ${n.spec} · لون ${n.name}`:`${n.name} ${n.code||""}`}\n${n.why||""}`;
+  sheet(`<div class="sheet-h"><h3>ابعت توصية</h3></div>
+   <div class="flabel">لأنهي قسم؟</div><div class="bsubs fwrap" id="rdept">${depts.filter(d=>d.code!==S.me.department).map((d,i)=>`<button type="button" data-k="${esc(d.code)}" aria-pressed="${d.code==="planning"||(i===0&&!depts.some(x=>x.code==="planning"))}">${esc(d.name)}</button>`).join("")}</div>
+   <label><span>نص التوصية</span><textarea id="rtxt" rows="5">${esc(txt)}</textarea></label><div id="rm"></div>
+   <div class="row"><button class="btn primary grow" id="rgo">ابعت</button><button class="btn" id="rx">إلغاء</button></div>`);
+  $("#rx").onclick=closeSheet;
+  $("#rdept").onclick=e=>{const b=e.target.closest("button");if(!b)return;$("#rdept").querySelectorAll("button").forEach(x=>x.setAttribute("aria-pressed",x===b))};
+  $("#rgo").onclick=async()=>{ const d=$("#rdept [aria-pressed=true]"); if(!d) return $("#rm").innerHTML=`<div class="msg err">اختار القسم.</div>`; $("#rgo").disabled=true;
+    try{ await rpc("fx_send",{p_kind:"plan",p_ref:n.key,p_to_dept:d.dataset.k,p_note:$("#rtxt").value}); closeSheet(); toast("التوصية اتبعتت وهتظهر عندهم في التنبيهات"); }
+    catch(e){ $("#rm").innerHTML=`<div class="msg err">${esc(errText(e))}</div>`; $("#rgo").disabled=false; } };
+}
+function planSettings(){ const P=S.plan;
+  sheet(`<div class="sheet-h"><h3>إعدادات التوصيات</h3></div>
+   <label><span>"رصيد كبير" يبدأ من كام كيلو حر؟ (عشان يطلع في أولويات البيع)</span><input type="number" id="sbig" value="${P.big}"></label>
+   <label><span>نسبة الأمان على كمية طلب التشغيل المقترح (%)</span><input type="number" id="ssaf" value="${Math.round(P.safety*100)}"></label>
+   <div id="sm"></div><div class="row"><button class="btn primary grow" id="sgo">احفظ</button><button class="btn" id="sx">إلغاء</button></div>`);
+  $("#sx").onclick=closeSheet;
+  $("#sgo").onclick=async()=>{ try{ await rpc("fx_set_setting",{p_key:"plan_big_kg",p_value:String(+$("#sbig").value||500)}); await rpc("fx_set_setting",{p_key:"plan_safety_pct",p_value:String(+$("#ssaf").value||0)});
+    closeSheet(); toast("اتحفظ"); await loadPlan(); drawPlan(); }catch(e){ $("#sm").innerHTML=`<div class="msg err">${esc(errText(e))}</div>`; } };
+}
+function planRows(){ const P=S.plan, out=[]; const add=(n,path)=>{ out.push([["العائلة","الخامة","الصنف","اللون"][n.lvl], path.join(" › "), n.code||n.spec||"", n.lvl===3?n.name:"", n.om, n.dy, n.gF, n.fF, n.gC+n.fC, n.ready, n.rG+n.rF, n.dem, n.rq, n.avail, n.avail-n.need, REC[n.rec].t, n.qty||"", n.why||"", n.min??"", n.note||"" ]); (n.kids||[]).forEach(k=>add(k,[...path,k.name])); };
+  P.tree.forEach(f=>add(f,[f.name])); return out; }
+function planExport(){
+  if(IN_CLAUDE()) return toast("التصدير بيشتغل من نسخة الموبايل. هنا استخدم زرار المشاركة.",true);
+  const head=["المستوى","المسار","الكود","اللون","على المكن","في المصبغة","مخزن خام حر","مخزن مجهز حر","بضاعة عملاء","جاهز لطلبيات","محجوز","طلبيات مفتوحة","لم يبدأ","حر للبيع","الصافي","التوصية","الكمية المقترحة","السبب","الحد الأدنى","ملاحظة المدير"];
+  const csv=[head,...planRows()].map(r=>r.map(x=>{ const s=typeof x==="number"?String(Math.round(x*10)/10):String(x??""); return /[",\n]/.test(s)?`"${s.replace(/"/g,'""')}"`:s; }).join(",")).join("\r\n");
+  const a=document.createElement("a"); a.href=URL.createObjectURL(new Blob(["﻿"+csv],{type:"text/csv;charset=utf-8"})); a.download=`تقرير_المتابعة_${new Date().toISOString().slice(0,10)}.csv`; document.body.appendChild(a); a.click(); a.remove(); }
+function planShare(){ const P=S.plan; if(!P) return; const L=P.leaves;
+  const act=L.filter(l=>["produce","dye","cover","raise"].includes(l.rec)).sort((a,b)=>b.need-a.need).slice(0,10);
+  const sell=sellList("").slice(0,10);
+  const tot=k=>fmt(L.reduce((a,l)=>a+l[k],0));
+  const txt=`*تقرير المتابعة · صفار جروب*\n${new Date().toLocaleDateString("ar-EG")}\n\nعلى المكن: ${tot("om")} كجم\nفي المصبغة: ${tot("dy")} كجم\nمخزن حر: ${tot("avail")} كجم\nطلبيات مفتوحة: ${tot("dem")} كجم\n`+
+    (act.length?`\n*محتاج قرار:*\n${act.map(l=>`• ${REC[l.rec].t}: ${l.sp.name||l.spec} (${l.spec}) ${l.name} — ${fmt(l.qty||l.need)} كجم`).join("\n")}\n`:"\nمفيش عجز محتاج قرار.\n")+
+    (sell.length?`\n*أولويات البيع:*\n${sell.map((s,i)=>`${i+1}. ${s.name} (${s.code}) — ${fmt(s.avail)} كجم حر`).join("\n")}`:"");
+  shareSheet("ملخص تقرير المتابعة", txt); }
+
 /* ============ pickers ============ */
 async function ensureCustomers(){ if(!S.customers) S.customers=(await rpc("fx_customers")||[]).map(([code,name])=>({code,name,key:norm(name+" "+code)})); }
 async function ensureSpecs(){ if(!S.specs) S.specs=(await rpc("fx_specs")||[]).map(([code,name,season,yarn])=>({code,name,season,yarn,key:norm(code+" "+name+" "+(yarn||""))})); }
@@ -1100,10 +1353,12 @@ async function viewNew(){
    <div id="nmsg"></div><button class="btn primary" id="ngo">اعمل طلب التشغيل</button>`;
   let wh="greige";
   $("#nwh").onclick=e=>{const b=e.target.closest("button");if(!b)return;wh=b.dataset.k;$("#nwh").querySelectorAll("button").forEach(x=>x.setAttribute("aria-pressed",x===b))};
-  picker($("#ncp"), S.customers, x=>`${x.name} · ${x.code}`, "اكتب اسم العميل أو كوده", p=>cust=p, recentCustomers());
+  const pre0=S.newPre;
+  picker($("#ncp"), S.customers, x=>`${x.name} · ${x.code}`, "اكتب اسم العميل أو كوده", p=>cust=p, recentCustomers(), pre0&&pre0.cust?S.customers.find(x=>x.code===pre0.cust):null);
   const nip=imgPicker($("#nimg"),"صورة الديزاين");
   const pre=S.newPre; S.newPre=null;
   picker($("#nsp"), S.specs, x=>`${x.code} · ${x.name}${x.season?" · "+x.season:""}`, "اكتب كود أو اسم الصنف", p=>spec=p, null, pre?S.specs.find(x=>x.code===pre.spec):null);
+  if(pre){ if(pre.color) $("#ncol").value=pre.color; if(pre.qty) $("#nq").value=pre.qty; if(pre.note) $("#nn").value=pre.note; }
   if(pre&&pre.wh==="finished"){ wh="finished"; $("#nwh").querySelectorAll("button").forEach(x=>x.setAttribute("aria-pressed",x.dataset.k==="finished")); }
   $("#ngo").onclick=async()=>{
     const m=$("#nmsg"), q=parseFloat($("#nq").value), col=$("#ncol").value.trim();
@@ -2078,6 +2333,7 @@ async function openLink(kind,id){
   try{
     if(kind==="wo"){ const l=await rpc("fx_work_orders",{p_open_only:false}); const w=(l||[]).find(x=>String(x.id)===String(id)); if(w) openWODetail(w); else toast("الأمر ده مش موجود",true); }
     else if(kind==="reservation"){ const l=await rpc("fx_reservations",{p_status:"all"}); const r=(l||[]).find(x=>String(x.id)===String(id)); if(r) openResDetail(r); else toast("الحجز ده مش ظاهر لك",true); }
+    else if(kind==="plan"){ goTab("plan"); if(!S.plan) await loadPlan(); const n=findNode(String(id)); if(n) openPlanNode(n); }
     else if(kind==="stock"){ const [w,sp,ck]=String(id).split("|"); if(!S.stock) await loadStock(); const r=S.stock.rows.find(x=>x.w===w&&x.spec===sp&&x.ck===ck&&x.free); if(r) openStockDetail(r); else openMaterial(String(sp).slice(0,5)); }
   }catch(e){ toast(errText(e),true); }
 }
