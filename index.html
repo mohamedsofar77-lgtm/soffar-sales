@@ -361,12 +361,14 @@ const SUPABASE_KEY = "sb_publishable_vdtYmvNULPMtkHXK-ztYpg_7Bk4P36h";
 // وضع التجربة: التطبيق بيفتح من غير تسجيل دخول بالمفتاح ده. لما التعديلات تخلص هنشيله ونرجّع تسجيل الدخول.
 const DEV_KEY = "";
 const APP_URL = "https://mohamedsofar77-lgtm.github.io/soffar-sales/";
-const APP_VERSION = "20261123000942";
+// نسخة التدريب: لو حد فتح التطبيق من غير رابط، بيدخل على وضع المراجعة والتدريب (قراءة بس)
+const PREVIEW_KEY = "";
+const APP_VERSION = "20261123001459";
 // رابط الدخول: الموظف بيفتح الرابط اللي فيه #k=... مرة واحدة، والتطبيق بيفتكره على الموبايل
 const KEY = (()=>{ let k=""; const m=(location.hash||"").match(/k=([A-Za-z0-9]+)/);
   if(m){ k=m[1]; try{ localStorage.setItem("soffar_key",k); }catch(e){} try{ history.replaceState(null,"",location.pathname+location.search); }catch(e){} }
   if(!k){ try{ k=localStorage.getItem("soffar_key")||""; }catch(e){} }
-  return k || DEV_KEY; })();
+  return k || DEV_KEY || PREVIEW_KEY; })();
 const sb = !window.supabase ? null : window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY,
   KEY ? { global:{ headers:{ "x-app-key": KEY } }, auth:{ persistSession:false, autoRefreshToken:false } } : {});
 
@@ -476,14 +478,20 @@ async function boot(){
 }
 
 function renderLogin(msg){
-  app.innerHTML = `<div class="login"><form class="card pad stack" id="lf">
+  app.innerHTML = `<div class="login"><div class="stack" style="width:min(380px,100%)"><form class="card pad stack" id="kf">
     <div><div class="brand">مبيعات صفار</div><div class="sub">رصيد الخام والمجهز والحجوزات</div></div>
     ${msg?`<div class="msg err">${esc(msg)}</div>`:""}
+    <label><span>رابط أو كود الدخول</span><input type="text" id="kcode" placeholder="الصق الرابط اللي وصلك على واتساب" autocomplete="off"></label>
+    <button class="btn primary">دخول</button>
+    <div class="sub">الرابط بيوصلك من الإدارة. بعد أول مرة التطبيق بيفتكرك ومش هيطلبه تاني.</div></form>
+  <details class="card pad"><summary class="sub">دخول بالإيميل</summary><form class="stack" id="lf" style="margin-top:10px">
     <label><span>الإيميل</span><input type="email" id="lemail" autocomplete="username" required></label>
     <label><span>كلمة السر</span><input type="password" id="lpass" autocomplete="current-password" required></label>
     <button class="btn primary" id="lbtn">دخول</button>
-    <div class="sub">معاك رابط دخول من الإدارة؟ افتحه من الموبايل على طول وهيدخلك من غير باسورد. مش معاك؟ اطلبه من المدير.</div>
-  </form></div>`;
+  </form></details></div></div>`;
+  $("#kf").addEventListener("submit", e=>{ e.preventDefault(); const v=$("#kcode").value.trim(); const m=v.match(/k=([A-Za-z0-9]+)/)||v.match(/^([A-Za-z0-9]{20,})$/);
+    if(!m) return renderLogin("الرابط أو الكود ده مش صحيح. انسخ الرابط كامل من الرسالة.");
+    try{ localStorage.setItem("soffar_key",m[1]); }catch(x){} location.replace(location.pathname+"#k="+m[1]); location.reload(); });
   $("#lf").addEventListener("submit", async e => {
     e.preventDefault(); const b=$("#lbtn"); b.disabled=true; b.textContent="بيدخل…";
     const { error } = await sb.auth.signInWithPassword({ email:$("#lemail").value.trim(), password:$("#lpass").value });
