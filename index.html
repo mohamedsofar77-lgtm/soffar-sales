@@ -363,7 +363,7 @@ const DEV_KEY = "";
 const APP_URL = "https://mohamedsofar77-lgtm.github.io/soffar-sales/";
 // نسخة التدريب: لو حد فتح التطبيق من غير رابط، بيدخل على وضع المراجعة والتدريب (قراءة بس)
 const PREVIEW_KEY = "";
-const APP_VERSION = "20261123001459";
+const APP_VERSION = "20261123002421";
 // رابط الدخول: الموظف بيفتح الرابط اللي فيه #k=... مرة واحدة، والتطبيق بيفتكره على الموبايل
 const KEY = (()=>{ let k=""; const m=(location.hash||"").match(/k=([A-Za-z0-9]+)/);
   if(m){ k=m[1]; try{ localStorage.setItem("soffar_key",k); }catch(e){} try{ history.replaceState(null,"",location.pathname+location.search); }catch(e){} }
@@ -471,23 +471,30 @@ async function boot(){
     }catch(e){ try{ localStorage.removeItem("soffar_key"); }catch(x){} return renderLogin(/not_allowed/.test(e.message||"")?"الرابط ده مش شغال أو اتقفل. اطلب رابط جديد من الإدارة.":errText(e)); }
   }
   const { data:{ session } } = await sb.auth.getSession();
-  if (!session) return renderLogin();
+  if (!session) {
+    // وضع التدريب المفتوح: لو الإدارة فاتحاه، التطبيق بيفتح على طول (قراءة بس)
+    try{ const w=await rpc("fx_whoami"); if(w&&w.role==="viewer"){
+      S.me={ role:"admin", realRole:"viewer", department:w.department, department_name:w.department_name, full_name:"متدرب", email:"", dev:true, preview:true, openTraining:true };
+      return renderShell(); } }catch(e){}
+    return renderLogin();
+  }
   try { S.me = await rpc("fx_me"); } catch(e){ S.me = null; }
   if (!S.me) return renderNoAccess(session.user.email);
+  try{ const w=await rpc("fx_whoami"); S.me.department=w.department; S.me.department_name=w.department_name; S.me.realRole=w.role; if(w.role==="viewer"){ S.me.preview=true; S.me.role="admin"; } }catch(e){}
   renderShell();
 }
 
 function renderLogin(msg){
-  app.innerHTML = `<div class="login"><div class="stack" style="width:min(380px,100%)"><form class="card pad stack" id="kf">
+  app.innerHTML = `<div class="login"><div class="stack" style="width:min(380px,100%)"><form class="card pad stack" id="lf">
     <div><div class="brand">مبيعات صفار</div><div class="sub">رصيد الخام والمجهز والحجوزات</div></div>
     ${msg?`<div class="msg err">${esc(msg)}</div>`:""}
-    <label><span>رابط أو كود الدخول</span><input type="text" id="kcode" placeholder="الصق الرابط اللي وصلك على واتساب" autocomplete="off"></label>
-    <button class="btn primary">دخول</button>
-    <div class="sub">الرابط بيوصلك من الإدارة. بعد أول مرة التطبيق بيفتكرك ومش هيطلبه تاني.</div></form>
-  <details class="card pad"><summary class="sub">دخول بالإيميل</summary><form class="stack" id="lf" style="margin-top:10px">
     <label><span>الإيميل</span><input type="email" id="lemail" autocomplete="username" required></label>
     <label><span>كلمة السر</span><input type="password" id="lpass" autocomplete="current-password" required></label>
     <button class="btn primary" id="lbtn">دخول</button>
+    <div class="sub">الإيميل وكلمة السر بيتعملوا من الإدارة.</div></form>
+  <details class="card pad"><summary class="sub">معاك رابط دخول؟</summary><form class="stack" id="kf" style="margin-top:10px">
+    <label><span>رابط أو كود الدخول</span><input type="text" id="kcode" placeholder="الصق الرابط اللي وصلك على واتساب" autocomplete="off"></label>
+    <button class="btn">دخول بالرابط</button>
   </form></details></div></div>`;
   $("#kf").addEventListener("submit", e=>{ e.preventDefault(); const v=$("#kcode").value.trim(); const m=v.match(/k=([A-Za-z0-9]+)/)||v.match(/^([A-Za-z0-9]{20,})$/);
     if(!m) return renderLogin("الرابط أو الكود ده مش صحيح. انسخ الرابط كامل من الرسالة.");
@@ -548,12 +555,12 @@ function header(title, extra=""){
     <span class="role">${ICONS.user}${esc(S.me.department_name||ROLE_AR[S.me.realRole||S.me.role]||"")}${S.me.preview?" · مراجعة وتدريب":""}</span></div>
     <div class="row">${extra}<button class="icon-btn bell" data-bell aria-label="التنبيهات" title="التنبيهات">${ICONS.bell}<span class="bell-n" hidden></span></button><button class="icon-btn" data-fb aria-label="ملاحظة على التطبيق" title="ملاحظة على التطبيق">${ICONS.note}</button>${S.me.owner&&IN_CLAUDE()?"":`<button class="icon-btn" id="logout" aria-label="خروج" title="خروج">${ICONS.out}</button>`}</div>
   </div></header>
-  ${S.me.preview?`<div class="dev">نسخة مراجعة وتدريب: تقدر تشوف كل الشاشات والبيانات الحقيقية وتجرب، لكن مفيش حاجة بتتحفظ. لو لقيت حاجة ناقصة دوس على زرار الملاحظة فوق.</div>`:S.me.owner?`<div class="dev">دخول برابط الإدارة الكامل. متبعتوش لحد، وابعت للموظفين روابط أقسامهم من الأساسيات ← الأقسام والروابط.</div>`:""}`;
+  ${S.me.openTraining?`<div class="dev">نسخة التدريب: بتشوف بيانات المصنع الحقيقية وتقدر تجرب كل الشاشات، لكن مفيش حاجة بتتحفظ. عندك ملاحظة؟ دوس زرار الملاحظة فوق. ولو معاك حساب، دوس زرار الخروج وادخل بالإيميل.</div>`:S.me.preview?`<div class="dev">نسخة مراجعة وتدريب: تقدر تشوف كل الشاشات والبيانات الحقيقية وتجرب، لكن مفيش حاجة بتتحفظ. لو لقيت حاجة ناقصة دوس على زرار الملاحظة فوق.</div>`:S.me.owner?`<div class="dev">دخول برابط الإدارة الكامل. متبعتوش لحد، وابعت للموظفين روابط أقسامهم من الأساسيات ← الأقسام والروابط.</div>`:""}`;
 }
 const refreshBtn = () => `<button class="icon-btn" id="rf" aria-label="تحديث" title="تحديث">${ICONS.refresh}</button>`;
 function busyBtn(b,on){ if(!b) return; b.disabled=on; b.classList.toggle("spin",on); }
 function bindHeader(){
-  const b=$("#logout"); if(b) b.onclick=async()=>{ if(KEY){ try{ localStorage.removeItem("soffar_key"); }catch(e){} S.me=null; S.stock=null; location.hash=""; return renderLogin("خرجت. افتح رابط الدخول تاني عشان تدخل."); } await sb.auth.signOut(); S.stock=null; renderLogin(); };
+  const b=$("#logout"); if(b) b.onclick=async()=>{ if(S.me&&S.me.openTraining){ S.me=null; S.stock=null; return renderLogin(); } if(KEY){ try{ localStorage.removeItem("soffar_key"); }catch(e){} S.me=null; S.stock=null; location.hash=""; return renderLogin("خرجت. افتح رابط الدخول تاني عشان تدخل."); } await sb.auth.signOut(); S.stock=null; renderLogin(); };
   document.querySelectorAll("[data-bell]").forEach(x=>x.onclick=()=>goTab("inbox"));
   document.querySelectorAll("[data-fb]").forEach(x=>x.onclick=()=>openFeedback());
   paintBell();
@@ -1270,10 +1277,10 @@ async function bUsers(box){
   let st={}; try{ st=await rpc("fx_settings")||{}; }catch(e){}
   box.innerHTML=`<section class="card pad stack"><h2>إعدادات</h2><div class="row"><label class="grow"><span>مدة الحجز (أيام) قبل ما يتلغي لوحده</span><input type="number" id="sdays" min="1" max="60" value="${esc(st.reservation_days||7)}"></label><button class="btn" id="sdsave" style="align-self:flex-end">حفظ</button></div></section>
   <form class="card pad stack" id="uf"><h2>إضافة أو تعديل مستخدم</h2>
-   <div class="sub">الأول اعمل للشخص حساب من Supabase (Authentication ← Add user)، وبعدين اكتب إيميله هنا واختار صلاحيته.</div>
+   <div class="sub">الأول اعمل للشخص حساب من Supabase (Authentication ← Add user ← Create new user، وعلّم على Auto Confirm)، وبعدين اكتب إيميله هنا واختار قسمه.</div>
    <label><span>الإيميل</span><input type="email" id="ue" required></label>
    <label><span>الاسم</span><input type="text" id="un"></label>
-   <label><span>الصلاحية</span><select id="ur"><option value="sales">مبيعات: يشوف الرصيد ويحجز ويطلب تشغيل</option><option value="warehouse">مخزن: يسلّم الحجوزات ويحدّث أوامر التشغيل</option><option value="admin">مدير: كل حاجة</option><option value="none">إيقاف الحساب</option></select></label>
+   <label><span>القسم</span><select id="ur"><option value="sales">المبيعات</option><option value="planning">التخطيط والإنتاج</option><option value="warehouse">المخزن</option><option value="quality">الجودة</option><option value="management">الإدارة (كل الصلاحيات)</option><option value="review">مراجعة وتدريب (قراءة بس)</option><option value="none">إيقاف الحساب</option></select></label>
    <div id="um"></div><button class="btn primary">حفظ</button></form>
   <div class="card" id="ul"><div class="state">بيحمّل…</div></div>`;
   $("#sdsave").onclick=async()=>{ try{ await rpc("fx_set_setting",{p_key:"reservation_days",p_value:String(parseInt($("#sdays").value)||7)}); toast("اتحفظ"); }catch(e){ toast(errText(e),true); } };
@@ -1282,7 +1289,9 @@ async function bUsers(box){
     }catch(e){ $("#ul").innerHTML=`<div class="msg err">${esc(errText(e))}</div>`; } };
   load();
   $("#uf").onsubmit=async e=>{ e.preventDefault(); const m=$("#um");
-    try{ const x=await rpc("fx_set_user",{p_email:$("#ue").value,p_full_name:$("#un").value,p_role:$("#ur").value});
+    try{ const d=$("#ur").value;
+      let x=await rpc("fx_set_user",{p_email:$("#ue").value,p_full_name:$("#un").value,p_role:d==="none"?"none":({management:"admin",review:"viewer"}[d]||d)});
+      if(x.ok&&d!=="none") x=await rpc("fx_set_user_dept",{p_email:$("#ue").value,p_department:d});
       if(!x.ok){ m.innerHTML=`<div class="msg err">مفيش حساب بالإيميل ده. اعمله حساب من Supabase الأول.</div>`; return; }
       m.innerHTML=`<div class="msg ok">اتحفظ.</div>`; $("#uf").reset(); load();
     }catch(err){ m.innerHTML=`<div class="msg err">${esc(errText(err))}</div>`; } };
@@ -1829,9 +1838,13 @@ async function bFeedback(box){
 /* ============ departments & links (admin) ============ */
 const appBase = () => APP_URL || (IN_CLAUDE()? "" : location.origin+location.pathname);
 async function bDepts(box){
-  const [ds, keys]=await Promise.all([rpc("fx_departments"), rpc("fx_keys")]); S.depts=ds;
-  const base=appBase();
-  box.innerHTML=`<section class="card pad stack"><h2>الأقسام وأرقام الواتساب</h2><div class="sub">الرقم بالكود الدولي من غير +، مثلاً 2010xxxxxxxx. التحويلات والتنبيهات بتتبعت للقسم على الرقم ده.</div>
+  const [ds, keys, tr]=await Promise.all([rpc("fx_departments"), rpc("fx_keys"), rpc("fx_training")]); S.depts=ds;
+  const base=appBase(); const trOpen=tr&&tr.open_until&&new Date(tr.open_until)>new Date();
+  box.innerHTML=`<section class="card pad stack"><h2>وضع التدريب</h2>
+    <div class="msg ${trOpen?"ok":"err"}">${trOpen?`التدريب مفتوح لحد ${dt(tr.open_until)}. أي حد بيفتح رابط التطبيق بيدخل على طول ويشوف البيانات (قراءة بس).`:"التدريب مقفول. الدخول بالإيميل أو بروابط الأقسام بس."}</div>
+    <div class="sub">بعد التدريب اقفله، وابعت لكل موظف الإيميل وكلمة السر بتوعه.</div>
+    <div class="row"><button class="btn grow" data-tr="7">افتح 7 أيام</button><button class="btn grow" data-tr="14">افتح 14 يوم</button>${trOpen?`<button class="btn danger grow" data-tr="0">اقفل التدريب</button>`:""}</div></section>
+   <section class="card pad stack"><h2>الأقسام وأرقام الواتساب</h2><div class="sub">الرقم بالكود الدولي من غير +، مثلاً 2010xxxxxxxx. التحويلات والتنبيهات بتتبعت للقسم على الرقم ده.</div>
     ${ds.filter(d=>d.role!=="viewer").map(d=>`<div class="row dline" data-code="${d.code}"><label class="grow"><span>اسم القسم</span><input type="text" data-f="name" value="${esc(d.name)}"></label><label class="grow"><span>واتساب</span><input type="tel" data-f="wa" value="${esc(d.whatsapp||"")}" inputmode="tel"></label><button class="btn sm" data-save style="align-self:flex-end">حفظ</button></div>`).join("")}</section>
    <section class="card pad stack"><h2>روابط الدخول</h2>
     <div class="sub">كل رابط بيدخّل صاحبه على التطبيق بصلاحيات قسمه من غير باسورد. ابعت لكل موظف رابط قسمه، ولو حد ساب الشغل اقفل رابطه.</div>
@@ -1844,6 +1857,7 @@ async function bDepts(box){
    </section>`;
   const link=k=>`${base}#k=${k}`;
   box.onclick=async e=>{
+    const tb=e.target.closest("[data-tr]"); if(tb){ try{ await rpc("fx_set_training",{p_days:+tb.dataset.tr}); toast(+tb.dataset.tr?"التدريب اتفتح":"التدريب اتقفل"); bDepts(box); }catch(err){ toast(errText(err),true); } return; }
     const sv=e.target.closest("[data-save]"); if(sv){ const r=sv.closest(".dline"); try{ await rpc("fx_dept_save",{p_code:r.dataset.code,p_name:r.querySelector('[data-f="name"]').value,p_whatsapp:r.querySelector('[data-f="wa"]').value}); S.depts=null; toast("اتحفظ"); }catch(err){ toast(errText(err),true); } return; }
     const it=e.target.closest("[data-key]"); if(!it) return; const key=it.dataset.key;
     if(e.target.closest("[data-link]")){ try{ await navigator.clipboard.writeText(link(key)); toast("الرابط اتنسخ"); }catch(err){ waSheet(null, link(key)); } }
