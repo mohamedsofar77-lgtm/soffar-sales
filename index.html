@@ -377,6 +377,40 @@ textarea{width:100%;font:inherit;border:1px solid var(--line);background:var(--s
 #toast.show{opacity:1;transform:translate(-50%,0)}
 #toast.bad{background:var(--bad);color:#fff}
 @media (max-width:520px){.gl{grid-template-columns:1fr}.yrow{grid-template-columns:1fr 1fr}.yrow .wide{grid-column:1/-1}.btools{flex-wrap:wrap}.btools .btn{width:100%;height:auto}}
+
+/* families & filters */
+.crumbs{display:flex;flex-wrap:wrap;align-items:center;gap:6px;font-size:.82rem;color:var(--muted)}
+.crumbs button{border:0;background:none;color:var(--indigo);font-weight:600;padding:2px 0}
+.crumbs [aria-current]{color:var(--ink);font-weight:600}
+.fbar{display:flex;gap:10px;align-items:stretch}
+.fbar .search{flex:1;min-width:0}
+.needrow{display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:8px;align-items:center}
+.needrow label{font-size:.82rem;color:var(--muted);white-space:nowrap}
+.needrow input,.needrow select{min-width:0;width:100%}
+.needrow select{width:auto;max-width:40vw}
+.fbar .btn{flex:none;display:inline-flex;align-items:center;gap:6px}
+.fbar .btn svg{width:17px;height:17px}
+.fbadge{background:var(--indigo);color:#fff;border-radius:99px;padding:0 7px;font-size:.75rem}
+.fchips{display:flex;flex-wrap:wrap;gap:6px}
+.fchip{border:1px solid var(--indigo);background:var(--indigo-soft);color:var(--indigo);border-radius:99px;padding:4px 12px;font-size:.8rem;font-weight:600}
+.bsubs.fwrap{flex-wrap:wrap;overflow:visible}
+.fgrp{margin-top:-4px}
+.bsubs button[aria-pressed="true"]{background:var(--indigo);color:#fff}
+.sheet-h{display:flex;justify-content:space-between;align-items:center}
+.sheet-h h3{margin:0;font-size:1.05rem}
+.seg.sm button{padding:6px 6px;font-size:.85rem}
+.fam-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:12px}
+.fam-card{background:var(--surface);border:0;border-radius:var(--radius);box-shadow:var(--shadow);padding:14px;display:flex;flex-direction:column;gap:6px;text-align:right;color:var(--ink);min-width:0;border-top:3px solid var(--indigo);cursor:pointer}
+.fam-card:hover{transform:translateY(-1px)}
+.fc-t{font-weight:700;line-height:1.35}
+.fc-v{font-family:var(--f-display);font-weight:700;font-size:1.35rem;color:var(--ok)}
+.fc-v small{font-size:.7rem;color:var(--muted);font-weight:500;margin-inline-start:4px}
+.fc-s{display:flex;flex-wrap:wrap;gap:4px}
+.fc-m{font-size:.76rem;color:var(--muted);overflow:hidden;text-overflow:ellipsis;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}
+.canmake{margin-top:4px}
+.canmake summary{padding:12px 16px;cursor:pointer}
+.canmake .row-i{display:flex;align-items:center;gap:12px;padding:10px 16px;border-top:1px solid var(--line);width:100%;background:none;border-inline:0;border-bottom:0;text-align:right;color:var(--ink)}
+.c-nums .hl{color:var(--indigo);font-weight:600}
 </style>
 </head>
 <body>
@@ -390,7 +424,7 @@ const DEV_KEY = "";
 const APP_URL = "https://mohamedsofar77-lgtm.github.io/soffar-sales/";
 // نسخة التدريب: لو حد فتح التطبيق من غير رابط، بيدخل على وضع المراجعة والتدريب (قراءة بس)
 const PREVIEW_KEY = "";
-const APP_VERSION = "20261123145234";
+const APP_VERSION = "20261123151644";
 // رابط الدخول: الموظف بيفتح الرابط اللي فيه #k=... مرة واحدة، والتطبيق بيفتكره على الموبايل
 const KEY = (()=>{ let k=""; const m=(location.hash||"").match(/k=([A-Za-z0-9]+)/);
   if(m){ k=m[1]; try{ localStorage.setItem("soffar_key",k); }catch(e){} try{ history.replaceState(null,"",location.pathname+location.search); }catch(e){} }
@@ -412,7 +446,7 @@ const ERR_AR = {
 };
 
 const S = { me:null, tab:"home", stock:null, customers:null, specs:null,
-  f:{wh:"all", own:"free", q:"", limit:40, mat:"", spec:"", season:"", sort:"av"}, resFilter:"reserved", woOpen:true };
+  f:{wh:"all", own:"free", q:"", limit:40, mat:"", fam:"", spec:"", season:"", sort:"av", yt:[], lyc:"", cnt:"", need:"", cf:[], gr:[], op:"", view:"cards"}, resFilter:"reserved", woOpen:true };
 
 const $ = s => document.querySelector(s);
 const app = $("#app");
@@ -463,6 +497,7 @@ async function rpc(name, args){
 }
 
 const ICONS = {
+  filter:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 5h16l-6 8v5l-4 2v-7L4 5z"/></svg>',
   stock:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 7l9-4 9 4-9 4-9-4z"/><path d="M3 12l9 4 9-4"/><path d="M3 17l9 4 9-4"/></svg>',
   res:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="4" y="3" width="16" height="18" rx="2"/><path d="M8 8h8M8 12h8M8 16h5"/></svg>',
   wo:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M4.2 4.2l2.1 2.1M17.7 17.7l2.1 2.1M2 12h3M19 12h3M4.2 19.8l2.1-2.1M17.7 6.3l2.1-2.1"/></svg>',
@@ -635,7 +670,7 @@ function renderShell(){
   <nav class="tabs"><div class="in">${tabsFor(S.me.role).map(([k,l,i])=>`<button data-tab="${k}" ${S.tab===k?'aria-current="page"':""}>${i}<span>${l}</span></button>`).join("")}</div></nav>
   <div id="sheet"></div>`;
   app.querySelectorAll("[data-tab]").forEach(b=>b.onclick=()=>{
-    S.tab=b.dataset.tab; if(S.tab==="stock"){ S.f.mat=""; S.f.spec=""; S.f.season=""; }
+    S.tab=b.dataset.tab; if(S.tab==="stock"){ S.f.mat=""; S.f.spec=""; S.f.fam=""; }
     app.querySelectorAll("[data-tab]").forEach(x=>{ if(x===b) x.setAttribute("aria-current","page"); else x.removeAttribute("aria-current"); });
     show(); });
   show(); startPolling(); startUpdateCheck();
@@ -673,8 +708,7 @@ function bindHeader(){
   document.querySelectorAll("[data-go-guide]").forEach(x=>x.onclick=()=>goTab("guide"));
   paintBell();
 }
-function openMaterial(mc){ S.f={wh:"all",own:"free",q:"",limit:40,mat:mc,spec:"",season:"",sort:"av"}; goTab("stock",true); }
-function goTab(k,keep){ if(k==="stock"&&!keep){ S.f.mat=""; S.f.spec=""; S.f.season=""; } S.tab=k; app.querySelectorAll("[data-tab]").forEach(x=>{ if(x.dataset.tab===k) x.setAttribute("aria-current","page"); else x.removeAttribute("aria-current"); }); show(); }
+function goTab(k,keep){ if(k==="stock"&&!keep){ S.f.mat=""; S.f.spec=""; S.f.fam=""; } S.tab=k; app.querySelectorAll("[data-tab]").forEach(x=>{ if(x.dataset.tab===k) x.setAttribute("aria-current","page"); else x.removeAttribute("aria-current"); }); show(); }
 function show(){ const v=$("#view"); if(v) v.onclick=null; ({home:viewHome, guide:viewGuide, inbox:viewInbox, warehouse:viewWarehouse, reports:viewReports, stock:viewStock, new:viewNew, res:viewRes, wo:viewWO, basics:viewBasics}[S.tab]||viewStock)(); window.scrollTo(0,0); }
 
 /* ============ home ============ */
@@ -737,94 +771,225 @@ async function viewHome(){
 }
 
 /* ============ stock ============ */
+const YT=[["قطن",/قطن/],["شانية",/شاني/],["مخلوط",/مخلوط/],["سيرو",/سيرو/],["جيسبي",/جيسب|جسب/],["فسكوز",/فسكوز/],["بوليستر",/بوليستر|مونوفل/],["اسبن",/اسبن/],["كتان ومودال",/كتان|مودال|مدال/]];
+const CF=[["طباعة",/طباع|print|aop|مطبوع/i],["غسيل",/غسيل|yikama|wash/i],["خام",/خام/],["شانيه",/شاني/],["أسود",/اسود|أسود|black|charcoal|شاركول|deep night/i],["أبيض وأوف",/ابيض|أبيض|white|اوف|أوف|off|بياض|lambs|ivory|كريم|cream|butter|pastel/i],["كحلي",/كحل|navy|نيفي|navigate/i],["رمادي وفضي",/رماد|gr[ae]y|فض|silver|سيلفر|حديد|steel|titan|lava|opal|frost|tornado|ستيل|سلفر|هديد|hadidi|iron|metal|رصاص|جراي|dove|gleam|star/i],["بيج وبني",/بيج|beige|بني|brown|كافي|coffe|هافان|كشمير|tan\b|sand|taupe|عسل|mink|cumin|camel|oyster|mist|turtle|skin|peyote|lizard|tiger|rocky|khaki|كاكي|كمون|كموني|جملي|cafe|java|بستاج|تحجير|بنى/i],["أحمر ونبيتي",/احمر|أحمر|red|نبيت|برجن|برجاند|burg|wine|نحاس|طوب|brick|cordovan|باذنج|بذنج|بذانج|maro|مارو|فيران|سيمون|topy/i],["أخضر وزيتي",/اخضر|أخضر|green|زيت|olive|جيش|منت|mint|herb|sage|pine|garden|valerian|zity|فسدق|فستق/i],["أزرق ولبني",/ازرق|أزرق|blue|لبن|سماو|انديج|indigo|بترول|petrol|sky|فيروز|ocean|جنزار|arctic|bell|بيبي بلو|اكوا|aqua|تركواز|turq/i],["وردي وموف",/روز|rose|pink|بينك|موف|mauve|mouve|فوشيا|بنفس|purple|violet|لافندر|اوركيد|زهري/i],["أصفر وبرتقالي",/اصفر|أصفر|yellow|اورانج|orange|مسطرد|مستيك|ليمون/i]];
+const colorFam = n => { const s=String(n||""); for(const [f,re] of CF) if(re.test(s)) return f; return "ألوان تانية"; };
+const GR_L={A:"درجة A",B:"درجة B",C:"درجة C"}, OP_L={o:"مفتوح",c:"مقفول"};
+function specInfo(yarns){
+  const lines=String(yarns||"").split(";").filter(Boolean).map(x=>{const [p,c,y,st]=x.split("|"); return {p:+p||0,c:(c||"").trim(),y:y||"",st:st||""};});
+  const yt=new Set(); let lyc=false;
+  lines.forEach(l=>{ if(/ليكرا/.test(l.y)){ lyc=true; return; } YT.forEach(([k,re])=>{ if(re.test(l.y)) yt.add(k); }); });
+  const main=lines.filter(l=>!/ليكرا/.test(l.y)&&/^\d+\/\d+$/.test(l.c)).sort((a,b)=>b.p-a.p)[0];
+  return { yt:[...yt], lyc, cnt: main?main.c:"", text: lines.map(l=>l.c+l.y).join(" * ") };
+}
 async function loadStock(){
   const j = await rpc("fx_stock");
-  const owners=j.owners||{}, specs=j.specs||{};
+  const owners=j.owners||{}, specs=j.specs||{}, mats=j.mats||{}, attrs=j.attrs||{};
+  const cat={ mats:{}, specs:{} };
+  Object.entries(mats).forEach(([c,[n,f]])=>cat.mats[c]={code:c,name:n||"",fam:f||"موديلات خاصة"});
+  Object.entries(specs).forEach(([c,sp])=>{ const inf=specInfo(sp[4]); const mc=sp[3]||String(c).slice(0,5);
+    cat.specs[c]={code:c,name:sp[0]||"",season:sp[1]||"",text:sp[2]||inf.text,mat:mc,fam:(cat.mats[mc]||{}).fam||"موديلات خاصة",yt:inf.yt,lyc:inf.lyc,cnt:inf.cnt}; });
+  S.cat=cat;
   S.stock = { at:j.at, rows:(j.rows||[]).map(([w,spec,ck,cn,own,pcs,tot,res])=>{
-    const sp = specs[spec]||["","",""]; const free = !own;
+    const sp = cat.specs[spec]||{name:"",season:"",text:"",mat:String(spec).slice(0,5),fam:"موديلات خاصة",yt:[],lyc:false,cnt:""}; const free = !own;
     const ownerName = free ? "مخزون صفار" : (owners[own]||"عميل مش في القائمة");
     return { w, spec, ck, cn:cn||"", own, free, ownerName, pcs:+pcs||0, tot:+tot||0, res:+res||0, av:(+tot||0)-(+res||0),
-      sname:sp[0]||"صنف بدون اسم", season:sp[1]||"", yarn:sp[2]||"",
-      key:norm([spec,sp[0],ck.startsWith("N:")?"":ck,cn,ownerName].join(" ")) };
+      sname:sp.name||"صنف بدون اسم", season:sp.season, yarn:sp.text, mat:sp.mat, fam:sp.fam, sp, cf:colorFam(cn),
+      att: w==="g" ? (attrs[spec+"|"+ck+"|"+(own||"")]||{}) : null,
+      key:norm([spec,sp.name,sp.mat,(cat.mats[sp.mat]||{}).name,ck.startsWith("N:")?"":ck,cn,ownerName].join(" ")) };
   })};
 }
+const FDEF={wh:"all",own:"free",q:"",limit:40,mat:"",fam:"",spec:"",season:"",sort:"av",yt:[],lyc:"",cnt:"",need:"",cf:[],gr:[],op:"",view:"cards"};
+function fCount(){ const f=S.f; return (f.yt||[]).length+(f.lyc?1:0)+(f.cnt?1:0)+(f.cf||[]).length+(f.gr||[]).length+(f.op?1:0)+(f.season?1:0); }
+function specPass(sp){ const f=S.f; if(!sp) return false;
+  if(f.season&&sp.season!==f.season) return false;
+  if((f.yt||[]).length&&!f.yt.every(t=>sp.yt.includes(t))) return false;
+  if(f.lyc==="y"&&!sp.lyc) return false; if(f.lyc==="n"&&sp.lyc) return false;
+  if(f.cnt&&sp.cnt!==f.cnt) return false; return true; }
+function gKg(r){ // greige kg that matches grade/open filter (null = no such filter)
+  const f=S.f; if(!(f.gr||[]).length&&!f.op) return null; if(r.w!=="g"||!r.att) return 0;
+  let a=Infinity; if((f.gr||[]).length) a=Math.min(a,f.gr.reduce((s,g)=>s+(+r.att["g"+g]||0),0)); if(f.op) a=Math.min(a,+r.att["o"+f.op]||0); return a; }
+function rowPass(r, terms){ const f=S.f;
+  if(!(f.wh==="all"||(f.wh==="greige"?r.w==="g":r.w==="f"))) return false;
+  if(!(f.own==="all"||(f.own==="free"?r.free:!r.free))) return false;
+  if(f.fam&&r.fam!==f.fam) return false; if(f.mat&&r.mat!==f.mat) return false;
+  if(!specPass(r.sp)) return false;
+  if((f.cf||[]).length&&!f.cf.includes(r.cf)) return false;
+  const gk=gKg(r); if(gk!==null&&gk<0.5) return false;
+  const need=parseFloat(f.need); if(need>0){ if(!r.free) return false; const have=gk!==null?Math.min(gk,r.av):r.av; if(have<need*0.9) return false; }
+  return terms.every(t=>r.key.includes(t)); }
+function openMaterial(mc){ const fam=(S.cat&&S.cat.mats[mc]||{}).fam||""; S.f={...FDEF, ...pickKeep(S.f), mat:mc, fam}; goTab("stock",true); }
+function pickKeep(f){ f=f||{}; return {wh:f.wh||"all",own:f.own||"free",yt:f.yt||[],lyc:f.lyc||"",cnt:f.cnt||"",need:f.need||"",cf:f.cf||[],gr:f.gr||[],op:f.op||"",season:f.season||"",view:f.view||"cards"}; }
 async function viewStock(){
-  const v=$("#view");
+  const v=$("#view"); S.f={...FDEF,...S.f};
+  if(!S.stock){ v.innerHTML=header("الرصيد",refreshBtn())+`<div class="state"><strong>بيحمّل الرصيد…</strong></div>`; bindHeader();
+    try{ await loadStock(); }catch(e){ v.innerHTML=header("الرصيد",refreshBtn())+`<div class="msg err">${esc(errText(e))}</div>`; bindHeader(); $("#rf").onclick=()=>viewStock(); return; } }
   let title="الرصيد", backBtn="";
-  if(S.f.mat){ let mn=""; try{ mn=((await master("materials")).find(m=>m[0]===S.f.mat)||[])[1]||""; }catch(e){}
-    title=`${esc(mn||"خامة")} <span class="hcode num">${esc(S.f.mat)}</span>`;
-    backBtn=`<button class="icon-btn" id="back" aria-label="رجوع" title="رجوع">${ICONS.back}</button>`; }
-  v.innerHTML = header(title, backBtn+`<button class="icon-btn" id="shr" aria-label="شارك المتاح" title="شارك المتاح على واتساب">${ICONS.share}</button>`+refreshBtn()) + `
+  if(S.f.mat&&!S.f.fam) S.f.fam=(S.cat.mats[S.f.mat]||{}).fam||"";
+  if(S.f.mat){ const m=S.cat.mats[S.f.mat]||{}; title=`${esc(m.name||"خامة")} <span class="hcode num">${esc(S.f.mat)}</span>`; }
+  else if(S.f.fam){ title=esc(S.f.fam); }
+  if(S.f.mat||S.f.fam) backBtn=`<button class="icon-btn" id="back" aria-label="رجوع" title="رجوع">${ICONS.back}</button>`;
+  const crumbs = (S.f.fam||S.f.mat) ? `<nav class="crumbs"><button data-cr="root">كل العائلات</button>${S.f.fam?`<span>‹</span><button data-cr="fam" ${S.f.mat?"":"aria-current=\"page\""}>${esc(S.f.fam)}</button>`:""}${S.f.mat?`<span>‹</span><span aria-current="page">${esc((S.cat.mats[S.f.mat]||{}).name||S.f.mat)}</span>`:""}</nav>` : "";
+  v.innerHTML = header(title, backBtn+`<button class="icon-btn" id="shr" aria-label="شارك المتاح" title="شارك المتاح على واتساب">${ICONS.share}</button>`+refreshBtn()) + crumbs + `
   <section class="totals"><div><span class="ic">${ICONS.kg}</span><span class="k">الموجود</span><span class="v"><span class="num" id="t1">—</span><small>كجم</small></span></div>
   <div class="res"><span class="ic">${ICONS.lock}</span><span class="k">المحجوز</span><span class="v"><span class="num" id="t2">—</span><small>كجم</small></span></div>
   <div class="avail"><span class="ic">${ICONS.check}</span><span class="k">المتاح للبيع</span><span class="v"><span class="num" id="t3">—</span><small>كجم</small></span></div></section>
-  <div class="seg" id="segwh">${[["all","الكل"],["greige","خام"],["finished","مجهز"]].map(([k,l])=>`<button data-k="${k}" aria-pressed="${S.f.wh===k}">${l}</button>`).join("")}</div>
-  <div class="seg" id="segown">${[["free","مخزون صفار"],["cust","بضاعة عملاء"],["all","الكل"]].map(([k,l])=>`<button data-k="${k}" aria-pressed="${S.f.own===k}">${l}</button>`).join("")}</div>
+  <div class="seg" id="segwh">${[["all","خام ومجهز"],["greige","خام"],["finished","مجهز"]].map(([k,l])=>`<button data-k="${k}" aria-pressed="${S.f.wh===k}">${l}</button>`).join("")}</div>
+  <div class="fbar"><div class="search grow">${ICONS.search}<input type="search" id="sq" placeholder="ابحث بالصنف أو الكود أو اللون" value="${esc(S.f.q)}"></div>
+    <button class="btn" id="fopen">${ICONS.filter||""} فلاتر${fCount()?` <b class="fbadge num">${fCount()}</b>`:""}</button></div>
+  <div class="needrow"><label for="fneed">محتاج كام كيلو؟</label><input type="number" id="fneed" min="0" step="1" inputmode="decimal" placeholder="مثلاً 500" value="${esc(S.f.need)}">
+   <select id="ssort" aria-label="ترتيب"><option value="av" ${S.f.sort==="av"?"selected":""}>الأكتر متاح</option><option value="tot" ${S.f.sort==="tot"?"selected":""}>الأكتر موجود</option><option value="code" ${S.f.sort==="code"?"selected":""}>الكود</option><option value="name" ${S.f.sort==="name"?"selected":""}>الاسم</option></select></div>
+  <div class="fchips" id="fchips"></div>
   ${S.f.mat?`<div><div class="flabel">الإصدار</div><div class="bsubs" id="vers"></div></div>`:""}
-  <div class="row frow"><div class="bsubs" id="seas">${[["","كل المواسم"],["صيفي","صيفي"],["شتوى","شتوي"]].map(([k,l])=>`<button data-k="${k}" aria-pressed="${S.f.season===k}">${l}</button>`).join("")}</div>
-   <label class="sortl"><span>ترتيب</span><select id="ssort"><option value="av" ${S.f.sort==="av"?"selected":""}>الأكتر متاح</option><option value="tot" ${S.f.sort==="tot"?"selected":""}>الأكتر موجود</option><option value="code" ${S.f.sort==="code"?"selected":""}>الكود</option><option value="name" ${S.f.sort==="name"?"selected":""}>الاسم</option></select></label></div>
-  <div class="search">${ICONS.search}<input type="search" id="sq" placeholder="ابحث بالصنف أو الكود أو اللون أو العميل" value="${esc(S.f.q)}"></div>
-  <div class="sub" id="cnt"></div><div class="stack" id="slist"><div class="state"><strong>بيحمّل الرصيد…</strong></div></div>
-  <button class="btn" id="more" hidden>عرض أصناف أكتر</button>`;
+  ${!S.f.mat?`<div class="seg sm" id="segview"><button data-k="cards" aria-pressed="${S.f.view==="cards"}">كروت</button><button data-k="list" aria-pressed="${S.f.view==="list"}">قائمة الأصناف</button></div>`:""}
+  <div class="sub" id="cnt"></div><div class="stack" id="slist"></div>
+  <button class="btn" id="more" hidden>عرض أصناف أكتر</button>
+  <div id="canmake"></div>`;
   bindHeader();
-  $("#segwh").onclick=e=>{const b=e.target.closest("button");if(!b)return;S.f.wh=b.dataset.k;S.f.limit=40;$("#segwh").querySelectorAll("button").forEach(x=>x.setAttribute("aria-pressed",x===b));drawStock()};
-  $("#segown").onclick=e=>{const b=e.target.closest("button");if(!b)return;S.f.own=b.dataset.k;S.f.limit=40;$("#segown").querySelectorAll("button").forEach(x=>x.setAttribute("aria-pressed",x===b));drawStock()};
+  const seg=(id,key)=>{ const el=$(id); if(el) el.onclick=e=>{const b=e.target.closest("button");if(!b)return;S.f[key]=b.dataset.k;S.f.limit=40;el.querySelectorAll("button").forEach(x=>x.setAttribute("aria-pressed",x===b));drawStock()}; };
+  seg("#segwh","wh"); seg("#segview","view");
   let t; $("#sq").oninput=e=>{clearTimeout(t);t=setTimeout(()=>{S.f.q=e.target.value;S.f.limit=40;drawStock()},150)};
+  let tn; $("#fneed").oninput=e=>{clearTimeout(tn);tn=setTimeout(()=>{S.f.need=e.target.value;S.f.limit=40;drawStock()},250)};
+  $("#fopen").onclick=openFilters;
+  $("#fchips").onclick=e=>{const b=e.target.closest("[data-rm]");if(!b)return;const [k,val]=b.dataset.rm.split("|");
+    if(Array.isArray(S.f[k])) S.f[k]=S.f[k].filter(x=>x!==val); else S.f[k]=k==="own"?"free":""; viewStock(); };
   $("#more").onclick=()=>{S.f.limit+=40;drawStock()};
   $("#rf").onclick=async()=>{ busyBtn($("#rf"),true); try{await loadStock();drawStock()}catch(e){$("#slist").innerHTML=`<div class="msg err">${esc(errText(e))}</div>`}finally{busyBtn($("#rf"),false)} };
-  $("#slist").onclick=e=>{const b=e.target.closest("[data-reserve]");if(b){openReserve(S.stock.rows[+b.dataset.reserve]);return}
+  v.querySelectorAll("[data-cr]").forEach(b=>b.onclick=()=>{ if(b.dataset.cr==="root"){S.f.fam="";S.f.mat="";S.f.spec=""} else {S.f.mat="";S.f.spec=""} S.f.limit=40; viewStock(); window.scrollTo(0,0); });
+  if($("#back")) $("#back").onclick=()=>{ if(S.f.mat){ S.f.mat=""; S.f.spec=""; } else S.f.fam=""; S.f.limit=40; viewStock(); window.scrollTo(0,0); };
+  const goInto=(fn)=>{ fn(); S.f.limit=40; viewStock(); window.scrollTo(0,0); };
+  $("#slist").onclick=e=>{
+    const fc=e.target.closest("[data-fam]"); if(fc){ goInto(()=>{S.f.fam=fc.dataset.fam;S.f.mat="";}); return; }
+    const mc=e.target.closest("[data-matc]"); if(mc){ goInto(()=>{S.f.mat=mc.dataset.matc; S.f.fam=(S.cat.mats[mc.dataset.matc]||{}).fam||S.f.fam;}); return; }
+    const b=e.target.closest("[data-reserve]");if(b){openReserve(S.stock.rows[+b.dataset.reserve]);return}
     const sh=e.target.closest("[data-share]"); if(sh){ const [w,sp]=sh.dataset.share.split("|"); const rows=S.stock.rows.filter(r=>r.w===w&&r.spec===sp); shareSheet("شارك الصنف", shareText(rows, `${rows[0].sname} (${sp})`)); return; }
     const mu=e.target.closest("[data-multi]"); if(mu){ const [w,sp]=mu.dataset.multi.split("|"); openMultiReserve(sp,w); return; }
     const cr=e.target.closest(".c[data-i]"); if(cr){ openStockDetail(S.stock.rows[+cr.dataset.i]); return; }
-    const h=e.target.closest("[data-openmat]"); if(h&&!S.f.mat){ openMaterial(h.dataset.openmat); return; }
+    const h=e.target.closest("[data-openmat]"); if(h&&!S.f.mat){ goInto(()=>{S.f.mat=h.dataset.openmat; S.f.fam=(S.cat.mats[h.dataset.openmat]||{}).fam||"";}); return; }
     if(h&&S.f.mat){ S.f.spec = S.f.spec===h.dataset.spec?"":h.dataset.spec; S.f.limit=40; drawStock(); window.scrollTo({top:0,behavior:"smooth"}); } };
-  if($("#back")) $("#back").onclick=()=>{ S.f.mat=""; S.f.spec=""; goTab("home"); };
+  $("#canmake").onclick=e=>{ const mk=e.target.closest("[data-make]"); if(mk){ S.newPre={spec:mk.dataset.make, wh:S.f.wh==="finished"?"finished":"greige"}; goTab("new"); return; }
+    const mc=e.target.closest("[data-matc]"); if(mc){ goInto(()=>{S.f.mat=mc.dataset.matc;}); } };
   $("#shr").onclick=()=>{ const rows=(S.lastIdx||[]).map(i=>S.stock.rows[i]); if(!rows.some(r=>r.free&&r.av>=0.5)) return toast("مفيش متاح في الفلتر ده",true);
-    shareSheet("شارك المتاح", shareText(rows.slice(0,300), S.f.mat?`${rows[0].sname} (${S.f.mat})`:"الرصيد المتاح")); };
-  $("#seas").onclick=e=>{const b=e.target.closest("button");if(!b)return;S.f.season=b.dataset.k;S.f.limit=40;$("#seas").querySelectorAll("button").forEach(x=>x.setAttribute("aria-pressed",x===b));drawStock()};
+    shareSheet("شارك المتاح", shareText(rows.slice(0,300), S.f.mat?`${rows[0].sname} (${S.f.mat})`:(S.f.fam||"الرصيد المتاح"))); };
   $("#ssort").onchange=e=>{S.f.sort=e.target.value;drawStock()};
   if($("#vers")) $("#vers").onclick=e=>{const b=e.target.closest("button");if(!b)return;S.f.spec=b.dataset.k;S.f.limit=40;drawStock()};
-  if(!S.stock){ try{ await loadStock(); }catch(e){ $("#slist").innerHTML=`<div class="msg err">${esc(errText(e))}</div>`; return; } }
-  drawStock();
+  drawChips(); drawStock();
+}
+function drawChips(){ const el=$("#fchips"); if(!el) return; const f=S.f, ch=[];
+  if(f.own!=="free") ch.push(["own","",f.own==="cust"?"بضاعة عملاء":"صفار + عملاء"]);
+  if(f.season) ch.push(["season","",f.season==="شتوى"?"شتوي":f.season]);
+  (f.yt||[]).forEach(x=>ch.push(["yt",x,x])); if(f.lyc) ch.push(["lyc","",f.lyc==="y"?"بليكرا":"من غير ليكرا"]);
+  if(f.cnt) ch.push(["cnt","","نمرة "+f.cnt]); (f.cf||[]).forEach(x=>ch.push(["cf",x,"لون: "+x]));
+  (f.gr||[]).forEach(x=>ch.push(["gr",x,GR_L[x]])); if(f.op) ch.push(["op","",OP_L[f.op]]);
+  el.innerHTML=ch.map(([k,val,l])=>`<button class="fchip" data-rm="${esc(k+"|"+val)}" aria-label="شيل ${esc(l)}">${esc(l)} <span aria-hidden="true">×</span></button>`).join("");
+  el.hidden=!ch.length; }
+function openFilters(){
+  const f=S.f, cnts=new Map();
+  Object.values(S.cat.specs).forEach(sp=>{ if(sp.cnt) cnts.set(sp.cnt,(cnts.get(sp.cnt)||0)+1); });
+  const cntList=[...cnts.entries()].filter(([,n])=>n>=5).sort((a,b)=>parseFloat(a[0])-parseFloat(b[0])).map(([c])=>c);
+  const tog=(name,opts,sel,multi)=>`<div class="fgrp"><div class="bsubs fwrap" data-g="${name}" data-multi="${multi?1:0}">${opts.map(([k,l])=>`<button type="button" data-k="${esc(k)}" aria-pressed="${multi?sel.includes(k):sel===k}">${esc(l)}</button>`).join("")}</div></div>`;
+  sheet(`<div class="sheet-h"><h3>فلاتر الرصيد</h3><button class="linkbtn" id="fclr">امسح الفلاتر</button></div>
+   <div class="flabel">ملكية البضاعة</div>${tog("own",[["free","مخزون صفار"],["cust","بضاعة عملاء"],["all","الاتنين"]],f.own,false)}
+   <div class="flabel">الموسم</div>${tog("season",[["","الكل"],["صيفي","صيفي"],["شتوى","شتوي"]],f.season,false)}
+   <div class="flabel">نوع الغزل <small>(تقدر تختار أكتر من نوع)</small></div>${tog("yt",YT.map(([k])=>[k,k]),f.yt,true)}
+   <div class="flabel">ليكرا</div>${tog("lyc",[["","الكل"],["y","بليكرا"],["n","من غير ليكرا"]],f.lyc,false)}
+   <div class="flabel">نمرة الغزل الأساسي</div>${tog("cnt",[["","الكل"],...cntList.map(c=>[c,c])],f.cnt,false)}
+   <div class="flabel">عائلة اللون</div>${tog("cf",[...CF.map(([k])=>[k,k]),["ألوان تانية","ألوان تانية"]],f.cf,true)}
+   <div class="flabel">درجة التوب <small>(للخام بس)</small></div>${tog("gr",[["A","A"],["B","B"],["C","C"]],f.gr,true)}
+   <div class="flabel">مفتوح / مقفول <small>(للخام بس)</small></div>${tog("op",[["","الكل"],["o","مفتوح"],["c","مقفول"]],f.op,false)}
+   <div class="row"><button class="btn primary grow" id="fok">اعرض النتيجة</button></div>`);
+  const sh=$("#sheet");
+  sh.querySelectorAll("[data-g]").forEach(g=>g.onclick=e=>{ const b=e.target.closest("button"); if(!b) return; const k=g.dataset.g;
+    if(g.dataset.multi==="1"){ const a=new Set(S.f[k]||[]); a.has(b.dataset.k)?a.delete(b.dataset.k):a.add(b.dataset.k); S.f[k]=[...a]; b.setAttribute("aria-pressed",a.has(b.dataset.k)); }
+    else { S.f[k]=b.dataset.k; g.querySelectorAll("button").forEach(x=>x.setAttribute("aria-pressed",x===b)); } });
+  $("#fclr").onclick=()=>{ Object.assign(S.f,{own:"free",season:"",yt:[],lyc:"",cnt:"",cf:[],gr:[],op:"",need:""}); closeSheet(); viewStock(); };
+  $("#fok").onclick=()=>{ S.f.limit=40; closeSheet(); viewStock(); };
 }
 function drawStock(){
   if(!S.stock||!$("#slist")) return;
+  drawChips();
   const canReserve = S.me.role==="sales"||S.me.role==="admin";
   const terms=norm(S.f.q).split(" ").filter(Boolean);
-  const base=(r)=>(S.f.wh==="all"||(S.f.wh==="greige"?r.w==="g":r.w==="f"))&&(S.f.own==="all"||(S.f.own==="free"?r.free:!r.free))
-     &&(!S.f.mat||String(r.spec).startsWith(S.f.mat))&&(!S.f.season||r.season===S.f.season)&&terms.every(t=>r.key.includes(t));
-  if($("#vers")){ const vm=new Map(); S.stock.rows.forEach(r=>{ if(!base(r)) return; const x=vm.get(r.spec)||{av:0}; if(r.free) x.av+=Math.max(0,r.av); vm.set(r.spec,x); });
+  const need=parseFloat(S.f.need)||0;
+  const pass=r=>rowPass(r,terms);
+  if($("#vers")){ const vm=new Map(); S.stock.rows.forEach(r=>{ if(!pass(r)) return; const x=vm.get(r.spec)||{av:0}; if(r.free) x.av+=Math.max(0,r.av); vm.set(r.spec,x); });
     if(S.f.spec&&!vm.has(S.f.spec)) S.f.spec="";
     $("#vers").innerHTML=`<button data-k="" aria-pressed="${!S.f.spec}">الكل</button>`+[...vm.entries()].sort((a,b)=>a[0].localeCompare(b[0])).map(([sp,x])=>`<button data-k="${esc(sp)}" aria-pressed="${S.f.spec===sp}"><span class="num">${esc(sp.slice(5)||sp)}</span> · <span class="num">${fmt(x.av)}</span> كجم</button>`).join(""); }
-  const idx=[]; S.stock.rows.forEach((r,i)=>{ if(base(r)&&(!S.f.spec||r.spec===S.f.spec)) idx.push(i); }); S.lastIdx=idx;
-  let tot=0,res=0,av=0; const groups=new Map();
-  for(const i of idx){ const r=S.stock.rows[i]; tot+=r.tot; res+=r.res; if(r.free) av+=Math.max(0,r.av);
+  const idx=[]; S.stock.rows.forEach((r,i)=>{ if(pass(r)&&(!S.f.spec||r.spec===S.f.spec)) idx.push(i); }); S.lastIdx=idx;
+  let tot=0,res=0,av=0; idx.forEach(i=>{const r=S.stock.rows[i]; tot+=r.tot; res+=r.res; if(r.free) av+=Math.max(0,r.av);});
+  $("#t1").textContent=fmt(tot); $("#t2").textContent=fmt(res); $("#t3").textContent=fmt(av);
+  const mode = S.f.mat ? "list" : (S.f.view==="list"||terms.length) ? "list" : (S.f.fam ? "mats" : "fams");
+  $("#more").hidden=true;
+  if(mode==="fams"||mode==="mats"){
+    const groups=new Map(), keyOf=r=>mode==="fams"?r.fam:r.mat;
+    idx.forEach(i=>{ const r=S.stock.rows[i]; const k=keyOf(r); let g=groups.get(k);
+      if(!g){ g={k,g:0,f:0,cust:0,mats:new Set(),colors:0,best:new Map()}; groups.set(k,g); }
+      const a=r.free?Math.max(0,r.av):0; if(r.w==="g") g.g+=a; else g.f+=a; if(!r.free) g.cust+=r.tot; g.mats.add(r.mat); if(a>=0.5||!r.free) g.colors++;
+      if(a>=0.5) g.best.set(r.cn,(g.best.get(r.cn)||0)+a); });
+    const list=[...groups.values()].filter(g=>g.g+g.f>=0.5||g.cust>=0.5);
+    const so=S.f.sort; list.sort(so==="name"?((a,b)=>String(nameOf(a.k)).localeCompare(nameOf(b.k),"ar")):so==="code"?((a,b)=>String(a.k).localeCompare(String(b.k))):((a,b)=>(b.g+b.f)-(a.g+a.f)||b.cust-a.cust));
+    function nameOf(k){ return mode==="fams"?k:((S.cat.mats[k]||{}).name||k); }
+    $("#cnt").textContent = list.length ? (mode==="fams"?`${list.length} عائلة`:`${list.length} خامة في ${S.f.fam}`)+` · ${idx.length.toLocaleString("en-US")} لون${need?` فيه ${fmt(need)} كجم على الأقل`:""} · آخر تحديث ${dt(S.stock.at)}` : "";
+    $("#slist").innerHTML = list.length ? `<div class="fam-grid">${list.map(g=>{ const top=[...g.best.entries()].sort((a,b)=>b[1]-a[1]).slice(0,3).map(([c])=>c);
+      return `<button class="fam-card" ${mode==="fams"?`data-fam="${esc(g.k)}"`:`data-matc="${esc(g.k)}"`}>
+        <span class="fc-t">${esc(nameOf(g.k))}${mode==="mats"?` ${cd(g.k)}`:""}</span>
+        <span class="fc-v"><span class="num">${fmt(g.g+g.f)}</span><small>كجم متاح</small></span>
+        <span class="fc-s">${g.g>=0.5?`<span class="chip g">خام <span class="num">${fmt(g.g)}</span></span>`:""}${g.f>=0.5?`<span class="chip f">مجهز <span class="num">${fmt(g.f)}</span></span>`:""}${g.cust>=0.5&&S.f.own!=="free"?`<span class="chip s">عملاء <span class="num">${fmt(g.cust)}</span></span>`:""}</span>
+        <span class="fc-m">${mode==="fams"?`<span class="num">${g.mats.size}</span> خامة · `:""}<span class="num">${g.colors}</span> لون${top.length?` · ${esc(top.join("، "))}`:""}</span></button>`}).join("")}</div>`
+      : `<div class="state"><strong>مفيش رصيد مطابق</strong>جرّب تشيل فلتر أو تقلّل الكمية.</div>`;
+    drawCanMake(mode, idx);
+    return;
+  }
+  const groups=new Map();
+  for(const i of idx){ const r=S.stock.rows[i];
     const k=r.w+"|"+r.spec; let g=groups.get(k); if(!g){g={w:r.w,spec:r.spec,sname:r.sname,season:r.season,yarn:r.yarn,tot:0,av:0,items:[]};groups.set(k,g)}
     g.tot+=r.tot; if(r.free) g.av+=Math.max(0,r.av); g.items.push(i); }
-  $("#t1").textContent=fmt(tot); $("#t2").textContent=fmt(res); $("#t3").textContent=fmt(av);
   const sorters={av:(a,b)=>b.av-a.av||b.tot-a.tot, tot:(a,b)=>b.tot-a.tot, code:(a,b)=>String(a.spec).localeCompare(String(b.spec)), name:(a,b)=>a.sname.localeCompare(b.sname,"ar")};
   const list=[...groups.values()].sort(sorters[S.f.sort]||sorters.av);
   $("#cnt").textContent = list.length?`${list.length.toLocaleString("en-US")} صنف · ${idx.length.toLocaleString("en-US")} لون · آخر تحديث ${dt(S.stock.at)}`:"";
-  if(!list.length){ $("#slist").innerHTML=`<div class="state"><strong>مفيش رصيد مطابق</strong>جرّب تشيل كلمة من البحث أو تغيّر الفلتر.</div>`; $("#more").hidden=true; return; }
+  if(!list.length){ $("#slist").innerHTML=`<div class="state"><strong>مفيش رصيد مطابق</strong>جرّب تشيل كلمة من البحث أو تغيّر الفلتر.</div>`; drawCanMake("list", idx); return; }
+  const grSel=(S.f.gr||[]).length||S.f.op;
   $("#slist").innerHTML = list.slice(0,S.f.limit).map(g=>{
     g.items.sort((a,b)=>S.stock.rows[b].av-S.stock.rows[a].av);
-    return `<article class="spec"><div class="spec-h click" data-openmat="${esc(String(g.spec).slice(0,5))}" data-spec="${esc(g.spec)}" role="button" tabindex="0" title="${S.f.mat?"اعرض الإصدار ده بس":"افتح صفحة الخامة"}"><div class="spec-top"><span class="chip ${g.w}">${g.w==="g"?"خام":"مجهز"}</span><span class="spec-name">${esc(g.sname)}</span><span class="code num">${esc(g.spec)}</span>${g.season?`<span class="chip s">${esc(g.season)}</span>`:""}</div>${g.yarn?`<div class="yarn">${esc(g.yarn)}</div>`:""}
+    return `<article class="spec"><div class="spec-h click" data-openmat="${esc(S.stock.rows[g.items[0]].mat)}" data-spec="${esc(g.spec)}" role="button" tabindex="0" title="${S.f.mat?"اعرض الإصدار ده بس":"افتح صفحة الخامة"}"><div class="spec-top"><span class="chip ${g.w}">${g.w==="g"?"خام":"مجهز"}</span><span class="spec-name">${esc(g.sname)}</span><span class="code num">${esc(g.spec)}</span>${g.season?`<span class="chip s">${esc(g.season)}</span>`:""}</div>${g.yarn?`<div class="yarn">${esc(g.yarn)}</div>`:""}
       <div class="spec-act"><button class="btn sm" data-share="${esc(g.w+"|"+g.spec)}">${ICONS.share} شارك</button>${canReserve&&g.av>=0.5?`<button class="btn sm primary" data-multi="${esc(g.w+"|"+g.spec)}">حجز ألوان</button>`:""}</div></div>
     <div>${g.items.map(i=>{const r=S.stock.rows[i];
       const pa=r.tot>0?Math.max(0,Math.min(1,r.av/r.tot))*100:0, pr=r.tot>0?Math.min(1,r.res/r.tot)*100:0;
       const cls=r.av<-0.5?"neg":(r.av<0.5?"zero":"");
+      const att=r.att&&Object.keys(r.att).length?["A","B","C"].filter(x=>r.att["g"+x]>=0.5).map(x=>`${x} <span class="num">${fmt(r.att["g"+x])}</span>`).concat(["o","c"].filter(x=>r.att["o"+x]>=0.5).map(x=>`${OP_L[x]} <span class="num">${fmt(r.att["o"+x])}</span>`)).join(" · "):"";
       return `<div class="c click" data-i="${i}" role="button" tabindex="0"><div><div class="c-name">${swatch(r)}${esc(r.cn||"بدون لون")}</div><div class="c-meta">${!r.ck.startsWith("N:")?`<span class="num">${esc(r.ck)}</span>`:""}${!r.free?`<span class="owner">${esc(r.ownerName)}</span>${cd(r.own)}`:""}</div></div>
       <div class="c-side">${r.free?`<div class="c-avail ${cls}"><span class="num">${fmt(Math.max(0,r.av))}</span> <small>كجم متاح</small></div>${canReserve&&r.av>=0.5?`<button class="btn sm primary" data-reserve="${i}">احجز</button>`:""}`:`<span class="chip s">بضاعة عميل</span>`}</div>
       <div class="bar" aria-hidden="true"><i class="a" style="width:${r.free?pa:0}%"></i><i class="r" style="width:${pr}%"></i></div>
-      <div class="c-nums"><span>موجود <span class="num">${fmt(r.tot)}</span></span><span>محجوز <span class="num">${fmt(r.res)}</span></span><span><span class="num">${r.pcs.toLocaleString("en-US")}</span> توب</span>${cls==="neg"&&r.free?`<span class="flag">الحجز أكبر من الموجود بـ <span class="num">${fmt(-r.av)}</span></span>`:""}</div></div>`}).join("")}</div></article>`}).join("");
+      <div class="c-nums"><span>موجود <span class="num">${fmt(r.tot)}</span></span><span>محجوز <span class="num">${fmt(r.res)}</span></span><span><span class="num">${r.pcs.toLocaleString("en-US")}</span> توب</span>${att?`<span class="${grSel?"hl":""}">${att}</span>`:""}${cls==="neg"&&r.free?`<span class="flag">الحجز أكبر من الموجود بـ <span class="num">${fmt(-r.av)}</span></span>`:""}</div></div>`}).join("")}</div></article>`}).join("");
   const left=list.length-S.f.limit; $("#more").hidden=left<=0; if(left>0) $("#more").textContent=`عرض أصناف أكتر (${left.toLocaleString("en-US")} باقيين)`;
+  drawCanMake("list", idx);
+}
+/* specs that match the filters but have nothing free to sell → offer a production order */
+function drawCanMake(mode, idx){
+  const el=$("#canmake"); if(!el) return; el.innerHTML="";
+  if(!(S.f.fam||S.f.mat)||!S.cat) return;
+  const canSell=["sales","admin","planning"].includes(S.me.role);
+  const avBySpec=new Map(); idx.forEach(i=>{const r=S.stock.rows[i]; if(r.free&&r.av>=0.5) avBySpec.set(r.spec,(avBySpec.get(r.spec)||0)+r.av);});
+  const specs=Object.values(S.cat.specs).filter(sp=>(S.f.mat?sp.mat===S.f.mat:sp.fam===S.f.fam)&&specPass(sp)&&!avBySpec.has(sp.code));
+  if(!specs.length) return;
+  if(S.f.mat){
+    el.innerHTML=`<details class="card canmake"><summary><b>ممكن نصنّعه</b> · <span class="num">${specs.length}</span> إصدار مالوش رصيد متاح دلوقتي</summary>
+      ${specs.sort((a,b)=>a.code.localeCompare(b.code)).map(sp=>`<div class="row-i"><div class="mid"><div class="t"><span class="num">${esc(sp.code)}</span> · ${esc(sp.name)}${sp.season?` · ${esc(sp.season)}`:""}</div><div class="m">${esc(sp.text||"")}</div></div>${canSell?`<button class="btn sm" data-make="${esc(sp.code)}">طلب تشغيل</button>`:""}</div>`).join("")}</details>`;
+  } else {
+    const byMat=new Map(); specs.forEach(sp=>{ byMat.set(sp.mat,(byMat.get(sp.mat)||0)+1); });
+    const matsWithStock=new Set(idx.map(i=>S.stock.rows[i]).filter(r=>r.free&&r.av>=0.5).map(r=>r.mat));
+    const none=[...byMat.keys()].filter(m=>!matsWithStock.has(m));
+    if(!none.length) return;
+    el.innerHTML=`<details class="card canmake"><summary><b>ممكن نصنّعه</b> · <span class="num">${none.length}</span> خامة مالهاش رصيد متاح في الفلتر ده</summary>
+      ${none.sort().map(m=>`<button class="row-i click" data-matc="${esc(m)}"><div class="mid"><div class="t">${esc((S.cat.mats[m]||{}).name||m)} ${cd(m)}</div><div class="m"><span class="num">${byMat.get(m)}</span> إصدار</div></div><span class="chev">‹</span></button>`).join("")}</details>`;
+  }
 }
 
 /* ============ pickers ============ */
 async function ensureCustomers(){ if(!S.customers) S.customers=(await rpc("fx_customers")||[]).map(([code,name])=>({code,name,key:norm(name+" "+code)})); }
 async function ensureSpecs(){ if(!S.specs) S.specs=(await rpc("fx_specs")||[]).map(([code,name,season,yarn])=>({code,name,season,yarn,key:norm(code+" "+name+" "+(yarn||""))})); }
-function picker(container, items, label, placeholder, onPick, recent){
-  let picked=null;
+function picker(container, items, label, placeholder, onPick, recent, initial){
+  let picked=initial||null; if(picked) onPick(picked);
   const draw=()=>{
     if(picked){ container.innerHTML=`<div class="picked"><span>${esc(label(picked))}</span><button type="button" class="btn sm">تغيير</button></div>`;
       container.querySelector("button").onclick=()=>{picked=null;onPick(null);draw();container.querySelector("input").focus()}; return; }
@@ -917,7 +1082,9 @@ async function viewNew(){
   $("#nwh").onclick=e=>{const b=e.target.closest("button");if(!b)return;wh=b.dataset.k;$("#nwh").querySelectorAll("button").forEach(x=>x.setAttribute("aria-pressed",x===b))};
   picker($("#ncp"), S.customers, x=>`${x.name} · ${x.code}`, "اكتب اسم العميل أو كوده", p=>cust=p, recentCustomers());
   const nip=imgPicker($("#nimg"),"صورة الديزاين");
-  picker($("#nsp"), S.specs, x=>`${x.code} · ${x.name}${x.season?" · "+x.season:""}`, "اكتب كود أو اسم الصنف", p=>spec=p);
+  const pre=S.newPre; S.newPre=null;
+  picker($("#nsp"), S.specs, x=>`${x.code} · ${x.name}${x.season?" · "+x.season:""}`, "اكتب كود أو اسم الصنف", p=>spec=p, null, pre?S.specs.find(x=>x.code===pre.spec):null);
+  if(pre&&pre.wh==="finished"){ wh="finished"; $("#nwh").querySelectorAll("button").forEach(x=>x.setAttribute("aria-pressed",x.dataset.k==="finished")); }
   $("#ngo").onclick=async()=>{
     const m=$("#nmsg"), q=parseFloat($("#nq").value), col=$("#ncol").value.trim();
     if(!cust) return m.innerHTML=`<div class="msg err">اختار العميل.</div>`;
@@ -1246,12 +1413,12 @@ async function editSupplier(r){
 /* ---- materials ---- */
 async function bMaterials(box){
   const list=await master("materials");
-  const rows=list.map(([code,name,n])=>({code,name,n,key:norm(code+" "+name)}));
+  const rows=list.map(([code,name,n,fam])=>({code,name,n,fam:fam||"",key:norm(code+" "+name+" "+(fam||""))}));
   box.innerHTML = toolbar("ابحث باسم الخامة أو الكود","خامة جديدة") + `<div class="card" id="blist"></div><div id="bmore"></div>`;
   const draw=()=>{
     const t=norm(S.bQ).split(" ").filter(Boolean); const f=rows.filter(r=>t.every(w=>r.key.includes(w)));
     $("#bcnt").textContent=`${f.length.toLocaleString("en-US")} خامة`;
-    $("#blist").innerHTML = f.length ? f.slice(0,S.bLimit).map(r=>`<div class="mrow click" data-code="${esc(r.code)}" role="button" tabindex="0"><div class="mid"><div class="t">${esc(r.name)} ${cd(r.code)}</div><div class="m"><span>${r.n} إصدار</span></div></div>
+    $("#blist").innerHTML = f.length ? f.slice(0,S.bLimit).map(r=>`<div class="mrow click" data-code="${esc(r.code)}" role="button" tabindex="0"><div class="mid"><div class="t">${esc(r.name)} ${cd(r.code)}</div><div class="m">${r.fam?`<span class="chip f">${esc(r.fam)}</span> `:""}<span>${r.n} إصدار</span></div></div>
       <div class="actions"><button class="btn sm" data-specs>المواصفات</button>${isAdmin()?`<button class="btn sm" data-edit>تعديل</button>`:""}</div></div>`).join("") : `<div class="state"><strong>مفيش نتايج</strong></div>`;
     $("#bmore").innerHTML=moreBtn(f.length-S.bLimit);
   };
@@ -1263,15 +1430,17 @@ async function bMaterials(box){
     if(e.target.closest("[data-specs]")){ S.bTab="specs"; S.bMat=r.code; S.bQ=""; viewBasics(); return; }
     if(!e.target.closest("button")) openMaterial(r.code); };
 }
+const FAMS=["ميلتون","سمر ميلتون","سنجل وبراسولا","سنجل ليكرا","بيكيه","دبل بيكيه ودبل فيس","انتربوي وانترلوك","ريب ودربي","كشمير وسيرما وبسكوته","جاكار وتكستشر","ياقات وأساور وكمر","موديلات خاصة"];
 async function editMaterial(r){
   const g=await master("guide");
   sheet(`<h2>${r?"تعديل خامة":"خامة جديدة"}</h2>
    <div class="codebox"><span>كود الخامة</span><b class="num">${esc(r?r.code:g.next.material)}</b><small>${r?"المواصفات بتاعتها بتبدأ بالكود ده":"بيتعمل تلقائي، وبعدين تضيف لها مواصفات (إصدارات)"}</small></div>
    <label><span>اسم الخامة (القماش)</span><input type="text" id="en" value="${esc(r?r.name:"")}" placeholder="مثلاً: بيكيه شانيه"></label>
+   <label><span>العائلة (الكارت اللي الخامة بتظهر تحته في الرصيد)</span><input type="text" id="efam" list="famlist" value="${esc(r?r.fam:"")}" placeholder="اختار أو اكتب عائلة جديدة"><datalist id="famlist">${FAMS.map(f=>`<option value="${esc(f)}">`).join("")}</datalist></label>
    <div id="em"></div><div class="row"><button class="btn primary grow" id="es">حفظ</button><button class="btn" id="ex">إلغاء</button></div>`);
   $("#ex").onclick=closeSheet;
   $("#es").onclick=async()=>{ $("#es").disabled=true;
-    try{ const x=await rpc("fx_save_material",{p_code:r?r.code:null,p_name:$("#en").value}); dropMaster("materials"); closeSheet(); toast(r?"اتحفظ":`اتضافت بالكود ${x.code}`); viewBasics(); }
+    try{ const x=await rpc("fx_save_material",{p_code:r?r.code:null,p_name:$("#en").value,p_family:$("#efam").value.trim()||null}); S.stock=null; dropMaster("materials"); closeSheet(); toast(r?"اتحفظ":`اتضافت بالكود ${x.code}`); viewBasics(); }
     catch(e){ $("#em").innerHTML=`<div class="msg err">${esc(errText(e))}</div>`; $("#es").disabled=false; } };
 }
 
