@@ -466,6 +466,20 @@ textarea{width:100%;font:inherit;border:1px solid var(--line);background:var(--s
 .wrapbtns{flex-wrap:wrap}
 details.card summary{padding:10px 14px;cursor:pointer}
 @media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .r-red{background:#55160c;color:#fda29b}:root:not([data-theme="light"]) .r-orange{background:#4e1d09;color:#fdb022}:root:not([data-theme="light"]) .r-yellow{background:#542c0d;color:#fde272}:root:not([data-theme="light"]) .r-blue{background:#172554;color:#93c5fd}:root:not([data-theme="light"]) .r-green{background:#053321;color:#75e0a7}}
+.plan-k .kpi{cursor:pointer}
+.plan-k .kpi .s{color:var(--indigo)}
+.pc-hero{background:var(--surface);border-radius:var(--radius);box-shadow:var(--shadow);padding:16px}
+.pc-big{font-family:var(--f-display);font-weight:800;font-size:2rem;display:flex;align-items:baseline;gap:6px}
+.pc-big small{font-size:.9rem;color:var(--muted);font-weight:500}
+.pcf{display:flex;flex-direction:column;gap:6px}
+.pcf-h{display:flex;justify-content:space-between;font-weight:700;font-size:.9rem;color:var(--muted);padding:0 4px}
+.pcf .card .row-i,.pcc .row-i{display:flex;align-items:center;gap:12px;padding:10px 14px;border-top:1px solid var(--line)}
+.pcf .card .row-i:first-child{border-top:0}
+.pcf .row-i .pr-m{margin-top:4px}
+.pcc summary{padding:12px 14px;cursor:pointer;list-style:none;display:flex;flex-direction:column;gap:6px}
+.pcc-h{display:flex;align-items:center;gap:8px}
+.pcc-v{font-family:var(--f-display);font-weight:700;white-space:nowrap}
+.pcc-v small{font-size:.7rem;color:var(--muted);margin-inline-start:3px}
 </style>
 </head>
 <body>
@@ -479,7 +493,7 @@ const DEV_KEY = "";
 const APP_URL = "https://mohamedsofar77-lgtm.github.io/soffar-sales/";
 // نسخة التدريب: لو حد فتح التطبيق من غير رابط، بيدخل على وضع المراجعة والتدريب (قراءة بس)
 const PREVIEW_KEY = "";
-const APP_VERSION = "20261123154547";
+const APP_VERSION = "20261123161122";
 // رابط الدخول: الموظف بيفتح الرابط اللي فيه #k=... مرة واحدة، والتطبيق بيفتكره على الموبايل
 const KEY = (()=>{ let k=""; const m=(location.hash||"").match(/k=([A-Za-z0-9]+)/);
   if(m){ k=m[1]; try{ localStorage.setItem("soffar_key",k); }catch(e){} try{ history.replaceState(null,"",location.pathname+location.search); }catch(e){} }
@@ -726,7 +740,7 @@ function renderShell(){
   <nav class="tabs"><div class="in">${tabsFor(S.me.role).map(([k,l,i])=>`<button data-tab="${k}" ${S.tab===k?'aria-current="page"':""}>${i}<span>${l}</span></button>`).join("")}</div></nav>
   <div id="sheet"></div>`;
   app.querySelectorAll("[data-tab]").forEach(b=>b.onclick=()=>{
-    S.tab=b.dataset.tab; if(S.tab==="stock"){ S.f.mat=""; S.f.spec=""; S.f.fam=""; }
+    S.tab=b.dataset.tab; S.planCard=""; if(S.tab==="stock"){ S.f.mat=""; S.f.spec=""; S.f.fam=""; }
     app.querySelectorAll("[data-tab]").forEach(x=>{ if(x===b) x.setAttribute("aria-current","page"); else x.removeAttribute("aria-current"); });
     show(); });
   show(); startPolling(); startUpdateCheck();
@@ -768,7 +782,7 @@ function bindHeader(){
 function goTab(k,keep){ if(k==="stock"&&!keep){ S.f.mat=""; S.f.spec=""; S.f.fam=""; } S.tab=k; app.querySelectorAll("[data-tab]").forEach(x=>{ if(x.dataset.tab===k) x.setAttribute("aria-current","page"); else x.removeAttribute("aria-current"); }); show(); }
 /* ---- back / forward between pages ---- */
 const NAV={stack:[],i:-1,restoring:false};
-function navSnap(){ const f=S.f||{}; return {tab:S.tab, fam:f.fam||"", mat:f.mat||"", spec:f.spec||"", bTab:S.tab==="basics"?(S.bTab||""):"", whTab:S.tab==="warehouse"?(S.whTab||""):""}; }
+function navSnap(){ const f=S.f||{}; return {tab:S.tab, pc:S.tab==="plan"?(S.planCard||""):"", fam:f.fam||"", mat:f.mat||"", spec:f.spec||"", bTab:S.tab==="basics"?(S.bTab||""):"", whTab:S.tab==="warehouse"?(S.whTab||""):""}; }
 function navRecord(){ if(NAV.restoring) return; const s=navSnap(), k=JSON.stringify(s), cur=NAV.stack[NAV.i];
   if(cur&&JSON.stringify(cur)===k) return;
   NAV.stack=NAV.stack.slice(0,NAV.i+1); NAV.stack.push(s); if(NAV.stack.length>80) NAV.stack.shift(); NAV.i=NAV.stack.length-1;
@@ -776,7 +790,7 @@ function navRecord(){ if(NAV.restoring) return; const s=navSnap(), k=JSON.string
 function updNav(){ const b=$("#navb"), f=$("#navf"); if(b) b.disabled=NAV.i<=0; if(f) f.disabled=NAV.i>=NAV.stack.length-1; }
 function navGo(d){ const j=NAV.i+d; if(j<0||j>=NAV.stack.length) return; NAV.i=j; const s=NAV.stack[j];
   NAV.restoring=true;
-  try{ S.f.fam=s.fam; S.f.mat=s.mat; S.f.spec=s.spec; if(s.bTab) S.bTab=s.bTab; if(s.whTab) S.whTab=s.whTab; S.f.limit=40; closeSheet(); goTab(s.tab,true); }
+  try{ S.f.fam=s.fam; S.f.mat=s.mat; S.f.spec=s.spec; if(s.bTab) S.bTab=s.bTab; if(s.whTab) S.whTab=s.whTab; S.f.limit=40; if(s.tab==="plan") S.planCard=s.pc||""; closeSheet(); goTab(s.tab,true); }
   finally{ NAV.restoring=false; } updNav(); }
 window.addEventListener("popstate",()=>{ if(!S.me) return;
   if($("#sheet")&&$("#sheet").innerHTML){ closeSheet(); try{ history.pushState({soffarNav:NAV.i},""); }catch(e){} return; }
@@ -811,7 +825,7 @@ async function viewHome(){
   <div class="section-h"><h2>أكتر خامات متاحة للبيع</h2><button class="linkbtn" data-go="stock">الرصيد كله</button></div>
   <section class="card top-list" id="top"><div class="state">بيحمّل…</div></section>`;
   bindHeader();
-  v.onclick=e=>{ const g=e.target.closest("[data-go]"); if(g){ if(g.dataset.sub){ S.bTab=g.dataset.sub; } if(g.dataset.ptab){ S.planTab=g.dataset.ptab; } if(g.dataset.wh){ S.f.wh=g.dataset.wh; S.f.own="free"; S.f.limit=40; } goTab(g.dataset.go); return; }
+  v.onclick=e=>{ const g=e.target.closest("[data-go]"); if(g){ if(g.dataset.sub){ S.bTab=g.dataset.sub; } if(g.dataset.go==="plan"){ S.planCard=""; } if(g.dataset.ptab){ S.planTab=g.dataset.ptab; } if(g.dataset.wh){ S.f.wh=g.dataset.wh; S.f.own="free"; S.f.limit=40; } goTab(g.dataset.go); return; }
     const mb=e.target.closest("[data-mat]"); if(mb){ openMaterial(mb.dataset.mat); if(mb.dataset.pspec){ S.f.spec=mb.dataset.pspec; } return; }
     const b=e.target.closest("[data-reserve]"); if(b) openReserve(S.stock.rows[+b.dataset.reserve]); };
   const fill=async(force)=>{
@@ -1125,6 +1139,7 @@ function planMatch(n,q,rf){ // node visible under search + rec filter?
   if(n.kids) return (own&&recOk&&!q&&!rf) || n.kids.some(k=>planMatch(k,q,rf)) || (own&&recOk&&(q||rf)&&n.lvl>=1);
   return own&&recOk; }
 async function viewPlan(){
+  if(S.planCard) return viewPlanCard();
   navRecord(); const v=$("#view"); S.planOpen=S.planOpen||new Set(); S.planTab=S.planTab||"tree";
   v.innerHTML=header("تقرير المتابعة", `<button class="icon-btn" id="pexp" aria-label="تصدير إكسيل" title="تصدير إكسيل">${ICONS.out}</button><button class="icon-btn" id="pshr" aria-label="ملخص واتساب" title="ملخص واتساب">${ICONS.share}</button>`+refreshBtn())+
   `<section class="kpis plan-k" id="pk"><div class="state">بيحسب التقرير…</div></section>
@@ -1138,6 +1153,7 @@ async function viewPlan(){
   let t; $("#pq").oninput=e=>{clearTimeout(t);t=setTimeout(()=>{S.planQ=e.target.value;drawPlan()},200)};
   $("#rf").onclick=async()=>{busyBtn($("#rf"),true);try{await loadPlan(true);drawPlan()}catch(e){toast(errText(e),true)}finally{busyBtn($("#rf"),false)}};
   if($("#pset")) $("#pset").onclick=planSettings;
+  $("#pk").onclick=e=>{ const c=e.target.closest("[data-card]"); if(!c) return; S.planCard=c.dataset.card; S.pcQ=""; viewPlanCard(); window.scrollTo(0,0); };
   $("#pexp").onclick=planExport; $("#pshr").onclick=planShare;
   $("#pbody").onclick=e=>{ const act=e.target.closest("[data-pact]"); const row=e.target.closest("[data-pk]"); if(!row) return;
     const n=findNode(row.dataset.pk); if(!n) return;
@@ -1145,6 +1161,68 @@ async function viewPlan(){
     S.planOpen.has(n.key)?S.planOpen.delete(n.key):S.planOpen.add(n.key); drawPlan(); };
   if(!S.plan){ try{ await loadPlan(); }catch(e){ $("#pk").innerHTML=`<div class="msg err">${esc(errText(e))}</div>`; return; } }
   drawPlan();
+}
+
+/* ---- plan KPI card → its own page ---- */
+const PCARDS={om:{t:"على المكن",o:true}, qa:{t:"في الجودة",o:true}, dy:{t:"في المصبغة",o:true}, ready:{t:"طلبيات في المخازن",o:true}, avail:{t:"مخزن حر",o:false}, dem:{t:"طلبيات مفتوحة",o:true}, def:{t:"عجز محتاج قرار",o:false}, sell:{t:"فائض للبيع",o:false}};
+function orderStage(o){ const [cc,cn,tg,rem,ready,lines]=o; const L=lines||[]; const sum=st=>L.filter(x=>st.includes(x[1])).reduce((a,x)=>a+(+x[2]||0),0);
+  const om=sum(["on_machine","partial_return"]), qa=sum(["at_quality"]), dy=sum(["at_dyehouse"]), stz=sum(["greige_done","finished"]), rd=+ready||0;
+  const s_dy=Math.max(0,dy-Math.max(0,rd-stz)), s_qa=Math.max(0,qa-Math.max(0,rd-stz-dy)), s_om=Math.max(0,om-Math.max(0,rd-stz-dy-qa));
+  return {om:s_om, qa:s_qa, dy:s_dy, ready:Math.min(+rem||0,Math.max(rd,stz)), dem:+rem||0}; }
+function leafVal(l,k){ if(k==="def") return ["produce","dye","cover"].includes(l.rec)?l.need:0; if(k==="sell") return 0; return +l[k]||0; }
+async function viewPlanCard(){
+  navRecord(); const v=$("#view"), k=S.planCard, C=PCARDS[k]; if(!C){ S.planCard=""; return viewPlan(); }
+  S.pcBy=S.pcBy&&(C.o||S.pcBy!=="cust")?S.pcBy:"spec";
+  v.innerHTML=header(C.t, refreshBtn())+`<nav class="crumbs"><button data-cr="plan">تقرير المتابعة</button><span>‹</span><span aria-current="page">${esc(C.t)}</span></nav>
+   <section class="pc-hero" id="pch"><div class="state">بيحسب…</div></section>
+   ${C.o?`<div class="seg" id="pcby"><button data-k="spec" aria-pressed="${S.pcBy==="spec"}">حسب الصنف</button><button data-k="cust" aria-pressed="${S.pcBy==="cust"}">حسب العميل</button></div>`:""}
+   <div class="search">${ICONS.search}<input type="search" id="pcq" placeholder="${C.o?"ابحث بالصنف أو اللون أو العميل أو رقم الأمر":"ابحث بالصنف أو الكود أو اللون"}" value="${esc(S.pcQ||"")}"></div>
+   <div class="sub" id="pccnt"></div><div id="pcbody" class="stack"></div>`;
+  bindHeader();
+  v.querySelector("[data-cr]").onclick=()=>{ S.planCard=""; goTab("plan"); };
+  if($("#pcby")) $("#pcby").onclick=e=>{const b=e.target.closest("button");if(!b)return;S.pcBy=b.dataset.k;$("#pcby").querySelectorAll("button").forEach(x=>x.setAttribute("aria-pressed",x===b));drawPlanCard()};
+  let t; $("#pcq").oninput=e=>{clearTimeout(t);t=setTimeout(()=>{S.pcQ=e.target.value;drawPlanCard()},200)};
+  $("#rf").onclick=async()=>{busyBtn($("#rf"),true);try{await loadPlan(true);drawPlanCard()}catch(e){toast(errText(e),true)}finally{busyBtn($("#rf"),false)}};
+  $("#pcbody").onclick=e=>{ const n=e.target.closest("[data-pk]"); if(n&&!e.target.closest("summary,[data-cust]")){ const node=findNode(n.dataset.pk); if(node) openPlanNode(node); return; }
+    const c=e.target.closest("[data-cust]"); if(c){ openCustomerDetail(c.dataset.cust); } };
+  if(!S.plan){ try{ await loadPlan(); }catch(e){ $("#pch").innerHTML=`<div class="msg err">${esc(errText(e))}</div>`; return; } }
+  drawPlanCard();
+}
+function drawPlanCard(){
+  const P=S.plan, k=S.planCard, C=PCARDS[k]; if(!P||!$("#pcbody")) return;
+  const q=norm(S.pcQ||"");
+  let total=0, html="", count=0, sub="";
+  if(S.pcBy==="cust"&&C.o){
+    const cust=new Map();
+    P.leaves.forEach(l=>(l.orders||[]).forEach(o=>{ const v=orderStage(o)[k]; if(v<0.5) return;
+      let c=cust.get(o[0]); if(!c){ c={code:o[0],name:o[1]||o[0],v:0,items:[]}; cust.set(o[0],c); }
+      c.v+=v; c.items.push({l,o,v}); }));
+    let list=[...cust.values()];
+    if(q) list=list.filter(c=>norm(c.name+" "+c.code+" "+c.items.map(x=>x.l.sp.name+" "+x.l.name+" "+(x.o[5]||[]).map(y=>y[0]).join(" ")).join(" ")).includes(q));
+    list.sort((a,b)=>b.v-a.v); list.forEach(c=>total+=c.v); count=list.length; sub=`${count} عميل`;
+    html=list.map(c=>`<details class="card pcc"><summary><div class="pcc-h"><span class="pr-n">${esc(c.name)} ${cd(c.code)}</span><span class="pcc-v"><span class="num">${fmt(c.v)}</span><small>كجم</small></span></div>
+      <div class="pr-m">${[...new Set(c.items.map(x=>x.l.sp.name||x.l.spec))].slice(0,4).map(n=>`<span class="pm">${esc(n)}</span>`).join("")}<span class="pm">${c.items.length} سطر</span></div></summary>
+      ${c.items.sort((a,b)=>b.v-a.v).map(({l,o,v})=>`<div class="row-i click" data-pk="${esc(l.key)}" role="button" tabindex="0"><div class="mid"><div class="t">${esc(l.sp.name||l.spec)} ${cd(l.spec)} · ${esc(l.name)}</div>
+        <div class="m">${o[2]==="g"?"خام":"مجهز"} · أوامر ${(o[5]||[]).map(x=>`<span class="num">${esc(x[0])}</span> ${WO_ST[x[1]]||x[1]}`).join("، ")}</div></div><div class="a"><span class="num">${fmt(v)}</span><small>كجم</small></div></div>`).join("")}
+      <div class="row" style="padding:8px 14px"><button class="btn sm" data-cust="${esc(c.code)}">صفحة العميل</button></div></details>`).join("");
+  } else {
+    let specs;
+    if(k==="sell"){ specs=sellList("").map(s=>({s,v:Math.max(0,s.avail-s.need),kids:s.kids.filter(x=>x.avail>=0.5).map(x=>({l:x,v:x.avail}))})); }
+    else { const m=new Map(); P.leaves.forEach(l=>{ const v=leafVal(l,k); if(v<0.5) return; let x=m.get(l.spec); if(!x){ x={s:P.specs.get(l.spec),v:0,kids:[]}; m.set(l.spec,x); } x.v+=v; x.kids.push({l,v}); }); specs=[...m.values()]; }
+    if(q) specs=specs.filter(x=>norm([x.s.name,x.s.code,(S.cat.mats[x.s.mat]||{}).name,x.kids.map(y=>y.l.name).join(" ")].join(" ")).includes(q));
+    specs.sort((a,b)=>b.v-a.v); specs.forEach(x=>total+=x.v); count=specs.length; sub=`${count} صنف`;
+    const fams=new Map(); specs.forEach(x=>{ const f=x.s.fam||"موديلات خاصة"; let g=fams.get(f); if(!g){ g={f,v:0,items:[]}; fams.set(f,g); } g.v+=x.v; g.items.push(x); });
+    html=[...fams.values()].sort((a,b)=>b.v-a.v).map(g=>`<div class="pcf"><div class="pcf-h"><span>${esc(g.f)}</span><span class="num">${fmt(g.v)} كجم</span></div>
+      <div class="card">${g.items.map(x=>{ const cs=x.kids.sort((a,b)=>b.v-a.v);
+        const custs=C.o?[...new Set(cs.flatMap(y=>(y.l.orders||[]).filter(o=>orderStage(o)[k]>=0.5).map(o=>o[1])))]:[];
+        return `<div class="row-i click" data-pk="${esc(x.s.key)}" role="button" tabindex="0"><div class="mid"><div class="t">${esc(x.s.name)} ${cd(x.s.code)}</div>
+        <div class="m">${esc((S.cat.mats[x.s.mat]||{}).name||"")}${custs.length?` · ${esc(custs.slice(0,3).join("، "))}${custs.length>3?` +${custs.length-3}`:""}`:""}</div>
+        <div class="pr-m">${cs.slice(0,6).map(y=>`<span class="pm">${esc(y.l.name)} <b class="num">${fmt(y.v)}</b></span>`).join("")}${cs.length>6?`<span class="pm">+${cs.length-6} لون</span>`:""}</div></div>
+        <div class="a"><span class="num">${fmt(x.v)}</span><small>كجم</small></div><span class="chev">‹</span></div>`}).join("")}</div></div>`).join("");
+  }
+  $("#pch").innerHTML=`<div class="pc-big"><span class="num">${fmt(total)}</span><small>كجم</small></div><div class="sub">${sub} · آخر تحديث ${dt(P.at)}</div>`;
+  $("#pccnt").textContent=count?(S.pcBy==="cust"&&C.o?"دوس على العميل يفتح أوامره، وعلى أي سطر يفتح تفاصيله":"دوس على أي صنف يفتح تفاصيله وإجراءاته"):"";
+  $("#pcbody").innerHTML=html||`<div class="state"><strong>مفيش حاجة هنا دلوقتي</strong></div>`;
 }
 function sellList(q){ const P=S.plan; const pinned=s=>s.pin||s.kids.some(k=>k.pin);
   return [...P.specs.values()].filter(s=>!s.ign&&(pinned(s)||s.avail-s.need>=P.big)&&(!q||norm(s.name+" "+s.code).includes(q)))
@@ -1168,9 +1246,9 @@ function drawPlan(){
   const P=S.plan; if(!P||!$("#pbody")) return;
   const all=P.leaves; const tot=k=>all.reduce((a,l)=>a+l[k],0);
   const def=all.filter(l=>["produce","dye","cover"].includes(l.rec)), sell=sellList("");
-  $("#pk").innerHTML=[["على المكن",tot("om"),"t-w"],["في الجودة",tot("qa"),"t-w"],["في المصبغة",tot("dy"),"t-f"],["طلبيات في المخازن",tot("ready"),"t-g",`خام ${fmt(tot("sg"))} · مجهز ${fmt(tot("sf"))}`],["مخزن حر",tot("avail"),"t-g"],["طلبيات مفتوحة",tot("dem"),"t-r"],
-     ["عجز محتاج قرار",def.reduce((a,l)=>a+l.need,0),"t-bad",`${def.length} لون/صنف`],["فائض للبيع",sell.reduce((a,s)=>a+Math.max(0,s.avail-s.need),0),"t-ok",`${sell.length} صنف`]]
-    .map(([l,v,c,s])=>`<div class="kpi ${c}"><span class="k">${l}</span><span class="v"><span class="num">${fmt(v)}</span><small>كجم</small></span>${s?`<span class="s">${s}</span>`:""}</div>`).join("");
+  $("#pk").innerHTML=[["om",tot("om"),"t-w"],["qa",tot("qa"),"t-w"],["dy",tot("dy"),"t-f"],["ready",tot("ready"),"t-g",`خام ${fmt(tot("sg"))} · مجهز ${fmt(tot("sf"))}`],["avail",tot("avail"),"t-g"],["dem",tot("dem"),"t-r"],
+     ["def",def.reduce((a,l)=>a+l.need,0),"t-bad",`${def.length} لون/صنف`],["sell",sell.reduce((a,s)=>a+Math.max(0,s.avail-s.need),0),"t-ok",`${sell.length} صنف`]]
+    .map(([k,v,c,s])=>`<button type="button" class="kpi ${c}" data-card="${k}"><span class="k">${PCARDS[k].t}</span><span class="v"><span class="num">${fmt(v)}</span><small>كجم</small></span><span class="s">${s?s+" · ":""}التفاصيل ‹</span></button>`).join("");
   const counts={}; all.forEach(l=>counts[l.rec]=(counts[l.rec]||0)+1);
   $("#prf").innerHTML=Object.entries(REC).filter(([k])=>k!=="ok"&&k!=="ign"&&counts[k]).map(([k,r])=>`<button data-k="${k}" aria-pressed="${S.planRec===k}"><span class="dot ${r.c}"></span>${r.t} <span class="num">${counts[k]}</span></button>`).join("");
   const q=norm(S.planQ||""), rf=S.planRec||"";
