@@ -514,7 +514,7 @@ const DEV_KEY = "";
 const APP_URL = "https://mohamedsofar77-lgtm.github.io/soffar-sales/";
 // نسخة التدريب: لو حد فتح التطبيق من غير رابط، بيدخل على وضع المراجعة والتدريب (قراءة بس)
 const PREVIEW_KEY = "";
-const APP_VERSION = "20261123162204";
+const APP_VERSION = "20261123163422";
 // رابط الدخول: الموظف بيفتح الرابط اللي فيه #k=... مرة واحدة، والتطبيق بيفتكره على الموبايل
 const KEY = (()=>{ let k=""; const m=(location.hash||"").match(/k=([A-Za-z0-9]+)/);
   if(m){ k=m[1]; try{ localStorage.setItem("soffar_key",k); }catch(e){} try{ history.replaceState(null,"",location.pathname+location.search); }catch(e){} }
@@ -752,7 +752,7 @@ function renderNoAccess(email){
 /* ============ shell ============ */
 function tabsFor(role){
   const t = [["home","الرئيسية",ICONS.home],["stock","الرصيد",ICONS.stock],["res","الحجوزات",ICONS.res],["wo","التشغيل",ICONS.wo]];
-  if (role==="sales") t.splice(1,0,["order","طلبية",ICONS.new]);
+  if (role==="sales") t.splice(1,0,["order","حجز طلبية",ICONS.new]);
   if (role==="warehouse"||role==="admin") t.push(["warehouse","المخزن",ICONS.box]);
   if (role==="quality") t.push(["warehouse","الجودة",ICONS.box]);
   t.push(["basics","الأساسيات",ICONS.grid]);
@@ -833,7 +833,7 @@ async function viewHome(){
   </section>
   <div class="section-h"><h2>اختصارات</h2></div>
   <section class="quick">
-    <button data-go="order"><span class="qi">${ICONS.new}</span>طلبية جديدة</button>
+    <button data-go="order"><span class="qi">${ICONS.new}</span>حجز طلبية</button>
     <button data-go="guide"><span class="qi">${ICONS.book}</span>دليل التشغيل</button>
     <button data-go="stock"><span class="qi">${ICONS.stock}</span>الرصيد</button>
     ${canSell?`<button data-go="new"><span class="qi">${ICONS.new}</span>طلب تشغيل</button>`:""}
@@ -1168,7 +1168,7 @@ async function viewPlan(){
   navRecord(); const v=$("#view"); S.planOpen=S.planOpen||new Set(); S.planTab=S.planTab||"tree";
   v.innerHTML=header("تقرير المتابعة", `<button class="icon-btn" id="pexp" aria-label="تصدير إكسيل" title="تصدير إكسيل">${ICONS.out}</button><button class="icon-btn" id="pshr" aria-label="ملخص واتساب" title="ملخص واتساب">${ICONS.share}</button>`+refreshBtn())+
   `<section class="kpis plan-k" id="pk"><div class="state">بيحسب التقرير…</div></section>
-   <div class="seg" id="ptab"><button data-k="so" aria-pressed="${S.planTab==="so"}">طلبيات مستنية قرار <b class="fbadge num" id="pson" hidden></b></button><button data-k="tree" aria-pressed="${S.planTab==="tree"}">شجرة الخامات</button><button data-k="sell" aria-pressed="${S.planTab==="sell"}">أولويات البيع</button><button data-k="act" aria-pressed="${S.planTab==="act"}">محتاج قرار</button></div>
+   <div class="seg" id="ptab"><button data-k="so" aria-pressed="${S.planTab==="so"}">تحت الاعتماد <b class="fbadge num" id="pson" hidden></b></button><button data-k="tree" aria-pressed="${S.planTab==="tree"}">شجرة الخامات</button><button data-k="sell" aria-pressed="${S.planTab==="sell"}">أولويات البيع</button><button data-k="act" aria-pressed="${S.planTab==="act"}">محتاج قرار</button></div>
    <div class="bsubs" id="prf"></div>
    <div class="fbar"><div class="search grow">${ICONS.search}<input type="search" id="pq" placeholder="ابحث بالخامة أو الصنف أو الكود أو اللون" value="${esc(S.planQ||"")}"></div>${isAdmin()?`<button class="btn" id="pset">الإعدادات</button>`:""}</div>
    <div class="sub" id="pcnt"></div><div id="pbody" class="card ptree"></div>`;
@@ -1367,24 +1367,24 @@ function planShare(){ const P=S.plan; if(!P) return; const L=P.leaves;
   shareSheet("ملخص تقرير المتابعة", txt); }
 
 /* ============ sales orders: salesperson enters, follow-up manager decides ============ */
-const SO_ST={pending:"مستنية قرار",partial:"اتقرر جزء منها",decided:"اتاخد القرار",cancelled:"ملغية"};
+const SO_ST={pending:"تحت الاعتماد",partial:"اتعتمد جزء منها",decided:"اتعتمدت وبقت خطة",cancelled:"ملغية"};
 const SRC_L={f_stock:"من مخزن المجهز",g_stock:"من مخزن الخام",wo:"تحويل من أمر",new:"إنتاج جديد"};
 const cnormJS=t=>String(t||"").toLowerCase().trim().replace(/[أإآ]/g,"ا").replace(/ى/g,"ي").replace(/ة/g,"ه").replace(/[\s\-_.()]+/g,"").replace(/^(offwhite|اوفويت)$/,"اوفوايت").replace(/^black$/,"اسود").replace(/^white$/,"ابيض").replace(/^navy$/,"كحلي");
 function lsGet(k){ try{ return localStorage.getItem(k)||""; }catch(e){ return ""; } }
 function lsSet(k,v){ try{ localStorage.setItem(k,v); }catch(e){} }
 async function viewOrder(){
   navRecord(); const v=$("#view");
-  v.innerHTML=header("طلبية جديدة")+`<div class="card pad stack" id="of"><div class="state">بيحمّل الأصناف والعملاء…</div></div>
+  v.innerHTML=header("حجز طلبية")+`<div class="card pad stack" id="of"><div class="state">بيحمّل الأصناف والعملاء…</div></div>
    <div class="section-h"><h2>آخر الطلبيات</h2><button class="linkbtn" id="oref">تحديث</button></div><div class="card" id="olist"><div class="state">بيحمّل…</div></div>`;
   bindHeader();
   try{ await Promise.all([ensureCustomers(), ensureSpecs(), S.stock?null:loadStock()]); }catch(e){ $("#of").innerHTML=`<div class="msg err">${esc(errText(e))}</div>`; return; }
   let cust=null; const lines=[];
-  $("#of").innerHTML=`<div class="sub">دخّل طلبية العميل زي ما هي. الطلبية هتروح لإدارة المتابعة والتخطيط، وهما اللي هيقرروا هتتغطى منين، وهيوصلك تنبيه بالقرار والتسليم المتوقع.</div>
+  $("#of").innerHTML=`<div class="sub">دخّل حجز العميل بتفاصيله، وتقدر تشوف أرصدة كل مكان وتقترح هتتغطى منين: من المخزن، تحويل، أو إنتاج. الحجز بيتحط في جدول <b>تحت الاعتماد</b> لحد ما إدارة المتابعة والتخطيط تعتمده، وبعدها بيتحول للأقسام ويبقى خطة، ويوصلك تنبيه بالقرار والتسليم المتوقع.</div>
    <label><span>العميل</span><div id="ocp"></div></label>
    <div class="row"><label class="grow"><span>اسم البياع</span><input type="text" id="osn" value="${esc(lsGet("soffar_sales_name"))}" placeholder="اسمك"></label><label class="grow"><span>العميل عايز يستلم يوم</span><input type="date" id="odue"></label></div>
    <div><div class="flabel">سطور الطلبية</div><div class="stack" id="olines"></div><button class="btn" id="oadd" type="button">+ ضيف سطر</button></div>
    <label><span>ملاحظة</span><input type="text" id="onote" placeholder="اختياري"></label>
-   <div id="om"></div><button class="btn primary" id="ogo">ابعت الطلبية للمتابعة</button>`;
+   <div id="om"></div><button class="btn primary" id="ogo">ابعت الحجز للاعتماد</button>`;
   picker($("#ocp"), S.customers, x=>`${x.name} · ${x.code}`, "اكتب اسم العميل أو كوده", p=>cust=p, recentCustomers());
   const hint=(ln)=>{ if(!ln.spec) return ""; const cn=cnormJS(ln.color); let f=0,fa=0,g=0;
     S.stock.rows.forEach(r=>{ if(r.spec!==ln.spec.code||!r.free||r.av<0.5) return; if(r.w==="f"){ fa+=r.av; if(cn&&cnormJS(r.cn)===cn) f+=r.av; } else g+=r.av; });
@@ -1396,7 +1396,8 @@ async function viewOrder(){
       <div class="row"><label class="grow"><span>اللون</span><input type="text" data-col list="ocl${i}" placeholder="مثلاً: اوف وايت"><datalist id="ocl${i}"></datalist></label>
       <label class="grow"><span>الكمية (كجم)</span><input type="number" data-q min="0" step="0.01" inputmode="decimal"></label></div>
       <div class="seg sm" data-tg><button type="button" data-k="finished" aria-pressed="true">عايزه مجهز</button><button type="button" data-k="greige" aria-pressed="false">عايزه خام</button></div>
-      <div class="pr-m" data-h></div>`;
+      <div class="pr-m" data-h></div>
+      <button type="button" class="btn sm" data-prop>شوف أرصدة كل مكان واقترح منين</button><div data-pp></div>`;
     $("#olines").appendChild(box);
     const upd=()=>{ box.querySelector("[data-h]").innerHTML=hint(ln); };
     picker(box.querySelector("[data-sp]"), S.specs, x=>`${x.code} · ${x.name}${x.season?" · "+x.season:""}`, "اكتب كود أو اسم الصنف", p=>{ ln.spec=p;
@@ -1406,6 +1407,10 @@ async function viewOrder(){
     box.querySelector("[data-q]").oninput=e=>{ ln.qty=e.target.value; };
     box.querySelector("[data-tg]").onclick=e=>{const b=e.target.closest("button");if(!b)return;ln.target=b.dataset.k;box.querySelectorAll("[data-tg] button").forEach(x=>x.setAttribute("aria-pressed",x===b))};
     box.querySelector("[data-del]").onclick=()=>{ ln.deleted=true; box.remove(); };
+    box.querySelector("[data-prop]").onclick=()=>{ const m=box.querySelector("[data-pp]");
+      if(!ln.spec||!(parseFloat(ln.qty)>0)){ m.innerHTML=`<div class="msg err">اختار الصنف واكتب الكمية الأول.</div>`; return; }
+      ln.pl={id:"p"+i,spec:ln.spec.code,color:ln.color.trim(),qty:parseFloat(ln.qty),target:ln.target}; m.innerHTML=`<div class="state">بيجيب الأرصدة…</div>`;
+      box.querySelector("[data-prop]").textContent="حدّث الأرصدة والاقتراح"; soLineDecider(null,ln.pl,m,"propose"); };
   };
   addLine();
   $("#oadd").onclick=addLine;
@@ -1414,9 +1419,9 @@ async function viewOrder(){
     if(!ok.length) return m.innerHTML=`<div class="msg err">ضيف سطر واحد على الأقل.</div>`;
     for(const [i,l] of ok.entries()){ if(!l.spec) return m.innerHTML=`<div class="msg err">اختار الصنف في السطر ${i+1}.</div>`; if(!(parseFloat(l.qty)>0)) return m.innerHTML=`<div class="msg err">اكتب الكمية في السطر ${i+1}.</div>`; }
     $("#ogo").disabled=true; lsSet("soffar_sales_name",$("#osn").value.trim());
-    try{ const r=await rpc("fx_so_create",{p_customer:cust.code,p_due:$("#odue").value||null,p_note:$("#onote").value.trim()||null,p_lines:ok.map(l=>({spec:l.spec.code,color:l.color.trim(),qty:parseFloat(l.qty),target:l.target})),p_sales_name:$("#osn").value.trim()||null});
+    try{ const r=await rpc("fx_so_create",{p_customer:cust.code,p_due:$("#odue").value||null,p_note:$("#onote").value.trim()||null,p_lines:ok.map(l=>{ const g=l.pl&&l.pl._get?l.pl._get():null; return {spec:l.spec.code,color:l.color.trim(),qty:parseFloat(l.qty),target:l.target,proposal:g?g.proposal:[],proposal_note:g?g.note:""}; }),p_sales_name:$("#osn").value.trim()||null});
       rememberCustomer(cust.code);
-      sheet(`<div class="msg ok">تمام 👍 الطلبية <b class="num">${esc(r.so_no)}</b> وصلت لإدارة المتابعة والتخطيط. أول ما القرار يتاخد هيوصلك تنبيه.</div><button class="btn primary" id="dok">تمام</button>`);
+      sheet(`<div class="msg ok">تمام 👍 الحجز <b class="num">${esc(r.so_no)}</b> اتسجل تحت الاعتماد ووصل لإدارة المتابعة والتخطيط. أول ما يتعتمد هيوصلك تنبيه بالقرار.</div><button class="btn primary" id="dok">تمام</button>`);
       $("#dok").onclick=()=>{ closeSheet(); viewOrder(); };
     }catch(e){ m.innerHTML=`<div class="msg err">${esc(errText(e))}</div>`; $("#ogo").disabled=false; } };
   const loadList=async()=>{ try{ const l=await rpc("fx_so_list",{p_status:"all"})||[]; S.soAll=l;
@@ -1451,14 +1456,14 @@ async function viewSO(){
   if($("#socancel")) $("#socancel").onclick=()=>{ sheet(`<div class="sheet-h"><h3>إلغاء ${esc(o.so_no)}</h3></div><label><span>السبب</span><input type="text" id="cxr" placeholder="مثلاً: العميل لغى"></label><div id="cxm"></div><div class="row"><button class="btn danger grow" id="cxgo">إلغاء الطلبية</button><button class="btn" id="cxx">رجوع</button></div>`);
     $("#cxx").onclick=closeSheet; $("#cxgo").onclick=async()=>{ try{ await rpc("fx_so_cancel",{p_id:o.id,p_reason:$("#cxr").value}); closeSheet(); toast("الطلبية اتلغت"); viewSO(); }catch(e){ $("#cxm").innerHTML=`<div class="msg err">${esc(errText(e))}</div>`; } }; };
   $("#sobody").querySelectorAll("[data-cust]").forEach(b=>b.onclick=()=>openCustomerDetail(b.dataset.cust));
-  for(const l of (o.lines||[])) if(l.status==="pending"&&canAct) soLineDecider(o,l);
+  for(const l of (o.lines||[])) if(l.status==="pending"&&canAct) soLineDecider(o,l,document.querySelector(`[data-line="${l.id}"] [data-src]`),"decide");
 }
 function soDecisionView(l){ const d=l.decision||[];
   return `<div class="recbox r-green"><b>اتاخد القرار 👍 ${l.expected_date?` · التسليم المتوقع ${new Date(l.expected_date).toLocaleDateString("ar-EG",{day:"numeric",month:"long"})}`:""}</b>
     ${d.map(a=>`<span>• ${SRC_L[a.src]||a.src}${a.src==="wo"?` <span class="num">${esc(a.from_wo)}</span> (${esc(a.from_customer||"")} · ${WO_ST[a.stage]||a.stage})`:""}${a.color&&a.src!=="wo"?` · ${esc(a.color)}`:""}: <b class="num">${fmt(a.qty)}</b> كجم${a.reason?` · السبب: ${esc(a.reason)}`:""}${a.delay_days?` · العميل التاني هيتأخر ${a.delay_days} يوم`:""}</span>`).join("")}
     ${l.decision_note?`<span>ملاحظة: ${esc(l.decision_note)}</span>`:""}<span class="sub">${esc(l.decided_by||"")} · ${dt(l.decided_at)}${l.knit_days?` · نسيج ${l.knit_days} يوم`:""}${l.dye_days?` · صباغة ${l.dye_days} يوم`:""}</span></div>`; }
-async function soLineDecider(o,l){
-  const box=document.querySelector(`[data-line="${l.id}"] [data-src]`); if(!box) return;
+async function soLineDecider(o,l,box,mode){
+  if(!box) return; const propose=mode==="propose";
   let src; try{ src=await rpc("fx_so_sources",{p_spec:l.spec,p_color:l.color||""}); }catch(e){ box.innerHTML=`<div class="msg err">${esc(errText(e))}</div>`; return; }
   const need=+l.qty, fin=l.target!=="greige";
   const F=(src.f_stock||[]).filter(x=>x.match), Fo=(src.f_stock||[]).filter(x=>!x.match), G=src.g_stock||[], W=(src.wos||[]).filter(w=>w.match||!l.color), Wo=(src.wos||[]).filter(w=>!(w.match||!l.color));
@@ -1480,21 +1485,22 @@ async function soLineDecider(o,l){
      <div class="sgrp"><div class="sg-h">إنتاج جديد</div><div class="srow"><div class="mid"><div class="t">أمر تشغيل جديد للطلبية</div><div class="m">يروح للتخطيط</div></div><div class="sav"></div>${inp("new",999999,"إنتاج جديد")}</div></div>
     </div>
     <div class="alloc" data-sum></div>
+    ${propose?`<label><span>ملاحظة للمتابعة</span><input type="text" data-pnote placeholder="مثلاً: العميل مستعجل"></label>`:`${(l.proposal||[]).length?`<div class="recbox r-blue"><b>اقتراح البياع</b>${l.proposal.map(a=>`<span>• ${SRC_L[a.src]||a.src}: <b class="num">${fmt(a.qty)}</b> كجم${a.color?` · ${esc(a.color)}`:""}${a.reason?` · ${esc(a.reason)}`:""}</span>`).join("")}${l.proposal_note?`<span>ملاحظته: ${esc(l.proposal_note)}</span>`:""}</div>`:""}
     <div class="row"><label class="grow"><span>مدة النسيج (يوم)</span><input type="number" data-kd min="0" inputmode="numeric" placeholder="مثلاً 10"></label><label class="grow"><span>مدة الصباغة (يوم)</span><input type="number" data-dd min="0" inputmode="numeric" placeholder="مثلاً 7"></label><label class="grow"><span>التسليم المتوقع</span><input type="date" data-exp min="${today}"></label></div>
     <label><span>ملاحظة على القرار</span><input type="text" data-note placeholder="اختياري"></label>
-    <div data-m></div><button class="btn primary" data-go>اعتمد القرار</button>`;
+    <div data-m></div><button class="btn primary" data-go>اعتمد القرار</button>`}`;
   const ins=[...box.querySelectorAll(".ain")];
   const val=k=>{ const e=ins.find(x=>x.dataset.a===k); return e?(parseFloat(e.value)||0):0; };
   let expTouched=false;
   const recalc=()=>{ let tot=0; ins.forEach(e=>tot+=parseFloat(e.value)||0); const left=need-tot;
     box.querySelectorAll(".srow.wo").forEach(r=>{ const id=r.dataset.wo; const x=r.querySelector(".wx"); if(x) x.hidden=!(val("wo:"+id)>0); });
     box.querySelector("[data-sum]").innerHTML=`<span>اتوزّع <b class="num">${fmt(tot)}</b> من <b class="num">${fmt(need)}</b></span>${Math.abs(left)<0.5?`<span class="okc">كده تمام 👍</span>`:left>0?`<span class="badc">باقي <b class="num">${fmt(left)}</b> كجم</span>`:`<span class="badc">زيادة <b class="num">${fmt(-left)}</b> كجم عن المطلوب</span>`}`;
-    if(!expTouched){ const kd=parseInt(box.querySelector("[data-kd]").value)||0, dd=parseInt(box.querySelector("[data-dd]").value)||0;
+    if(!expTouched&&!propose){ const kd=parseInt(box.querySelector("[data-kd]").value)||0, dd=parseInt(box.querySelector("[data-dd]").value)||0;
       const hasNew=val("new")>0, hasG=ins.some(e=>e.dataset.a.startsWith("g:")&&parseFloat(e.value)>0), hasOm=W.concat(Wo).some(w=>val("wo:"+w.id)>0&&["on_machine","requested","partial_return"].includes(w.status));
       const hasDy=W.concat(Wo).some(w=>val("wo:"+w.id)>0&&["at_quality","greige_done","at_dyehouse"].includes(w.status));
       let days=0; if(hasNew||hasOm) days=kd+(fin?dd:0); else if(hasG||hasDy) days=fin?dd:0;
       if(kd||dd){ const d=new Date(); d.setDate(d.getDate()+Math.max(1,days)); box.querySelector("[data-exp]").value=d.toISOString().slice(0,10); } } };
-  ins.forEach(e=>e.oninput=recalc); box.querySelector("[data-kd]").oninput=recalc; box.querySelector("[data-dd]").oninput=recalc; box.querySelector("[data-exp]").oninput=()=>{expTouched=true};
+  ins.forEach(e=>e.oninput=recalc); if(!propose){ box.querySelector("[data-kd]").oninput=recalc; box.querySelector("[data-dd]").oninput=recalc; box.querySelector("[data-exp]").oninput=()=>{expTouched=true}; }
   // suggested solutions
   const fill=(plan)=>{ ins.forEach(e=>e.value=""); Object.entries(plan).forEach(([k,q])=>{ const e=ins.find(x=>x.dataset.a===k); if(e&&q>0) e.value=Math.round(q*100)/100; }); recalc(); };
   const take=(list,keyf,availf,plan,left)=>{ for(const x of list){ if(left<0.5) break; const q=Math.min(left,availf(x)); if(q>=0.5){ plan[keyf(x)]=(plan[keyf(x)]||0)+q; left-=q; } } return left; };
@@ -1509,10 +1515,21 @@ async function soLineDecider(o,l){
     left=take(Wall.filter(w=>w.stock),w=>"wo:"+w.id,w=>w.rem,p,left);
     left=take(Wall.filter(w=>!w.stock).sort((a,b)=>((b.due_date?new Date(b.due_date):8e15)-(a.due_date?new Date(a.due_date):8e15))),w=>"wo:"+w.id,w=>w.rem,p,left); if(left>=0.5) p.new=left;
     if(Object.keys(p).some(k=>k.startsWith("wo:"))) sols.push({k:"C",t:"🅲 أقل إنتاج جديد",p}); }
+  if(!propose&&(l.proposal||[]).length){ const p={}; l.proposal.forEach(a=>{ const k=a.src==="f_stock"?"f:"+a.ckey:a.src==="g_stock"?"g:"+a.ckey:a.src==="wo"?"wo:"+a.wo_id:"new"; p[k]=(p[k]||0)+(+a.qty||0); }); sols.unshift({k:"S",t:"👤 اقتراح البياع",p,prop:true}); }
   const desc=p=>{ const g={f:0,g:0,wo:0,new:0}; Object.entries(p).forEach(([k,q])=>{ const t=k.split(":")[0]; g[t==="f"?"f":t==="g"?"g":t==="wo"?"wo":"new"]+=q; });
     return [g.f?`${fmt(g.f)} مجهز`:"",g.g?`${fmt(g.g)} خام${fin?" يتصبغ":""}`:"",g.wo?`${fmt(g.wo)} تحويل من أوامر`:"",g.new?`${fmt(g.new)} إنتاج جديد`:""].filter(Boolean).join(" + "); };
   box.querySelector("[data-sols]").innerHTML=sols.map((s,i)=>`<button type="button" class="sol" data-sol="${i}"><b>${s.t}</b><span>${desc(s.p)}</span></button>`).join("")+`<button type="button" class="sol ghost" data-sol="x"><b>✍️ هرتّبه بإيدي</b><span>امسح وابدأ من الأول</span></button>`;
   box.querySelector("[data-sols]").onclick=e=>{ const b=e.target.closest("[data-sol]"); if(!b) return; box.querySelectorAll(".sol").forEach(x=>x.classList.toggle("on",x===b)); if(b.dataset.sol==="x") fill({}); else fill(sols[+b.dataset.sol].p); };
+  const collect=(strict)=>{ const alloc=[]; let tot=0;
+    for(const e of ins){ const q=parseFloat(e.value)||0; if(q<=0) continue; tot+=q; const k=e.dataset.a;
+      if(k.startsWith("f:")){ const x=(src.f_stock||[]).find(y=>"f:"+y.ckey===k); alloc.push({src:"f_stock",qty:q,ckey:x.ckey,color:x.color}); }
+      else if(k.startsWith("g:")){ const x=G.find(y=>"g:"+y.ckey===k); alloc.push({src:"g_stock",qty:q,ckey:x.ckey,color:x.color}); }
+      else if(k.startsWith("wo:")){ const id=+k.slice(3); const w=(src.wos||[]).find(y=>y.id===id); const r=box.querySelector(`[data-r="${id}"]`), d=box.querySelector(`[data-d="${id}"]`);
+        alloc.push({src:"wo",qty:q,wo_id:id,wo_no:w.wo_no,customer:w.customer,color:w.color,reason:r?r.value.trim():"",delay_days:d?parseInt(d.value)||0:0}); }
+      else alloc.push({src:"new",qty:q}); }
+    return {alloc,tot}; };
+  if(propose){ l._get=()=>({proposal:collect().alloc, note:(box.querySelector("[data-pnote]")||{}).value||""}); recalc(); return; }
+  { const sp=sols.findIndex(x=>x.prop); if(sp>=0){ box.querySelectorAll(".sol")[sp].classList.add("on"); fill(sols[sp].p); (l.proposal||[]).forEach(a=>{ if(a.src==="wo"){ const r=box.querySelector(`[data-r="${a.wo_id}"]`), d=box.querySelector(`[data-d="${a.wo_id}"]`); if(r&&a.reason) r.value=a.reason; if(d&&a.delay_days) d.value=a.delay_days; } }); } }
   recalc();
   box.querySelector("[data-go]").onclick=async()=>{ const m=box.querySelector("[data-m]"); const alloc=[]; let tot=0;
     for(const e of ins){ const q=parseFloat(e.value)||0; if(q<=0) continue; tot+=q; const k=e.dataset.a;
@@ -1658,10 +1675,18 @@ async function viewNew(){
 async function viewRes(){
   const v=$("#view");
   v.innerHTML=header("الحجوزات",refreshBtn())+`
-  <div class="seg" id="rseg">${[["reserved","مفتوحة"],["sold","اتباعت"],["expired","انتهت"],["cancelled","ملغية"],["all","الكل"]].map(([k,l])=>`<button data-k="${k}" aria-pressed="${S.resFilter===k}">${l}</button>`).join("")}</div>
+  <div class="seg" id="rseg">${[["pending","تحت الاعتماد"],["reserved","مفتوحة"],["sold","اتباعت"],["expired","انتهت"],["cancelled","ملغية"],["all","الكل"]].map(([k,l])=>`<button data-k="${k}" aria-pressed="${S.resFilter===k}">${l}</button>`).join("")}</div>
   <div class="card" id="rlist"><div class="state">بيحمّل…</div></div>`; bindHeader();
   $("#rseg").onclick=e=>{const b=e.target.closest("button");if(!b)return;S.resFilter=b.dataset.k;viewRes()};
   $("#rf").onclick=()=>viewRes();
+  if(S.resFilter==="pending"){ try{ const l=(await rpc("fx_so_list",{p_status:"open"}))||[]; S.soAll=l;
+      const rows=l.flatMap(o=>(o.lines||[]).filter(x=>x.status==="pending").map(x=>({o,x})));
+      $("#rlist").innerHTML=rows.length?rows.map(({o,x})=>`<div class="row-i click" data-so="${o.id}" role="button" tabindex="0"><div class="mid"><div class="t"><span class="num">${esc(o.so_no)}</span> · ${esc(o.customer||"")} ${cd(o.customer_code)}</div>
+        <div class="m">${esc(x.spec_name||"")} ${cd(x.spec)} · ${esc(x.color||"من غير لون")} · ${x.target==="greige"?"خام":"مجهز"}${(x.proposal||[]).length?` · اقتراح البياع: ${x.proposal.map(a=>`${SRC_L[a.src]} ${fmt(a.qty)}`).join(" + ")}`:""}${o.sales_name?` · ${esc(o.sales_name)}`:""}</div></div>
+        <div class="a"><span class="num">${fmt(x.qty)}</span><small><span class="chip so-pending">تحت الاعتماد</span></small></div><span class="chev">‹</span></div>`).join("")
+        :`<div class="state"><strong>مفيش حجوزات تحت الاعتماد</strong>اعمل حجز طلبية من الرئيسية ← حجز طلبية.</div>`;
+      $("#rlist").onclick=e=>{ const r=e.target.closest("[data-so]"); if(r) openSO(+r.dataset.so); };
+    }catch(e){ $("#rlist").innerHTML=`<div class="msg err">${esc(errText(e))}</div>`; } return; }
   let list; try{ try{ await rpc("fx_expire_reservations"); }catch(e){} list=await rpc("fx_reservations",{p_status:S.resFilter}); }catch(e){ $("#rlist").innerHTML=`<div class="msg err">${esc(errText(e))}</div>`; return; }
   if(!list.length){ $("#rlist").outerHTML=`<div class="state"><strong>مفيش حجوزات هنا</strong>${S.resFilter==="reserved"?"احجز من شاشة الرصيد بزرار «احجز» جنب اللون.":""}</div>`; return; }
   const role=S.me.role;
