@@ -390,7 +390,7 @@ const DEV_KEY = "";
 const APP_URL = "https://mohamedsofar77-lgtm.github.io/soffar-sales/";
 // نسخة التدريب: لو حد فتح التطبيق من غير رابط، بيدخل على وضع المراجعة والتدريب (قراءة بس)
 const PREVIEW_KEY = "";
-const APP_VERSION = "20261123004948";
+const APP_VERSION = "20261123005352";
 // رابط الدخول: الموظف بيفتح الرابط اللي فيه #k=... مرة واحدة، والتطبيق بيفتكره على الموبايل
 const KEY = (()=>{ let k=""; const m=(location.hash||"").match(/k=([A-Za-z0-9]+)/);
   if(m){ k=m[1]; try{ localStorage.setItem("soffar_key",k); }catch(e){} try{ history.replaceState(null,"",location.pathname+location.search); }catch(e){} }
@@ -552,8 +552,6 @@ const api={draw,DUR}; if(typeof module!=="undefined") module.exports=api; else r
 /* ============ app intro (Soffar Group) ============ */
 function introSeenToday(){ try{ return localStorage.getItem("soffar_intro")===new Date().toDateString(); }catch(e){ return false; } }
 async function playIntro(force){
-  if(!force && introSeenToday()) return;
-  try{ localStorage.setItem("soffar_intro",new Date().toDateString()); }catch(e){}
   const ov=document.createElement("div"); ov.className="intro"; ov.innerHTML=`<canvas></canvas><button class="intro-skip" type="button">تخطي</button>`;
   document.body.appendChild(ov);
   const cv=ov.querySelector("canvas"), ctx=cv.getContext("2d");
