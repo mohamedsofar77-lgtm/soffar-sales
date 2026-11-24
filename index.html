@@ -294,6 +294,13 @@ tr.warnrow td{background:var(--warn-soft)}
 .gth{width:84px;height:84px;padding:0;border:0;background:none;border-radius:12px;overflow:hidden;box-shadow:var(--shadow)}
 .iadd{flex-direction:column;align-items:center;justify-content:center;gap:4px;width:84px;height:84px;border:1.5px dashed var(--line);border-radius:12px;color:var(--muted);font-size:.72rem;text-align:center;cursor:pointer;padding:4px}
 .iadd:hover{border-color:var(--indigo);color:var(--indigo)}
+.pth{position:relative;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;width:84px;height:84px;border-radius:12px;background:var(--card);box-shadow:var(--shadow);cursor:pointer;padding:4px;text-align:center}
+.pth .pic{font-size:.7rem;font-weight:800;color:#fff;background:#d64545;border-radius:5px;padding:1px 6px}
+.pth .pnm{font-size:.66rem;line-height:1.2;max-width:76px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.pth .psz{font-size:.6rem;color:var(--muted)}
+.pth button{position:absolute;top:-6px;left:-6px;width:22px;height:22px;border-radius:50%;border:0;background:var(--bad);color:#fff;font-size:.7rem;line-height:1}
+.attb b:empty{display:none}.attb.has{color:var(--indigo);font-weight:700}
+.pdfv{width:min(900px,100%);height:76vh;border:0;border-radius:12px;background:#fff}
 .lightbox{position:fixed;inset:0;z-index:30;background:rgba(5,7,14,.92);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;padding:16px}
 .lightbox img,.lightbox video{max-width:100%;max-height:78vh;border-radius:12px}
 .lbbar{display:flex;justify-content:space-between;align-items:center;gap:10px;width:min(560px,100%);color:#fff}
@@ -539,7 +546,7 @@ const DEV_KEY = "";
 const APP_URL = "https://mohamedsofar77-lgtm.github.io/soffar-sales/";
 // نسخة التدريب: لو حد فتح التطبيق من غير رابط، بيدخل على وضع المراجعة والتدريب (قراءة بس)
 const PREVIEW_KEY = "";
-const APP_VERSION = "20261124151806";
+const APP_VERSION = "20261124153730";
 // رابط الدخول: الموظف بيفتح الرابط اللي فيه #k=... مرة واحدة، والتطبيق بيفتكره على الموبايل
 const KEY = (()=>{ let k=""; const m=(location.hash||"").match(/k=([A-Za-z0-9]+)/);
   if(m){ k=m[1]; try{ localStorage.setItem("soffar_key",k); }catch(e){} try{ history.replaceState(null,"",location.pathname+location.search); }catch(e){} }
@@ -560,7 +567,7 @@ const ERR_AR = {
   ar_no_access:"مش مسموحلك تشوف حساب العميل ده. اطلب الاطلاع من قسم الحسابات.", owner_only:"العملية دي محتاجة صلاحية المالك.", cheque_details:"اكتب رقم الشيك وتاريخ الاستحقاق.", bad_method:"اختار طريقة الدفع.", bad_amount:"اكتب المبلغ.", not_draft:"الحركة دي اتعتمدت أو اترفضت قبل كده.", posted_locked:"الحركة المعتمدة مايتعدلش مبلغها. اعمل إلغاء وحركة جديدة.", no_delete:"الحركات مابتتمسحش. استخدم الإلغاء.", bad_kind:"نوع الحركة مش معروف.", not_pending_cheque:"الشيك ده مش تحت التحصيل.", bad_price:"اكتب السعر.", not_pending:"الطلب ده اتاخد عليه قرار.", not_posted:"الحركة دي مش معتمدة.",
   bad_color_name:"اكتب اسم اللون.",   bad_dyehouse:"اختار المصبغة.",  bad_hex:"اختار اللون.", bad_tcx:"كود Pantone مش صحيح، شكله كده 19-4052.",
   reason_required:"اكتب سبب التحويل من أمر العميل التاني.", not_enough_stock:"الرصيد الحر مش مكفّي الكمية دي، حد حجز منه. حدّث الصفحة.", not_enough_on_order:"الأمر ده باقي فيه أقل من الكمية دي.", already_decided:"السطر ده اتاخد عليه قرار قبل كده.", no_allocation:"وزّع الكمية على مصدر واحد على الأقل.", no_lines:"ضيف سطر واحد على الأقل.", bad_customer:"اختار العميل.", bad_qty:"اكتب الكمية.", bad_source:"مصدر مش معروف.",
-  pct_not_100:"مجموع النسب لازم يبقى 100%.", bad_material:"اختار الخامة.", already_coded:"العميل ده متكود خلاص.", too_many_versions:"الخامة دي وصلت لأقصى عدد إصدارات (99).", no_reason:"اختار سبب المرتجع.", image_too_big:"الصورة كبيرة قوي.", bad_image:"الصورة مش سليمة.", no_lines:"ضيف سطر واحد على الأقل.", bad_warehouse:"اختار المخزن.", bad_supplier:"المورد ده مش موجود.", bad_reason:"اختار سبب الصرف.", roll_mismatch:"فيه توب مش من صنف ولون الحجز.", no_rolls_found:"مفيش ولا توب من دول في المخزن.", bad_code:"اكتب الكود.", bad_key:"إعداد مش معروف.", no_dyehouse:"اختار المصبغة اللي رايحلها الأتواب."
+  pct_not_100:"مجموع النسب لازم يبقى 100%.", bad_material:"اختار الخامة.", already_coded:"العميل ده متكود خلاص.", too_many_versions:"الخامة دي وصلت لأقصى عدد إصدارات (99).", no_reason:"اختار سبب المرتجع.", image_too_big:"الصورة كبيرة قوي.",file_too_big:"الملف أكبر من 5 MB.",bad_file_type:"مسموح PDF أو صور بس.",bad_file:"الملف فيه مشكلة، جرّب تاني.",file_done:"الملف اترفع خلاص.", bad_image:"الصورة مش سليمة.", no_lines:"ضيف سطر واحد على الأقل.", bad_warehouse:"اختار المخزن.", bad_supplier:"المورد ده مش موجود.", bad_reason:"اختار سبب الصرف.", roll_mismatch:"فيه توب مش من صنف ولون الحجز.", no_rolls_found:"مفيش ولا توب من دول في المخزن.", bad_code:"اكتب الكود.", bad_key:"إعداد مش معروف.", no_dyehouse:"اختار المصبغة اللي رايحلها الأتواب."
 };
 
 const S = { me:null, tab:"home", stock:null, customers:null, specs:null,
@@ -628,6 +635,7 @@ const ICONS = {
   search:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M20 20l-4-4"/></svg>',
   kg:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M6 8h12l2 12H4L6 8z"/><circle cx="12" cy="5" r="2"/></svg>',
   lock:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V8a4 4 0 018 0v3"/></svg>',
+  clip:'<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M21 11.5l-8.6 8.6a5 5 0 01-7.1-7.1l8.6-8.6a3.3 3.3 0 014.7 4.7l-8.6 8.6a1.7 1.7 0 01-2.4-2.4L15.5 8"/></svg>',
   camera:'<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 8h3l2-3h6l2 3h3v11H4z"/><circle cx="12" cy="13" r="3.5"/></svg>',
   share:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="18" cy="5" r="2.5"/><circle cx="6" cy="12" r="2.5"/><circle cx="18" cy="19" r="2.5"/><path d="M8.2 10.8l7.6-4.4M8.2 13.2l7.6 4.4"/></svg>',
   box:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 7l9-4 9 4v10l-9 4-9-4z"/><path d="M3 7l9 4 9-4M12 11v10"/></svg>',
@@ -1465,7 +1473,9 @@ async function viewOrder(){
    <div class="row"><label class="grow"><span>اسم البياع</span><input type="text" id="osn" value="${esc(lsGet("soffar_sales_name"))}" placeholder="اسمك"></label><label class="grow"><span>العميل عايز يستلم يوم</span><input type="date" id="odue"></label></div>
    <div><div class="flabel">سطور الطلبية</div><div class="stack" id="olines"></div><button class="btn" id="oadd" type="button">+ ضيف سطر</button></div>
    <label><span>ملاحظة</span><input type="text" id="onote" placeholder="اختياري"></label>
+   <div><div class="flabel">📎 أمر شراء العميل / الديزاين (صورة أو PDF)</div><div id="oatt"></div></div>
    <div id="om"></div><button class="btn primary" id="ogo">ابعت الحجز للاعتماد</button>`;
+  const oatt=imgPicker($("#oatt"),"ارفع ملف",{pdf:true});
   picker($("#ocp"), S.customers, x=>`${x.name} · ${x.code}`, "اكتب اسم العميل أو كوده", p=>cust=p, recentCustomers());
   const hint=(ln)=>{ if(!ln.spec) return ""; const cn=cnormJS(ln.color); let f=0,fa=0,g=0;
     S.stock.rows.forEach(r=>{ if(r.spec!==ln.spec.code||!r.free||r.av<0.5) return; if(r.w==="f"){ fa+=r.av; if(cn&&cnormJS(r.cn)===cn) f+=r.av; } else g+=r.av; });
@@ -1502,6 +1512,7 @@ async function viewOrder(){
     $("#ogo").disabled=true; lsSet("soffar_sales_name",$("#osn").value.trim());
     try{ const r=await rpc("fx_so_create",{p_customer:cust.code,p_due:$("#odue").value||null,p_note:$("#onote").value.trim()||null,p_lines:ok.map(l=>{ const g=l.pl&&l.pl._get?l.pl._get():null; return {spec:l.spec.code,color:l.color.trim(),qty:parseFloat(l.qty),target:l.target,proposal:g?g.proposal:[],proposal_note:g?g.note:""}; }),p_sales_name:$("#osn").value.trim()||null});
       rememberCustomer(cust.code);
+      const af=oatt.get(); if(af.length&&r&&r.id){ try{ await uploadImages("so",r.id,af,"أمر شراء"); }catch(er){ toast("الطلبية اتسجلت بس المرفق ما اترفعش: "+errText(er),true); } }
       sheet(`<div class="msg ok">تمام 👍 الحجز <b class="num">${esc(r.so_no)}</b> اتسجل تحت الاعتماد ووصل لإدارة المتابعة والتخطيط. أول ما يتعتمد هيوصلك تنبيه بالقرار.</div><button class="btn primary" id="dok">تمام</button>`);
       $("#dok").onclick=()=>{ closeSheet(); viewOrder(); };
     }catch(e){ m.innerHTML=`<div class="msg err">${esc(errText(e))}</div>`; $("#ogo").disabled=false; } };
@@ -1533,13 +1544,15 @@ async function viewSO(){
   $("#sobody").innerHTML=`<section class="card pad stack"><div class="row"><div class="grow"><div class="t"><b class="num">${esc(o.so_no)}</b> · ${esc(o.customer||"")} ${cd(o.customer_code)}</div>
       <div class="sub">${esc([o.sales_name,o.sales_dept].filter(Boolean).join(" · "))} · ${dt(o.created_at)}${o.due_date?` · العميل عايز يستلم ${new Date(o.due_date).toLocaleDateString("ar-EG",{day:"numeric",month:"long"})}`:""}</div>
       ${o.note?`<div class="kv">${esc(o.note)}</div>`:""}</div><div class="a"><span class="chip so-${o.status}">${SO_ST[o.status]}</span><div class="num" style="font-weight:700;margin-top:4px">${fmt(kg)} كجم</div></div></div>
-      ${canAct&&["pending","partial"].includes(o.status)?`<div class="row"><button class="btn sm danger" id="socancel">إلغاء الطلبية</button><button class="btn sm" data-cust="${esc(o.customer_code)}">صفحة العميل</button></div>`:""}</section>
+      ${canAct&&["pending","partial"].includes(o.status)?`<div class="row"><button class="btn sm danger" id="socancel">إلغاء الطلبية</button><button class="btn sm" data-cust="${esc(o.customer_code)}">صفحة العميل</button></div>`:""}
+      <div class="flabel">📎 أمر شراء العميل / الديزاين</div><div id="soatt"></div></section>
    ${(o.lines||[]).map((l,i)=>`<section class="card pad stack soline" data-line="${l.id}"><div class="row"><b class="num">${i+1}</b><div class="grow"><div class="t">${esc(l.spec_name||"")} ${cd(l.spec)} · ${esc(l.color||"من غير لون")}</div>
       <div class="sub">${l.target==="greige"?"عايزه خام":"عايزه مجهز"}</div></div><div class="a"><span class="num" style="font-weight:800;font-size:1.2rem">${fmt(l.qty)}</span><small> كجم</small></div></div>
       ${l.status==="decided"?soDecisionView(l):l.status==="cancelled"?`<div class="msg">السطر ده اتلغى</div>`:canAct?`<div data-src><div class="state">بيجيب المصادر…</div></div>`:`<div class="sub">مستني قرار إدارة المتابعة.</div>`}</section>`).join("")}`;
   if($("#socancel")) $("#socancel").onclick=()=>{ sheet(`<div class="sheet-h"><h3>إلغاء ${esc(o.so_no)}</h3></div><label><span>السبب</span><input type="text" id="cxr" placeholder="مثلاً: العميل لغى"></label><div id="cxm"></div><div class="row"><button class="btn danger grow" id="cxgo">إلغاء الطلبية</button><button class="btn" id="cxx">رجوع</button></div>`);
     $("#cxx").onclick=closeSheet; $("#cxgo").onclick=async()=>{ try{ await rpc("fx_so_cancel",{p_id:o.id,p_reason:$("#cxr").value}); closeSheet(); toast("الطلبية اتلغت"); viewSO(); }catch(e){ $("#cxm").innerHTML=`<div class="msg err">${esc(errText(e))}</div>`; } }; };
   $("#sobody").querySelectorAll("[data-cust]").forEach(b=>b.onclick=()=>openCustomerDetail(b.dataset.cust));
+  gallery($("#soatt"),"so",o.id,{caption:"أمر شراء",canAdd:canAct,addLabel:"ارفع أمر الشراء"});
   for(const l of (o.lines||[])) if(l.status==="pending"&&canAct) soLineDecider(o,l,document.querySelector(`[data-line="${l.id}"] [data-src]`),"decide");
 }
 function soDecisionView(l){ const d=l.decision||[];
@@ -1689,10 +1702,11 @@ function drawAR(){
     $("#arall").onclick=async()=>{ await ensureCustomers(); sheet(`<div class="sheet-h"><h3>كشف حساب عميل</h3></div><div id="arcp"></div>`); picker($("#arcp"),S.customers,x=>`${x.name} · ${x.code}`,"اكتب اسم العميل أو كوده",p=>{ if(p){ closeSheet(); openARCustomer(p.code); } }); };
     draw(); return; }
   if(S.arTab==="drafts"){
-    el.innerHTML=Q.drafts.length?Q.drafts.map(d=>arDraftCard(d)).join(""):`<div class="state"><strong>مفيش حاجة تحت المراجعة 👌</strong></div>`;
+    el.innerHTML=Q.drafts.length?Q.drafts.map(d=>arDraftCard(d)).join(""):`<div class="state"><strong>مفيش حاجة تحت المراجعة 👌</strong></div>`; attBadges(el,"ar");
     el.onclick=async e=>{ const b=e.target.closest("[data-act]"); if(!b) return; const id=+b.closest("[data-id]").dataset.id; const d=Q.drafts.find(x=>x.id===id); const m=b.closest("[data-id]").querySelector("[data-m]");
       if(b.dataset.act==="edit") return openAREntry({edit:d});
       if(b.dataset.act==="open") return openARCustomer(d.customer_code);
+      if(b.dataset.act==="att") return openAttSheet("ar",d.id,`مرفقات ${AR_K[d.kind]||""} · ${d.customer}`,{hint:"صورة الشيك أو إيصال التحويل أو الفاتورة",onChange:()=>attBadges(el,"ar")});
       b.disabled=true; try{ await rpc("fx_ar_post",{p_id:id,p_approve:b.dataset.act==="ok",p_note:null}); toast(b.dataset.act==="ok"?"اتعتمدت 👍":"اترفضت"); S.arSum=null; viewAR(); }
       catch(err){ m.innerHTML=`<div class="msg err">${esc(errText(err))}</div>`; b.disabled=false; } };
     return; }
@@ -1723,7 +1737,7 @@ function arDraftCard(d){ const amt=d.debit||d.credit; const noPrice=(d.lines||[]
     ${(d.lines||[]).length?`<div class="tbl"><table><thead><tr><th>الصنف</th><th>اللون</th><th>كجم</th><th>السعر</th><th>القيمة</th></tr></thead><tbody>${d.lines.map(l=>`<tr><td class="num">${esc(l.spec)}</td><td>${esc(l.color||"")}</td><td class="num">${fmt2(l.qty)}</td><td class="num ${l.price==null?"badc":""}">${l.price==null?"مش متحدد":fmt2(l.price)}</td><td class="num">${fmtM(l.amount)}</td></tr>`).join("")}</tbody></table></div>
       <div class="sub">قبل الضريبة ${fmtM(d.subtotal)}${+d.vat_amount?` · ضريبة 14% ${fmtM(d.vat_amount)}`:" · من غير ضريبة"}</div>`:""}
     ${d.note?`<div class="kv">${esc(d.note)}</div>`:""}${noPrice?`<div class="msg">الفاتورة دي من تسليم ومفيش سعر متسجل للصنف. دوس "عدّل" وحط السعر.</div>`:""}
-    <div class="row wrapbtns">${["invoice","return"].includes(d.kind)?`<button class="btn sm" data-act="edit">عدّل</button>`:""}<button class="btn sm primary" data-act="ok" ${noPrice?"disabled":""}>اعتمد</button><button class="btn sm" data-act="no">ارفض</button><button class="btn sm" data-act="open">كشف الحساب</button></div><div data-m></div></div>`; }
+    <div class="row wrapbtns">${["invoice","return"].includes(d.kind)?`<button class="btn sm" data-act="edit">عدّل</button>`:""}<button class="btn sm primary" data-act="ok" ${noPrice?"disabled":""}>اعتمد</button><button class="btn sm" data-act="no">ارفض</button><button class="btn sm" data-act="open">كشف الحساب</button><button class="btn sm attb" data-act="att" data-att="${d.id}">📎 <b></b> مرفقات</button></div><div data-m></div></div>`; }
 async function viewARStatement(){
   navRecord(); const v=$("#view"), code=S.arCust;
   v.innerHTML=header("كشف حساب",refreshBtn())+`<nav class="crumbs"><button data-cr="ar">حسابات العملاء</button><span>‹</span><span aria-current="page" id="arcr">…</span></nav><div id="stb" class="stack"><div class="state">بيحمّل…</div></div>`;
@@ -1745,7 +1759,7 @@ async function viewARStatement(){
     <div class="tbl"><table class="stmt"><thead><tr><th>التاريخ</th><th>البيان</th><th>عليه</th><th>له</th><th>الرصيد</th>${ownr?`<th class="noprint"></th>`:""}</tr></thead><tbody>
       ${from?`<tr class="op"><td>${esc(from)}</td><td>رصيد أول المدة</td><td></td><td></td><td class="num">${fmtM(st.opening)}</td>${ownr?"<td class='noprint'></td>":""}</tr>`:""}
       ${rows.map(e=>`<tr class="${e.status==="draft"?"dr":e.status==="rejected"?"rj":e.status==="reversed"?"rv":""}"><td class="num">${esc(e.date)}</td><td><b>${AR_K[e.kind]||e.kind}</b>${e.status!=="posted"?` <span class="chip s">${AR_ST[e.status]}</span>`:""}
-        <div class="sub">${(e.lines||[]).map(l=>`${esc(l.spec)} ${esc(l.color||"")} ${fmt2(l.qty)} كجم × ${l.price==null?"؟":fmt2(l.price)}`).join("، ")}${+e.vat_amount?` + ضريبة ${fmtM(e.vat_amount)}`:""}${e.method?`${AR_M[e.method]}`:""}${e.cheque_no?` رقم ${esc(e.cheque_no)}${e.due_date?` استحقاق ${esc(e.due_date)}`:""}${e.cheque_status==="bounced"?" · ارتد":e.cheque_status==="collected"?" · اتصرف":""}`:""}${e.note?` · ${esc(e.note)}`:""}</div></td>
+        <div class="sub">${(e.lines||[]).map(l=>`${esc(l.spec)} ${esc(l.color||"")} ${fmt2(l.qty)} كجم × ${l.price==null?"؟":fmt2(l.price)}`).join("، ")}${+e.vat_amount?` + ضريبة ${fmtM(e.vat_amount)}`:""}${e.method?`${AR_M[e.method]}`:""}${e.cheque_no?` رقم ${esc(e.cheque_no)}${e.due_date?` استحقاق ${esc(e.due_date)}`:""}${e.cheque_status==="bounced"?" · ارتد":e.cheque_status==="collected"?" · اتصرف":""}`:""}${e.note?` · ${esc(e.note)}`:""}</div><button class="linkbtn attb noprint" data-att="${e.id}">📎 <b></b></button></td>
         <td class="num">${+e.debit?fmtM(e.debit):""}</td><td class="num">${+e.credit?fmtM(e.credit):""}</td><td class="num">${e.bal!=null?fmtM(e.bal):""}</td>${ownr?`<td class="noprint">${e.status==="posted"&&e.kind!=="reversal"?`<button class="linkbtn" data-rev="${e.id}">إلغاء</button>`:""}</td>`:""}</tr>`).join("")||`<tr><td colspan="6"><div class="state">مفيش حركة في الفترة دي</div></td></tr>`}
     </tbody></table></div></section>
     <div class="row wrapbtns noprint">${acc?`<button class="btn" data-new="invoice">+ فاتورة</button><button class="btn" data-new="return">+ مرتجع</button><button class="btn primary" data-new="payment">+ تحصيل</button><button class="btn" data-new="discount">+ خصم</button><button class="btn" data-new="adjust">+ تسوية</button><button class="btn" data-new="opening">+ رصيد افتتاحي</button><button class="btn" id="stset">بيانات الحساب</button>`:`<button class="btn primary" data-new="payment">+ سجّل تحصيل</button>`}
@@ -1755,6 +1769,8 @@ async function viewARStatement(){
   if($("#stset")) $("#stset").onclick=()=>arCustomerSettings(c);
   $("#stshr").onclick=()=>shareSheet("كشف حساب",`*كشف حساب · ${c.name}*\n${from||"من البداية"} → ${to||"النهارده"}\n\n`+rows.filter(e=>e.bal!=null).map(e=>`${e.date} · ${AR_K[e.kind]} · ${+e.debit?"عليه "+fmtM(e.debit):"له "+fmtM(e.credit)} · الرصيد ${fmtM(e.bal)}`).join("\n")+`\n\n*الرصيد: ${fmtM(bal)} ج ${bal<0?"له":"عليه"}*\nصفار جروب`);
   if($("#stprt")) $("#stprt").onclick=()=>window.print();
+  attBadges($("#stb"),"ar");
+  $("#stb").querySelectorAll("button[data-att]").forEach(b=>b.onclick=()=>{ const e=rows.find(x=>String(x.id)===b.dataset.att)||{}; openAttSheet("ar",b.dataset.att,`مرفقات ${AR_K[e.kind]||""} ${e.date||""}`,{hint:"صورة الشيك أو إيصال التحويل أو الفاتورة",onChange:()=>attBadges($("#stb"),"ar")}); });
   $("#stb").querySelectorAll("[data-rev]").forEach(b=>b.onclick=()=>{ sheet(`<div class="sheet-h"><h3>إلغاء حركة</h3></div><div class="sub">الحركة مش هتتمسح، هيتعمل قيد عكسي ليها ويفضل الاتنين في الكشف.</div><label><span>السبب (إجباري)</span><input type="text" id="rvr"></label><div id="rvm"></div><div class="row"><button class="btn danger grow" id="rvgo">إلغاء الحركة</button><button class="btn" id="rvx">رجوع</button></div>`);
     $("#rvx").onclick=closeSheet; $("#rvgo").onclick=async()=>{ try{ await rpc("fx_ar_reverse",{p_id:+b.dataset.rev,p_reason:$("#rvr").value}); closeSheet(); toast("اتعمل قيد عكسي"); S.arSum=null; viewARStatement(); }catch(e){ $("#rvm").innerHTML=`<div class="msg err">${esc(errText(e))}</div>`; } }; });
 }
@@ -1772,6 +1788,7 @@ async function openAREntry(o){ // o: {kind, customer:{code,name}, vat, edit:draf
   await Promise.all([ensureCustomers(),ensureSpecs()]);
   const acc=isAcc(); const ed=o.edit; let kind=ed?ed.kind:(o.kind||(acc?"invoice":"payment")); let cust=ed?{code:ed.customer_code,name:ed.customer}:o.customer||null;
   const kinds=acc?["invoice","return","payment","discount","adjust","opening"]:["payment"];
+  const attStore=[];
   const lines=ed&&ed.lines?ed.lines.map(l=>({...l})):[]; let vat=ed?(+ed.vat_amount>0):!!o.vat; let method="cash";
   const render=()=>{
     const isInv=["invoice","return"].includes(kind);
@@ -1784,9 +1801,11 @@ async function openAREntry(o){ // o: {kind, customer:{code,name}, vat, edit:draf
      ${kind==="payment"?`<div class="seg sm" id="emeth">${Object.entries(AR_M).map(([k,l])=>`<button type="button" data-k="${k}" aria-pressed="${k===method}">${l}</button>`).join("")}</div>
        <div class="row" id="echq" ${method==="cheque"?"":"hidden"}><label class="grow"><span>رقم الشيك</span><input type="text" id="eno"></label><label class="grow"><span>البنك</span><input type="text" id="ebank"></label><label class="grow"><span>تاريخ الاستحقاق</span><input type="date" id="edue"></label></div>`:""}
      <label><span>ملاحظة</span><input type="text" id="enote" value="${esc(ed&&ed.note||"")}"></label>
+     ${!ed?`<div class="flabel">📎 ${kind==="payment"?"صورة الشيك أو إيصال التحويل":"المستند (صورة أو PDF)"}</div><div id="eatt"></div>`:""}
      ${!acc?`<div class="sub">التحصيل هيتسجل تحت المراجعة لحد ما الحسابات تأكده.</div>`:`<div class="sub">${["discount","adjust"].includes(kind)?"الخصم والتسوية محتاجين اعتماد المالك.":"الحركة هتتسجل تحت المراجعة لحد ما تتعتمد."}</div>`}
      <div id="em2"></div><div class="row"><button class="btn primary grow" id="ego">احفظ</button><button class="btn" id="ex2">إلغاء</button></div>`);
     $("#ex2").onclick=closeSheet;
+    const att=$("#eatt")?imgPicker($("#eatt"),"ارفع ملف",{pdf:true,store:attStore}):null;
     if($("#ek")) $("#ek").onclick=e=>{const b=e.target.closest("button");if(!b)return;kind=b.dataset.k;render()};
     if(ed) $("#ecp").innerHTML=`<div class="picked"><span>${esc(cust.name)} · ${esc(cust.code)}</span></div>`;
     else picker($("#ecp"),S.customers,x=>`${x.name} · ${x.code}`,"اكتب اسم العميل أو كوده",p=>{ cust=p; },recentCustomers(),cust?S.customers.find(x=>x.code===cust.code):null);
@@ -1814,7 +1833,8 @@ async function openAREntry(o){ // o: {kind, customer:{code,name}, vat, edit:draf
       else { const a=parseFloat($("#eamt").value); if(!a) return m.innerHTML=`<div class="msg err">اكتب المبلغ.</div>`; if(a<0&&!["adjust","opening"].includes(kind)) return m.innerHTML=`<div class="msg err">المبلغ لازم يبقى موجب.</div>`; p.amount=a; }
       if(kind==="payment"){ p.method=method; if(method==="cheque"){ p.cheque_no=$("#eno").value; p.bank=$("#ebank").value; p.due_date=$("#edue").value; if(!p.cheque_no||!p.due_date) return m.innerHTML=`<div class="msg err">اكتب رقم الشيك وتاريخ الاستحقاق.</div>`; } }
       $("#ego").disabled=true;
-      try{ if(ed) await rpc("fx_ar_invoice_update",{p_id:ed.id,p_lines:p.lines,p_vat:p.vat,p_note:p.note}); else await rpc("fx_ar_entry_add",{p_data:p});
+      try{ if(ed) await rpc("fx_ar_invoice_update",{p_id:ed.id,p_lines:p.lines,p_vat:p.vat,p_note:p.note}); else { const r=await rpc("fx_ar_entry_add",{p_data:p});
+          if(attStore.length&&r&&r.id){ try{ await uploadImages("ar",r.id,attStore,AR_K[kind]); }catch(er){ toast("الحركة اتسجلت بس المرفق ما اترفعش: "+errText(er),true); } } }
         closeSheet(); toast(ed?"اتعدّلت":"اتسجلت تحت المراجعة"); S.arSum=null; if(S.arCust) viewARStatement(); else if(S.tab==="ar") viewAR(); }
       catch(e){ m.innerHTML=`<div class="msg err">${esc(errText(e))}</div>`; $("#ego").disabled=false; } };
   };
@@ -2019,7 +2039,8 @@ async function viewRes(){
       const q=parseFloat(it.querySelector("[data-q]").value); if(!(q>0)){ m.innerHTML=`<div class="msg err">اكتب الكمية اللي اتسلمت.</div>`; return; }
       e.target.disabled=true;
       try{ const x=await rpc("fx_deliver_reservation",{p_id:id,p_qty:q}); if(!x.ok){ m.innerHTML=`<div class="msg err">أقصى كمية مسموح بيها <span class="num">${fmt2(x.max)}</span> كجم.</div>`; e.target.disabled=false; return; }
-        S.stock=null; viewRes(); }catch(err){ m.innerHTML=`<div class="msg err">${esc(errText(err))}</div>`; e.target.disabled=false; }
+        S.stock=null; const rr=list.find(x=>x.id===id); await viewRes(); toast("اتسلّم — صوّر إذن الاستلام الموقّع");
+        if(rr) openResDetail({...rr,status:"sold",delivered_qty:q}); }catch(err){ m.innerHTML=`<div class="msg err">${esc(errText(err))}</div>`; e.target.disabled=false; }
     }
     if(e.target.closest("[data-extend]")){ try{ await rpc("fx_extend_reservation",{p_id:id,p_days:7}); toast("الحجز اتمد 7 أيام"); viewRes(); }catch(err){ m.innerHTML=`<div class="msg err">${esc(errText(err))}</div>`; } return; }
     if(e.target.closest("[data-cancel]")){
@@ -2145,11 +2166,13 @@ function openResDetail(r){
    ${dl([["رقم الحجز",`<span class="num">${r.id}</span>`],["المخزن",WH_AR(r.warehouse)],["الصنف",`${esc(r.spec_name||"")} ${cd(r.spec_code)}`],["اللون",`${esc(r.color_name||"")}${r.ckey&&!String(r.ckey).startsWith("N:")?" "+cd(r.ckey):""}`],
      ["الكمية المحجوزة",`<b class="num">${fmt2(r.qty)}</b> كجم`],["نسبة السماح",`±<span class="num">${fmt2(r.tolerance_pct)}</span>% (من <span class="num">${fmt2(r.qty*(1-r.tolerance_pct/100))}</span> لـ <span class="num">${fmt2(r.qty*(1+r.tolerance_pct/100))}</span>)`],
      ["اتسلّم",r.status==="sold"?`<b class="num">${fmt2(r.delivered_qty)}</b> كجم`:""],["المندوب",esc(r.sales_name||"")],["تاريخ الحجز",dt(r.created_at)],["بينتهي",r.status==="reserved"&&r.expires_at?dt(r.expires_at)+" "+expChip(r):""],["تاريخ القفل",dt(r.closed_at)],["ملاحظة",esc(r.note||"")]])}
-   <div class="dsec">صور الديزاين</div><div id="rgal"></div>
+   ${(r.status==="sold"||+r.delivered_qty>0)?`<div class="dsec">📎 إذن الاستلام الموقّع من العميل</div><div id="rdel"></div>`:""}
+   <div class="dsec">الديزاين / أمر الشراء</div><div id="rgal"></div>
    ${sheetClose}`);
   $("#sheet .sheet").insertAdjacentHTML("beforeend",`<button class="btn primary" id="rsend">${ICONS.send} ابعت الحجز لقسم</button>`);
   $("#rsend").onclick=()=>openSend("reservation",String(r.id),`حجز ${r.id} · ${r.customer_name||""} · ${r.spec_name||""} ${r.color_name||""} · ${fmt2(r.qty)} كجم`);
   gallery($("#rgal"),"reservation",r.id,{caption:"ديزاين"});
+  if($("#rdel")) gallery($("#rdel"),"delivery",r.id,{caption:"إذن استلام",addLabel:"ارفع الإذن (صورة/PDF)"});
 }
 function openWODetail(w){
   if(!w) return;
@@ -2161,7 +2184,7 @@ function openWODetail(w){
      ["المرتجع",+w.qty_returned?`<b class="num badc">${fmt2(w.qty_returned)}</b> كجم`:""],["طلبه",w.requested_by_name?`${esc(w.requested_by_name)} · ${dt(w.created_at)}`:""],["ملاحظة",esc(w.note||"")]])}
    <div class="row"><label class="grow"><span>مطلوب يتسلّم يوم ${w.overdue?`<span class="chip st-returned">متأخر</span>`:""}</span><input type="date" id="wdue" value="${esc(w.due_date||"")}"></label><button class="btn" id="wdues" style="align-self:flex-end">حفظ التاريخ</button></div>
    ${(w.events||[]).length?`<div class="dsec">المراحل</div><div class="tl">${w.events.map(e=>`<div class="tli"><span class="chip st-${e.status}">${WO_ST[e.status]||e.status}</span><span class="sub">${dt(e.at)}</span>${e.note?`<span class="sub">${esc(e.note)}</span>`:""}</div>`).join("")}</div>`:""}
-   <div class="dsec">صور الديزاين والعينة</div><div id="wgal"></div>
+   <div class="dsec">الديزاين والعينة والمستندات</div><div id="wgal"></div>
    ${(w.returns||[]).length?`<div class="dsec">سجل المرتجعات</div><div class="ret">${w.returns.map(r=>`<div><b class="num">${fmt2(r.qty)}</b> كجم · ${esc(r.reason)}${r.supplier?` · ${esc(r.supplier)}`:""}${r.note?` · ${esc(r.note)}`:""} <span class="sub">${dt(r.at)}</span>${r.images?` <button class="linkbtn" data-rimg="${r.id}">${ICONS.camera} ${r.images} صورة</button>`:""}</div>`).join("")}</div><div id="rgal2"></div>`:""}
    <div class="row">${["admin","warehouse","planning"].includes(S.me.role)&&(+w.qty_returned)<(+w.qty_required)-0.001?`<button class="btn danger" id="dret">تسجيل مرتجع</button>`:""}<button class="btn grow" onclick="closeSheet()">قفل</button></div>`);
   if($("#dret")) $("#dret").onclick=()=>openReturn(w);
@@ -2181,8 +2204,10 @@ async function openCustomerDetail(code){
    ${wos.length?`<div class="dsec">أوامر الشغل</div><div class="card">${wos.slice(0,30).map(w=>`<div class="item"><div class="item-top"><div class="item-title"><span class="num">${esc(w.wo_no)}</span> · ${esc(w.spec||"")} ${cd(w.spec_code)}</div><span class="chip st-${w.status}">${WO_ST[w.status]||w.status}</span></div><div class="kv"><span>${esc(w.color||"")}</span><span>المطلوب <b class="num">${fmt(w.qty)}</b></span><span>اتسلّم <b class="num">${fmt(w.delivered)}</b></span></div></div>`).join("")}</div>`:""}
    ${res.length?`<div class="dsec">الحجوزات</div><div class="card">${res.slice(0,30).map(x=>`<div class="item"><div class="item-top"><div class="item-title">${esc(x.spec||"")} ${cd(x.spec_code)} · ${esc(x.color||"")}</div><span class="chip st-${x.status}">${RES_ST[x.status]||x.status}</span></div><div class="kv"><span>الكمية <b class="num">${fmt2(x.qty)}</b></span>${x.status==="sold"?`<span>اتسلّم <b class="num">${fmt2(x.delivered)}</b></span>`:""}<span>${dt(x.at)}</span></div></div>`).join("")}</div>`:""}
    ${!wos.length&&!res.length&&!st.length?`<div class="state">مفيش حركة على العميل ده لسه.</div>`:""}
+   <div class="dsec">📎 مستندات العميل (عقود، سجل تجاري، بطاقة ضريبية)</div><div id="cdatt"></div>
    <button class="btn" id="cdar">${isAcc()?"كشف حساب العميل":"اطلب كشف حساب من الحسابات"}</button>
    ${sheetClose}`);
+  gallery($("#cdatt"),"customer",d.code,{caption:d.name,addLabel:"ارفع مستند"});
   $("#cdar").onclick=()=>{ if(isAcc()){ closeSheet(); openARCustomer(d.code); } else arRequest(d.code); };
 }
 async function openSupplierDetail(code){
@@ -2192,7 +2217,9 @@ async function openSupplierDetail(code){
    ${dl([["النوع",esc(d.type||"")],["ملاحظة",esc(d.note||"")]])}
    <div class="dstats"><div><span>سطور في المخزن</span><b class="num">${(+d.rolls).toLocaleString("en-US")}</b></div><div><span>الوزن</span><b class="num">${fmt(d.kg)}</b></div></div>
    ${(d.top||[]).length?`<div class="dsec">أكتر أصناف جت منه وموجودة في المخزن</div><div class="card">${d.top.map(t=>`<div class="item"><div class="item-top"><div class="item-title">${esc(t.spec||"")} ${cd(t.spec_code)}</div><b class="num">${fmt(t.kg)} كجم</b></div></div>`).join("")}</div>`:`<div class="sub">مفيش بضاعة في المخزن مربوطة بالمورد ده.</div>`}
+   <div class="dsec">📎 مستندات المورد (عقود، قوايم أسعار)</div><div id="sdatt"></div>
    ${sheetClose}`);
+  gallery($("#sdatt"),"supplier",d.code,{caption:d.name,addLabel:"ارفع مستند"});
 }
 
 /* ============ basics (master data & coding) ============ */
@@ -2488,30 +2515,62 @@ function shrink(im, max, q){ const sc=Math.min(1, max/Math.max(im.width,im.heigh
   const x=c.getContext("2d"); x.fillStyle="#fff"; x.fillRect(0,0,c.width,c.height); x.drawImage(im,0,0,c.width,c.height); return c.toDataURL("image/jpeg",q); }
 async function prepImage(file){ const im=await loadImg(file); let data=shrink(im,1100,.78); if(data.length>650000) data=shrink(im,900,.66); if(data.length>650000) data=shrink(im,700,.6);
   return { thumb:shrink(im,180,.7), data }; }
-/* a small control to pick one or more photos (camera on phones) */
-function imgPicker(box, label="ضيف صور"){
-  const files=[];
-  const draw=()=>{ box.innerHTML=`<div class="ipick">${files.map((f,i)=>`<div class="ith"><img src="${f.thumb}" alt=""><button type="button" data-x="${i}" aria-label="شيل الصورة">✕</button></div>`).join("")}
-     <label class="iadd">${ICONS.camera}<span>${esc(label)}</span><input type="file" accept="image/*" multiple hidden></label></div>`;
-    box.querySelector("input").onchange=async e=>{ for(const f of e.target.files){ try{ files.push(await prepImage(f)); }catch(err){ toast(err.message,true); } } draw(); };
+/* ===== attachments: photos (camera) + PDF files ===== */
+const PDF_MAX=5*1024*1024, PDF_CHUNK=500000;
+const fmtSize=n=>n>=1048576?(n/1048576).toFixed(1)+" MB":Math.max(1,Math.round(n/1024))+" KB";
+function readB64(file){ return new Promise((ok,bad)=>{ const fr=new FileReader(); fr.onerror=()=>bad(new Error("الملف مش بيتقري")); fr.onload=()=>ok(String(fr.result).split(",")[1]||""); fr.readAsDataURL(file); }); }
+async function prepAny(file, allowPdf){
+  const isPdf=file.type==="application/pdf"||/\.pdf$/i.test(file.name||"");
+  if(isPdf){ if(!allowPdf) throw new Error("هنا صور بس");
+    if(file.size>PDF_MAX) throw new Error(`الملف ${fmtSize(file.size)} — الحد 5 MB`);
+    return { pdf:true, name:file.name||"ملف.pdf", size:file.size, b64:await readB64(file) }; }
+  return prepImage(file);
+}
+/* camera + file buttons (camera hidden inside Claude, where it can't open) */
+function attAdd(label, allowPdf, multiple=true){
+  const cam=IN_CLAUDE()?"":`<label class="iadd" data-cam>${ICONS.camera}<span>صوّر</span><input type="file" accept="image/*" capture="environment" hidden></label>`;
+  return `${cam}<label class="iadd">${ICONS.clip||"📎"}<span>${esc(label)}</span><input type="file" accept="${allowPdf?"image/*,application/pdf,.pdf":"image/*"}" ${multiple?"multiple":""} hidden></label>`;
+}
+function pdfTile(x, del){ return `<div class="pth" ${x.id?`data-fid="${x.id}"`:""}><span class="pic">PDF</span><span class="pnm">${esc(x.name)}</span><span class="psz">${fmtSize(x.size)}</span>${del!=null?`<button type="button" data-x="${del}" aria-label="شيل الملف">✕</button>`:""}</div>`; }
+/* a picker that holds photos/PDFs until the record exists */
+function imgPicker(box, label="ضيف صور", opts={}){
+  const files=opts.store||[]; const allowPdf=!!opts.pdf;
+  const draw=()=>{ box.innerHTML=`<div class="ipick">${files.map((f,i)=>f.pdf?pdfTile(f,i):`<div class="ith"><img src="${f.thumb}" alt=""><button type="button" data-x="${i}" aria-label="شيل الصورة">✕</button></div>`).join("")}
+     ${attAdd(label,allowPdf)}</div>`;
+    box.querySelectorAll("input[type=file]").forEach(inp=>inp.onchange=async e=>{ for(const f of e.target.files){ try{ files.push(await prepAny(f,allowPdf)); }catch(err){ toast(err.message,true); } } draw(); });
     box.querySelectorAll("[data-x]").forEach(b=>b.onclick=()=>{ files.splice(+b.dataset.x,1); draw(); }); };
   draw();
   return { get:()=>files.slice(), clear:()=>{ files.length=0; draw(); } };
 }
-async function uploadImages(kind, ref, files, caption){ let n=0; for(const f of files){ await rpc("fx_image_add",{p_kind:kind,p_ref:String(ref),p_thumb:f.thumb,p_data:f.data,p_caption:caption||null}); n++; } return n; }
-/* gallery of saved images for one record, with "add" */
+async function uploadPdf(kind, ref, f, caption){
+  const n=Math.max(1,Math.ceil(f.b64.length/PDF_CHUNK));
+  const r=await rpc("fx_file_begin",{p_kind:kind,p_ref:String(ref),p_name:f.name,p_mime:"application/pdf",p_size:f.size,p_chunks:n,p_caption:caption||null});
+  for(let i=0;i<n;i++) await rpc("fx_file_chunk",{p_id:r.id,p_n:i,p_data:f.b64.slice(i*PDF_CHUNK,(i+1)*PDF_CHUNK)});
+  return r.id;
+}
+async function uploadImages(kind, ref, files, caption){ let n=0; for(const f of files){
+  if(f.pdf) await uploadPdf(kind,ref,f,caption);
+  else await rpc("fx_image_add",{p_kind:kind,p_ref:String(ref),p_thumb:f.thumb,p_data:f.data,p_caption:caption||null});
+  n++; } return n; }
+/* saved photos + PDFs for one record, with camera/file add */
 async function gallery(box, kind, ref, opts={}){
-  box.innerHTML=`<div class="sub">بيحمّل الصور…</div>`;
-  let list=[]; try{ list=await rpc("fx_images",{p_kind:kind,p_ref:String(ref)})||[]; }catch(e){ box.innerHTML=`<div class="msg err">${esc(errText(e))}</div>`; return; }
+  const allowPdf=opts.pdf!==false && kind!=="color";
+  box.innerHTML=`<div class="sub">بيحمّل المرفقات…</div>`;
+  let list=[], docs=[]; try{ [list,docs]=await Promise.all([rpc("fx_images",{p_kind:kind,p_ref:String(ref)}), allowPdf?rpc("fx_files",{p_kind:kind,p_ref:String(ref)}):[]]); list=list||[]; docs=docs||[]; }
+  catch(e){ box.innerHTML=`<div class="msg err">${esc(errText(e))}</div>`; return; }
+  const none=!list.length&&!docs.length;
   box.innerHTML=`<div class="gal">${list.map(x=>`<button type="button" class="gth" data-id="${x.id}" title="${esc(x.caption||"")}"><img src="${x.thumb}" alt="${esc(x.caption||"صورة")}"></button>`).join("")}
-    ${opts.canAdd===false?"":`<label class="iadd">${ICONS.camera}<span>${list.length?"ضيف صورة":"ضيف أول صورة"}</span><input type="file" accept="image/*" multiple hidden></label>`}</div>
-    ${!list.length&&opts.canAdd===false?`<div class="sub">مفيش صور.</div>`:""}`;
-  box.querySelectorAll(".gth").forEach(b=>b.onclick=()=>viewImage(+b.dataset.id, ()=>gallery(box,kind,ref,opts)));
-  const inp=box.querySelector("input[type=file]"); if(inp) inp.onchange=async e=>{
-    const fs=[]; for(const f of e.target.files){ try{ fs.push(await prepImage(f)); }catch(err){ toast(err.message,true); } }
+    ${docs.map(x=>pdfTile(x)).join("")}
+    ${opts.canAdd===false?"":attAdd(none?(opts.addLabel||(allowPdf?"ارفع صورة أو PDF":"ضيف صورة")):"ضيف تاني",allowPdf)}</div>
+    ${none&&opts.canAdd===false?`<div class="sub">مفيش مرفقات.</div>`:""}`;
+  const again=()=>gallery(box,kind,ref,opts);
+  box.querySelectorAll(".gth").forEach(b=>b.onclick=()=>viewImage(+b.dataset.id, again));
+  box.querySelectorAll(".pth[data-fid]").forEach(b=>b.onclick=()=>viewPdf(+b.dataset.fid, again));
+  box.querySelectorAll("input[type=file]").forEach(inp=>inp.onchange=async e=>{
+    const fs=[]; for(const f of e.target.files){ try{ fs.push(await prepAny(f,allowPdf)); }catch(err){ toast(err.message,true); } }
     if(!fs.length) return; box.querySelector(".gal").insertAdjacentHTML("beforeend",`<span class="sub">بيرفع…</span>`);
-    try{ await uploadImages(kind,ref,fs,opts.caption); toast(fs.length>1?`اترفعت ${fs.length} صور`:"الصورة اترفعت"); if(kind==="color") S.stock=null; opts.onChange&&opts.onChange(); gallery(box,kind,ref,opts); }
-    catch(err){ toast(errText(err),true); gallery(box,kind,ref,opts); } };
+    try{ await uploadImages(kind,ref,fs,opts.caption); toast(fs.length>1?`اترفع ${fs.length} مرفقات`:"اترفع"); if(kind==="color") S.stock=null; opts.onChange&&opts.onChange(); again(); }
+    catch(err){ toast(errText(err),true); again(); } });
 }
 async function viewImage(id, after){
   const lb=document.createElement("div"); lb.className="lightbox"; lb.innerHTML=`<div class="sub" style="color:#fff">بيحمّل…</div>`; document.body.appendChild(lb);
@@ -2523,6 +2582,27 @@ async function viewImage(id, after){
       try{ await rpc("fx_image_delete",{p_id:id}); close(); toast("الصورة اتمسحت"); S.stock=null; after&&after(); }catch(err){ toast(errText(err),true); } };
   }catch(e){ lb.innerHTML=`<div class="msg err">${esc(errText(e))}</div>`; setTimeout(close,2000); }
 }
+async function viewPdf(id, after){
+  const lb=document.createElement("div"); lb.className="lightbox"; lb.innerHTML=`<div class="sub" style="color:#fff" id="pdfp">بيحمّل الملف…</div>`; document.body.appendChild(lb);
+  let url=null; const close=()=>{ lb.remove(); if(url) setTimeout(()=>URL.revokeObjectURL(url),60000); }; lb.onclick=e=>{ if(e.target===lb) close(); };
+  try{ let parts=[], meta=null;
+    for(let i=0;;i++){ const x=await rpc("fx_file_part",{p_id:id,p_n:i}); meta=x; parts.push(x.data||""); const p=lb.querySelector("#pdfp"); if(p) p.textContent=`بيحمّل الملف… ${i+1}/${x.of}`; if(i+1>=x.of) break; }
+    const bin=atob(parts.join("")); const u8=new Uint8Array(bin.length); for(let i=0;i<bin.length;i++) u8[i]=bin.charCodeAt(i);
+    url=URL.createObjectURL(new Blob([u8],{type:"application/pdf"}));
+    lb.innerHTML=`<iframe class="pdfv" src="${url}" title="${esc(meta.name)}"></iframe><div class="lbbar"><span>${esc(meta.name)}</span><div class="row">${IN_CLAUDE()?"":`<a class="btn sm center" href="${url}" target="_blank" rel="noopener" download="${esc(meta.name)}">افتح / نزّل</a>`}<button class="btn sm danger" id="lbdel">مسح</button><button class="btn sm" id="lbx">قفل</button></div></div>`;
+    lb.querySelector("#lbx").onclick=close;
+    lb.querySelector("#lbdel").onclick=async ev=>{ const b=ev.target; if(!b.dataset.sure){ b.dataset.sure="1"; b.textContent="متأكد؟"; return; }
+      try{ await rpc("fx_file_delete",{p_id:id}); close(); toast("الملف اتمسح"); after&&after(); }catch(err){ toast(errText(err),true); } };
+  }catch(e){ lb.innerHTML=`<div class="msg err">${esc(errText(e))}</div>`; setTimeout(close,2200); }
+}
+function openAttSheet(kind, ref, title, opts={}){
+  sheet(`<div class="sheet-h"><h3>📎 ${esc(title)}</h3></div>${opts.hint?`<div class="sub">${esc(opts.hint)}</div>`:""}<div id="attg"></div>${sheetClose}`);
+  gallery($("#attg"),kind,ref,{...opts,onChange:()=>{ opts.onChange&&opts.onChange(); }});
+}
+async function attBadges(root, kind){ const els=[...root.querySelectorAll("[data-att]")]; if(!els.length) return;
+  try{ const c=await rpc("fx_att_counts",{p_kind:kind,p_refs:els.map(e=>e.dataset.att)})||{}; els.forEach(e=>{ const n=c[e.dataset.att]; if(n){ e.classList.add("has"); const b=e.querySelector("b"); if(b) b.textContent=n; } }); }catch(e){} }
+/* a titled attachments section for a record page */
+function attSection(id, title, hint){ return `<div class="card attc"><div class="row" style="justify-content:space-between"><b>📎 ${esc(title)}</b>${hint?`<span class="sub">${esc(hint)}</span>`:""}</div><div id="${id}" style="margin-top:8px"></div></div>`; }
 
 /* ============ recent customers (this device) ============ */
 function recentCustomers(){ try{ return JSON.parse(localStorage.getItem("soffar_recent_cust")||"[]"); }catch(e){ return []; } }
@@ -2668,7 +2748,8 @@ async function bDyeCodes(box){
     $("#dylist").innerHTML=f.slice(0,200).map(c=>`<div class="row-i dyrow" data-code="${esc(c.code)}"><span class="tcxsw" style="background:${c.hex||"transparent"};${c.hex?"":"border-style:dashed"}"></span>
       <div class="mid"><div class="t"><span class="num">${esc(c.code)}</span> · ${esc(c.name||"")}${c.shared?` <span class="chip s" title="نفس الكود موجود في مصبغة تانية">في مصبغة تانية كمان</span>`:""}</div>
       <div class="m">${c.tcx?`Pantone <b class="num">${esc(c.tcx)}</b> ${esc(c.tcx_name||"")}${c.by?` · ${esc(c.by)}`:""}`:`<span class="badc">مش متربط</span>`}${c.kg?` · في المخزن ${fmt(c.kg)} كجم`:""}</div></div>
-      ${canEdit?`<button class="btn sm ${c.tcx?"":"primary"}" data-link>${c.tcx?"غيّر":"اربط"}</button>`:""}</div>`).join("")||`<div class="state"><strong>مفيش أكواد هنا</strong></div>`; };
+      <button class="linkbtn attb" data-att="${esc(S.dyHouse+"|"+c.code)}" aria-label="لاب ديب ومرفقات">📎 <b></b></button>
+      ${canEdit?`<button class="btn sm ${c.tcx?"":"primary"}" data-link>${c.tcx?"غيّر":"اربط"}</button>`:""}</div>`).join("")||`<div class="state"><strong>مفيش أكواد هنا</strong></div>`; attBadges($("#dylist"),"dyecode"); };
   const linkCode=(c,isNew)=>{ const d=dyes.find(x=>x.code===S.dyHouse)||{};
     openTCXChooser({title:`ربط كود ${c.code}`, head:`<div class="kv"><b>${esc(d.name||"")}</b><span>كود المصبغة <b class="num">${esc(c.code)}</b></span>${c.name?`<span>${esc(c.name)}</span>`:""}</div>`,
       current:c.tcx?[c.tcx,c.hex,c.tcx_name]:null, hint:c.name, onBack:()=>{ closeSheet(); },
@@ -2678,7 +2759,9 @@ async function bDyeCodes(box){
   $("#dyl").onclick=e=>{const b=e.target.closest("button[data-k]");if(!b)return;S.dyHouse=b.dataset.k;drawDyes();load()};
   $("#dyf").onclick=e=>{const b=e.target.closest("button");if(!b)return;S.dyF=b.dataset.k;$("#dyf").querySelectorAll("button").forEach(x=>x.setAttribute("aria-pressed",x===b));draw()};
   let t; $("#dyq").oninput=e=>{clearTimeout(t);t=setTimeout(()=>{S.dyQ=e.target.value;draw()},150)};
-  $("#dylist").onclick=e=>{ const b=e.target.closest("[data-link]"); if(!b) return; const c=codes.find(x=>x.code===b.closest("[data-code]").dataset.code); if(c) linkCode(c); };
+  $("#dylist").onclick=e=>{ const at=e.target.closest("[data-att]"); if(at){ const c=codes.find(x=>x.code===at.closest("[data-code]").dataset.code)||{}; const d=dyes.find(x=>x.code===S.dyHouse)||{};
+      return openAttSheet("dyecode",at.dataset.att,`${d.name||""} · كود ${c.code||""}${c.name?" "+c.name:""}`,{hint:"صورة اللاب ديب أو كارت الألوان (PDF)",caption:`لاب ديب ${c.code||""}`,canAdd:canEdit,onChange:()=>attBadges($("#dylist"),"dyecode")}); }
+    const b=e.target.closest("[data-link]"); if(!b) return; const c=codes.find(x=>x.code===b.closest("[data-code]").dataset.code); if(c) linkCode(c); };
   const newForm=(v)=>{ const d=dyes.find(x=>x.code===S.dyHouse)||{}; v=v||{code:"",name:"",x:null};
     sheet(`<div class="sheet-h"><h3>كود جديد · ${esc(d.name||"")}</h3></div>
      <div class="sub">التلات خانات إجباري: مايتحفظش غير لما يتكتبوا كلهم.</div>
