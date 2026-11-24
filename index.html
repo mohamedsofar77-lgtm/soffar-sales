@@ -518,6 +518,14 @@ details.card summary{padding:10px 14px;cursor:pointer}
 .tcxn{font-size:.72rem;color:var(--muted);padding:0 8px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .tcxhead{align-items:center;gap:14px} .tcxhead h3{margin:0}
 .bsubs.ticking{-webkit-mask-image:linear-gradient(to left,transparent 0,#000 18px,#000 calc(100% - 18px),transparent 100%);mask-image:linear-gradient(to left,transparent 0,#000 18px,#000 calc(100% - 18px),transparent 100%)}
+/* accounts */
+.agebar{display:flex;height:14px;border-radius:99px;overflow:hidden;gap:2px;margin:6px 0}
+.agebar span,.agel i{display:inline-block} .ag1{background:#17b26a} .ag2{background:#eaaa08} .ag3{background:#f79009} .ag4{background:#d92d20}
+.agel{display:flex;flex-wrap:wrap;gap:6px 14px;font-size:.78rem;color:var(--muted)} .agel i{width:10px;height:10px;border-radius:3px;margin-inline-end:4px;vertical-align:middle} .agel b{color:var(--ink)}
+.limbar{height:5px;border-radius:99px;background:var(--line);margin-top:6px;overflow:hidden} .limbar i{display:block;height:100%;background:var(--ok)} .limbar i.warn{background:#f79009} .limbar i.over{background:var(--bad)}
+table.stmt td{vertical-align:top} table.stmt tr.dr td{color:var(--muted);font-style:italic} table.stmt tr.rj td,table.stmt tr.rv td{color:var(--muted);text-decoration:line-through} table.stmt tr.op td{font-weight:700}
+.eline{border:1px solid var(--line);box-shadow:none;display:flex;flex-direction:column;gap:8px}
+@media print{ body *{visibility:hidden!important} #arprint,#arprint *{visibility:visible!important} #arprint{position:absolute;inset:0 0 auto 0;box-shadow:none} .noprint{display:none!important} }
 </style>
 </head>
 <body>
@@ -531,7 +539,7 @@ const DEV_KEY = "";
 const APP_URL = "https://mohamedsofar77-lgtm.github.io/soffar-sales/";
 // نسخة التدريب: لو حد فتح التطبيق من غير رابط، بيدخل على وضع المراجعة والتدريب (قراءة بس)
 const PREVIEW_KEY = "";
-const APP_VERSION = "20261124143709";
+const APP_VERSION = "20261124151806";
 // رابط الدخول: الموظف بيفتح الرابط اللي فيه #k=... مرة واحدة، والتطبيق بيفتكره على الموبايل
 const KEY = (()=>{ let k=""; const m=(location.hash||"").match(/k=([A-Za-z0-9]+)/);
   if(m){ k=m[1]; try{ localStorage.setItem("soffar_key",k); }catch(e){} try{ history.replaceState(null,"",location.pathname+location.search); }catch(e){} }
@@ -549,6 +557,7 @@ const ERR_AR = {
   no_stock:"الصنف ده مش موجود في مخزون صفار.", not_found:"الحركة دي مش موجودة.", not_open:"الحجز ده مش مفتوح خلاص.",
   bad_spec:"اختار الصنف من القائمة.", cannot_demote_self:"مينفعش تشيل صلاحية المدير من نفسك.",
   duplicate_name:"الاسم ده متسجل قبل كده.", bad_name:"اكتب الاسم.", bad_type:"اختار النوع.", no_yarns:"ضيف خيط واحد على الأقل.",
+  ar_no_access:"مش مسموحلك تشوف حساب العميل ده. اطلب الاطلاع من قسم الحسابات.", owner_only:"العملية دي محتاجة صلاحية المالك.", cheque_details:"اكتب رقم الشيك وتاريخ الاستحقاق.", bad_method:"اختار طريقة الدفع.", bad_amount:"اكتب المبلغ.", not_draft:"الحركة دي اتعتمدت أو اترفضت قبل كده.", posted_locked:"الحركة المعتمدة مايتعدلش مبلغها. اعمل إلغاء وحركة جديدة.", no_delete:"الحركات مابتتمسحش. استخدم الإلغاء.", bad_kind:"نوع الحركة مش معروف.", not_pending_cheque:"الشيك ده مش تحت التحصيل.", bad_price:"اكتب السعر.", not_pending:"الطلب ده اتاخد عليه قرار.", not_posted:"الحركة دي مش معتمدة.",
   bad_color_name:"اكتب اسم اللون.",   bad_dyehouse:"اختار المصبغة.",  bad_hex:"اختار اللون.", bad_tcx:"كود Pantone مش صحيح، شكله كده 19-4052.",
   reason_required:"اكتب سبب التحويل من أمر العميل التاني.", not_enough_stock:"الرصيد الحر مش مكفّي الكمية دي، حد حجز منه. حدّث الصفحة.", not_enough_on_order:"الأمر ده باقي فيه أقل من الكمية دي.", already_decided:"السطر ده اتاخد عليه قرار قبل كده.", no_allocation:"وزّع الكمية على مصدر واحد على الأقل.", no_lines:"ضيف سطر واحد على الأقل.", bad_customer:"اختار العميل.", bad_qty:"اكتب الكمية.", bad_source:"مصدر مش معروف.",
   pct_not_100:"مجموع النسب لازم يبقى 100%.", bad_material:"اختار الخامة.", already_coded:"العميل ده متكود خلاص.", too_many_versions:"الخامة دي وصلت لأقصى عدد إصدارات (99).", no_reason:"اختار سبب المرتجع.", image_too_big:"الصورة كبيرة قوي.", bad_image:"الصورة مش سليمة.", no_lines:"ضيف سطر واحد على الأقل.", bad_warehouse:"اختار المخزن.", bad_supplier:"المورد ده مش موجود.", bad_reason:"اختار سبب الصرف.", roll_mismatch:"فيه توب مش من صنف ولون الحجز.", no_rolls_found:"مفيش ولا توب من دول في المخزن.", bad_code:"اكتب الكود.", bad_key:"إعداد مش معروف.", no_dyehouse:"اختار المصبغة اللي رايحلها الأتواب."
@@ -771,6 +780,7 @@ function renderNoAccess(email){
 function tabsFor(role){
   const t = [["home","الرئيسية",ICONS.home],["stock","الرصيد",ICONS.stock],["res","الحجوزات",ICONS.res],["wo","التشغيل",ICONS.wo]];
   if (role==="sales") t.splice(1,0,["order","حجز طلبية",ICONS.new]);
+  if (role==="accounts") t.splice(1,0,["ar","الحسابات",ICONS.chart]);
   if (role==="warehouse"||role==="admin") t.push(["warehouse","المخزن",ICONS.box]);
   if (role==="quality") t.push(["warehouse","الجودة",ICONS.box]);
   t.push(["basics","الأساسيات",ICONS.grid]);
@@ -781,7 +791,7 @@ function renderShell(){
   <nav class="tabs"><div class="in">${tabsFor(S.me.role).map(([k,l,i])=>`<button data-tab="${k}" ${S.tab===k?'aria-current="page"':""}>${i}<span>${l}</span></button>`).join("")}</div></nav>
   <div id="sheet"></div>`;
   app.querySelectorAll("[data-tab]").forEach(b=>b.onclick=()=>{
-    S.tab=b.dataset.tab; S.planCard=""; S.soId=null; if(S.tab==="stock"){ S.f.mat=""; S.f.spec=""; S.f.fam=""; }
+    S.tab=b.dataset.tab; S.planCard=""; S.soId=null; S.arCust=null; if(S.tab==="stock"){ S.f.mat=""; S.f.spec=""; S.f.fam=""; }
     app.querySelectorAll("[data-tab]").forEach(x=>{ if(x===b) x.setAttribute("aria-current","page"); else x.removeAttribute("aria-current"); });
     show(); });
   show(); startPolling(); startUpdateCheck(); tickerStart();
@@ -823,7 +833,7 @@ function bindHeader(){
 function goTab(k,keep){ if(k==="stock"&&!keep){ S.f.mat=""; S.f.spec=""; S.f.fam=""; } S.tab=k; app.querySelectorAll("[data-tab]").forEach(x=>{ if(x.dataset.tab===k) x.setAttribute("aria-current","page"); else x.removeAttribute("aria-current"); }); show(); }
 /* ---- back / forward between pages ---- */
 const NAV={stack:[],i:-1,restoring:false};
-function navSnap(){ const f=S.f||{}; return {tab:S.tab, pc:S.tab==="plan"?(S.planCard||""):"", so:S.tab==="plan"?(S.soId||""):"", fam:f.fam||"", mat:f.mat||"", spec:f.spec||"", bTab:S.tab==="basics"?(S.bTab||""):"", whTab:S.tab==="warehouse"?(S.whTab||""):""}; }
+function navSnap(){ const f=S.f||{}; return {tab:S.tab, pc:S.tab==="plan"?(S.planCard||""):"", so:S.tab==="plan"?(S.soId||""):"", ac:S.tab==="ar"?(S.arCust||""):"", fam:f.fam||"", mat:f.mat||"", spec:f.spec||"", bTab:S.tab==="basics"?(S.bTab||""):"", whTab:S.tab==="warehouse"?(S.whTab||""):""}; }
 function navRecord(){ if(NAV.restoring) return; const s=navSnap(), k=JSON.stringify(s), cur=NAV.stack[NAV.i];
   if(cur&&JSON.stringify(cur)===k) return;
   NAV.stack=NAV.stack.slice(0,NAV.i+1); NAV.stack.push(s); if(NAV.stack.length>80) NAV.stack.shift(); NAV.i=NAV.stack.length-1;
@@ -831,12 +841,12 @@ function navRecord(){ if(NAV.restoring) return; const s=navSnap(), k=JSON.string
 function updNav(){ const b=$("#navb"), f=$("#navf"); if(b) b.disabled=NAV.i<=0; if(f) f.disabled=NAV.i>=NAV.stack.length-1; }
 function navGo(d){ const j=NAV.i+d; if(j<0||j>=NAV.stack.length) return; NAV.i=j; const s=NAV.stack[j];
   NAV.restoring=true;
-  try{ S.f.fam=s.fam; S.f.mat=s.mat; S.f.spec=s.spec; if(s.bTab) S.bTab=s.bTab; if(s.whTab) S.whTab=s.whTab; S.f.limit=40; if(s.tab==="plan"){ S.planCard=s.pc||""; S.soId=s.so||null; } closeSheet(); goTab(s.tab,true); }
+  try{ S.f.fam=s.fam; S.f.mat=s.mat; S.f.spec=s.spec; if(s.bTab) S.bTab=s.bTab; if(s.whTab) S.whTab=s.whTab; S.f.limit=40; if(s.tab==="plan"){ S.planCard=s.pc||""; S.soId=s.so||null; } if(s.tab==="ar") S.arCust=s.ac||null; closeSheet(); goTab(s.tab,true); }
   finally{ NAV.restoring=false; } updNav(); }
 window.addEventListener("popstate",()=>{ if(!S.me) return;
   if($("#sheet")&&$("#sheet").innerHTML){ closeSheet(); try{ history.pushState({soffarNav:NAV.i},""); }catch(e){} return; }
   if(NAV.i>0) navGo(-1); });
-function show(){ navRecord(); const v=$("#view"); if(v) v.onclick=null; ({home:viewHome, guide:viewGuide, inbox:viewInbox, warehouse:viewWarehouse, reports:viewReports, stock:viewStock, plan:viewPlan, order:viewOrder, new:viewNew, res:viewRes, wo:viewWO, basics:viewBasics}[S.tab]||viewStock)(); window.scrollTo(0,0); }
+function show(){ navRecord(); const v=$("#view"); if(v) v.onclick=null; ({home:viewHome, guide:viewGuide, inbox:viewInbox, warehouse:viewWarehouse, reports:viewReports, stock:viewStock, plan:viewPlan, order:viewOrder, ar:viewAR, new:viewNew, res:viewRes, wo:viewWO, basics:viewBasics}[S.tab]||viewStock)(); window.scrollTo(0,0); }
 
 /* ============ home ============ */
 async function viewHome(){
@@ -852,6 +862,7 @@ async function viewHome(){
   <div class="section-h"><h2>اختصارات</h2></div>
   <section class="quick">
     <button data-go="order"><span class="qi">${ICONS.new}</span>حجز طلبية</button>
+    <button data-go="ar"><span class="qi">${ICONS.chart}</span>حسابات العملاء</button>
     <button data-go="guide"><span class="qi">${ICONS.book}</span>دليل التشغيل</button>
     <button data-go="stock"><span class="qi">${ICONS.stock}</span>الرصيد</button>
     ${canSell?`<button data-go="new"><span class="qi">${ICONS.new}</span>طلب تشغيل</button>`:""}
@@ -868,7 +879,7 @@ async function viewHome(){
   <div class="section-h"><h2>أكتر خامات متاحة للبيع</h2><button class="linkbtn" data-go="stock">الرصيد كله</button></div>
   <section class="card top-list" id="top"><div class="state">بيحمّل…</div></section>`;
   bindHeader();
-  v.onclick=e=>{ const g=e.target.closest("[data-go]"); if(g){ if(g.dataset.sub){ S.bTab=g.dataset.sub; } if(g.dataset.go==="plan"){ S.planCard=""; S.soId=null; } if(g.dataset.ptab){ S.planTab=g.dataset.ptab; } if(g.dataset.wh){ S.f.wh=g.dataset.wh; S.f.own="free"; S.f.limit=40; } goTab(g.dataset.go); return; }
+  v.onclick=e=>{ const g=e.target.closest("[data-go]"); if(g){ if(g.dataset.sub){ S.bTab=g.dataset.sub; } if(g.dataset.go==="plan"){ S.planCard=""; S.soId=null; } if(g.dataset.go==="ar"){ S.arCust=null; } if(g.dataset.ptab){ S.planTab=g.dataset.ptab; } if(g.dataset.wh){ S.f.wh=g.dataset.wh; S.f.own="free"; S.f.limit=40; } goTab(g.dataset.go); return; }
     const mb=e.target.closest("[data-mat]"); if(mb){ openMaterial(mb.dataset.mat); if(mb.dataset.pspec){ S.f.spec=mb.dataset.pspec; } return; }
     const b=e.target.closest("[data-reserve]"); if(b) openReserve(S.stock.rows[+b.dataset.reserve]); };
   const fill=async(force)=>{
@@ -1514,6 +1525,9 @@ async function viewSO(){
   let o; try{ const l=await rpc("fx_so_list",{p_status:"all"})||[]; S.soAll=l; o=l.find(x=>x.id===S.soId); if(!S.stock) await loadStock(); }catch(e){ $("#sobody").innerHTML=`<div class="msg err">${esc(errText(e))}</div>`; return; }
   if(!o){ $("#sobody").innerHTML=`<div class="state"><strong>الطلبية دي مش موجودة</strong></div>`; return; }
   $("#socr").textContent=o.so_no;
+  if(isAcc()) rpc("fx_ar_brief",{p_customer:o.customer_code}).then(b=>{ if(!b||!$("#sobody")) return; const kgv=(o.lines||[]).reduce((a,l)=>a+(+l.qty||0),0); const over=b.limit&&b.bal>b.limit;
+    $("#sobody").insertAdjacentHTML("afterbegin",`<div class="msg ${over?"err":""}">حساب العميل: رصيده <b class="num">${fmtM(b.bal)}</b> ج${b.limit?` · حد الائتمان <b class="num">${fmt(b.limit)}</b>${over?" · <b>متجاوز الحد</b>":""}`:" · من غير حد ائتمان"} <button class="linkbtn" data-arc="${esc(o.customer_code)}">كشف الحساب</button></div>`);
+    $("#sobody").querySelector("[data-arc]").onclick=()=>openARCustomer(o.customer_code); }).catch(()=>{});
   const canAct=!S.me.preview&&(S.me.realRole||S.me.role)!=="viewer";
   const kg=(o.lines||[]).reduce((a,l)=>a+(+l.qty||0),0);
   $("#sobody").innerHTML=`<section class="card pad stack"><div class="row"><div class="grow"><div class="t"><b class="num">${esc(o.so_no)}</b> · ${esc(o.customer||"")} ${cd(o.customer_code)}</div>
@@ -1623,6 +1637,232 @@ function drawSOList(){ const l=(S.soAll||[]).filter(o=>["pending","partial"].inc
   $("#pbody").innerHTML=list.length?list.map(soRow).join(""):`<div class="state"><strong>مفيش طلبيات مستنية قرار 👌</strong>أول ما بياع يدخل طلبية هتظهر هنا.</div>`;
   const recent=(S.soAll||[]).filter(o=>!["pending","partial"].includes(o.status)).slice(0,15);
   if(recent.length) $("#pbody").innerHTML+=`<div class="pcf-h" style="padding:12px 14px">آخر الطلبيات اللي اتقررت</div>`+recent.map(soRow).join("");
+}
+
+/* ============ customer accounts (receivables) ============ */
+const AR_K={opening:"رصيد افتتاحي",invoice:"فاتورة بيع",return:"مرتجع",payment:"تحصيل",cheque_bounce:"شيك مرتد",discount:"خصم",adjust:"تسوية",reversal:"إلغاء حركة"};
+const AR_M={cash:"نقدي",transfer:"تحويل",cheque:"شيك"};
+const AR_ST={draft:"تحت المراجعة",posted:"معتمدة",rejected:"مرفوضة",reversed:"اتلغت"};
+const fmtM=n=>(+n||0).toLocaleString("en-US",{minimumFractionDigits:2,maximumFractionDigits:2});
+const isAcc=()=>!S.me.preview&&["admin","accounts"].includes(S.me.realRole||S.me.role);
+const isOwner=()=>!S.me.preview&&(S.me.realRole||S.me.role)==="admin";
+function openARCustomer(code){ S.arCust=code; goTab("ar",true); }
+async function viewAR(){
+  if(S.arCust) return viewARStatement();
+  navRecord(); if(!isAcc()) return viewARSales();
+  const v=$("#view"); S.arTab=S.arTab||"cust";
+  v.innerHTML=header("حسابات العملاء",`<button class="icon-btn" id="arnew" aria-label="حركة جديدة" title="حركة جديدة">${ICONS.new}</button>`+refreshBtn())+`
+   <section class="kpis plan-k" id="ark"><div class="state">بيحسب…</div></section>
+   <div class="bsubs" id="artab"></div>
+   <div id="arbody" class="stack"><div class="state">بيحمّل…</div></div>`;
+  bindHeader();
+  $("#rf").onclick=()=>{ S.arSum=null; S.arQ=null; viewAR(); };
+  $("#arnew").onclick=()=>openAREntry({});
+  try{ const [sm,qq]=await Promise.all([rpc("fx_ar_summary"),rpc("fx_ar_queue")]); S.arSum=sm; S.arQueue=qq; }catch(e){ $("#arbody").innerHTML=`<div class="msg err">${esc(errText(e))}</div>`; return; }
+  const C=S.arSum.customers||[], Q=S.arQueue; const tot=k=>C.reduce((a,c)=>a+(+c[k]||0),0);
+  const chq=(Q.cheques||[]).reduce((a,c)=>a+(+c.amount||0),0), pendAcc=(Q.access||[]).filter(a=>a.status==="pending").length;
+  $("#ark").innerHTML=[["إجمالي المديونية",tot("bal"),"t-r"],["متأخر عن ميعاد السداد",tot("overdue"),"t-bad"],["تحصيل الشهر",tot("month_pay"),"t-ok"],["شيكات تحت التحصيل",chq,"t-f"]]
+    .map(([l,v,c])=>`<div class="kpi ${c}"><span class="k">${l}</span><span class="v"><span class="num">${fmt(v)}</span><small>ج</small></span></div>`).join("");
+  const tabs=[["cust","العملاء"],["drafts",`تحت المراجعة${Q.drafts.length?` (${Q.drafts.length})`:""}`],["cheques",`الشيكات${Q.cheques.length?` (${Q.cheques.length})`:""}`],["access",`طلبات الاطلاع${pendAcc?` (${pendAcc})`:""}`],["prices","الأسعار"]];
+  $("#artab").innerHTML=tabs.map(([k,l])=>`<button data-k="${k}" aria-pressed="${S.arTab===k}">${l}</button>`).join("");
+  $("#artab").onclick=e=>{const b=e.target.closest("button");if(!b)return;S.arTab=b.dataset.k;$("#artab").querySelectorAll("button").forEach(x=>x.setAttribute("aria-pressed",x===b));drawAR()};
+  drawAR();
+}
+function drawAR(){
+  const el=$("#arbody"); if(!el) return; const C=S.arSum.customers||[], Q=S.arQueue;
+  if(S.arTab==="cust"){
+    const tot=k=>C.reduce((a,c)=>a+(+c[k]||0),0), all=tot("a30")+tot("a60")+tot("a90")+tot("a91")||1;
+    el.innerHTML=`<div class="card pad"><div class="flabel">أعمار الديون</div><div class="agebar">${[["a30","0–30 يوم","ag1"],["a60","31–60","ag2"],["a90","61–90","ag3"],["a91","أكتر من 90","ag4"]].map(([k,l,c])=>`<span class="${c}" style="flex:${Math.max(0.0001,tot(k)/all)}" title="${l}"></span>`).join("")}</div>
+      <div class="agel">${[["a30","0–30 يوم","ag1"],["a60","31–60","ag2"],["a90","61–90","ag3"],["a91","أكتر من 90","ag4"]].map(([k,l,c])=>`<span><i class="${c}"></i>${l} <b class="num">${fmt(tot(k))}</b></span>`).join("")}</div></div>
+      <div class="search">${ICONS.search}<input type="search" id="arq" placeholder="ابحث باسم العميل أو كوده" value="${esc(S.arSearch||"")}"></div>
+      <div class="sub" id="arcnt"></div><div class="card" id="arlist"></div>
+      <button class="btn" id="arall">كشف حساب عميل تاني</button>`;
+    const draw=()=>{ const q=norm(S.arSearch||""); const f=C.filter(c=>!q||norm(c.name+" "+c.code).includes(q));
+      $("#arcnt").textContent=`${f.length} عميل عليه حركة`;
+      $("#arlist").innerHTML=f.slice(0,150).map(c=>{ const use=c.limit?Math.min(100,Math.round(c.bal/c.limit*100)):null;
+        return `<div class="row-i click" data-c="${esc(c.code)}" role="button" tabindex="0"><div class="mid"><div class="t">${esc(c.name)} ${cd(c.code)}</div>
+          <div class="m">${c.overdue>0.5?`<span class="badc">متأخر ${fmt(c.overdue)}</span> · `:""}${c.limit?`حد ${fmt(c.limit)} (${use}%)`:"من غير حد ائتمان"}${c.drafts?` · ${c.drafts} تحت المراجعة`:""}${c.cheques>0.5?` · شيكات ${fmt(c.cheques)}`:""}${c.sales?` · ${esc(c.sales)}`:""}</div>
+          ${use!=null?`<div class="limbar"><i style="width:${use}%" class="${use>=100?"over":use>=80?"warn":""}"></i></div>`:""}</div>
+          <div class="a ${c.bal<0?"okc":""}"><span class="num">${fmtM(c.bal)}</span><small>${c.bal<0?"له":"عليه"}</small></div><span class="chev">‹</span></div>`; }).join("")||`<div class="state"><strong>لسه مفيش حركة على حسابات العملاء</strong>ابدأ بالأرصدة الافتتاحية من زرار + فوق.</div>`; };
+    let t; $("#arq").oninput=e=>{clearTimeout(t);t=setTimeout(()=>{S.arSearch=e.target.value;draw()},150)};
+    $("#arlist").onclick=e=>{ const r=e.target.closest("[data-c]"); if(r) openARCustomer(r.dataset.c); };
+    $("#arall").onclick=async()=>{ await ensureCustomers(); sheet(`<div class="sheet-h"><h3>كشف حساب عميل</h3></div><div id="arcp"></div>`); picker($("#arcp"),S.customers,x=>`${x.name} · ${x.code}`,"اكتب اسم العميل أو كوده",p=>{ if(p){ closeSheet(); openARCustomer(p.code); } }); };
+    draw(); return; }
+  if(S.arTab==="drafts"){
+    el.innerHTML=Q.drafts.length?Q.drafts.map(d=>arDraftCard(d)).join(""):`<div class="state"><strong>مفيش حاجة تحت المراجعة 👌</strong></div>`;
+    el.onclick=async e=>{ const b=e.target.closest("[data-act]"); if(!b) return; const id=+b.closest("[data-id]").dataset.id; const d=Q.drafts.find(x=>x.id===id); const m=b.closest("[data-id]").querySelector("[data-m]");
+      if(b.dataset.act==="edit") return openAREntry({edit:d});
+      if(b.dataset.act==="open") return openARCustomer(d.customer_code);
+      b.disabled=true; try{ await rpc("fx_ar_post",{p_id:id,p_approve:b.dataset.act==="ok",p_note:null}); toast(b.dataset.act==="ok"?"اتعتمدت 👍":"اترفضت"); S.arSum=null; viewAR(); }
+      catch(err){ m.innerHTML=`<div class="msg err">${esc(errText(err))}</div>`; b.disabled=false; } };
+    return; }
+  if(S.arTab==="cheques"){
+    el.innerHTML=Q.cheques.length?`<div class="card">${Q.cheques.map(c=>{ const late=c.due_date&&new Date(c.due_date)<new Date(new Date().toDateString());
+      return `<div class="row-i" data-id="${c.id}"><div class="mid"><div class="t">${esc(c.customer)} ${cd(c.customer_code)}</div><div class="m">شيك <b class="num">${esc(c.cheque_no||"")}</b>${c.bank?` · ${esc(c.bank)}`:""} · استحقاق <b class="${late?"badc":""}">${c.due_date?new Date(c.due_date).toLocaleDateString("ar-EG",{day:"numeric",month:"short"}):"—"}</b></div>
+      <div class="row" style="margin-top:6px"><button class="btn sm" data-ch="collected">اتصرف ✓</button><button class="btn sm danger" data-ch="bounced">ارتد</button></div><div data-m></div></div><div class="a"><span class="num">${fmtM(c.amount)}</span><small>ج</small></div></div>`; }).join("")}</div>`
+      :`<div class="state"><strong>مفيش شيكات تحت التحصيل</strong></div>`;
+    el.onclick=async e=>{ const b=e.target.closest("[data-ch]"); if(!b) return; const row=b.closest("[data-id]"); b.disabled=true;
+      try{ await rpc("fx_ar_cheque",{p_id:+row.dataset.id,p_status:b.dataset.ch}); toast(b.dataset.ch==="bounced"?"اتسجل شيك مرتد واتضاف على حساب العميل":"اتسجل إن الشيك اتصرف"); S.arSum=null; viewAR(); }
+      catch(err){ row.querySelector("[data-m]").innerHTML=`<div class="msg err">${esc(errText(err))}</div>`; b.disabled=false; } };
+    return; }
+  if(S.arTab==="access"){
+    el.innerHTML=Q.access.length?`<div class="card">${Q.access.map(a=>`<div class="row-i" data-id="${a.id}"><div class="mid"><div class="t">${esc(a.customer)} ${cd(a.customer_code)}</div>
+      <div class="m">${esc([a.requester,a.dept].filter(Boolean).join(" · "))}${a.purpose?` · ${esc(a.purpose)}`:""} · ${dt(a.created_at)}</div>
+      ${a.status==="pending"?`<div class="row" style="margin-top:6px"><button class="btn sm primary" data-ac="1">وافق لحد آخر النهارده</button><button class="btn sm" data-ac="0">ارفض</button></div>`:`<div class="m">${a.status==="approved"?`اتوافق · لحد ${dt(a.valid_until)}`:"اترفض"}${a.decided_by?` · ${esc(a.decided_by)}`:""}</div>`}<div data-m></div></div></div>`).join("")}</div>`
+      :`<div class="state"><strong>مفيش طلبات اطلاع</strong></div>`;
+    el.onclick=async e=>{ const b=e.target.closest("[data-ac]"); if(!b) return; const row=b.closest("[data-id]"); b.disabled=true;
+      try{ await rpc("fx_ar_access_decide",{p_id:+row.dataset.id,p_approve:b.dataset.ac==="1"}); toast(b.dataset.ac==="1"?"اتوافق، والكشف متاح ليه لحد آخر النهارده":"اترفض"); viewAR(); }
+      catch(err){ row.querySelector("[data-m]").innerHTML=`<div class="msg err">${esc(errText(err))}</div>`; b.disabled=false; } };
+    return; }
+  if(S.arTab==="prices") return drawPrices(el);
+}
+function arDraftCard(d){ const amt=d.debit||d.credit; const noPrice=(d.lines||[]).some(l=>l.price==null);
+  return `<div class="card pad stack" data-id="${d.id}"><div class="row"><div class="grow"><div class="t"><b>${AR_K[d.kind]||d.kind}</b> · ${esc(d.customer)} ${cd(d.customer_code)}</div>
+    <div class="sub">${d.date} · ${esc(d.created_by||"")}${d.method?` · ${AR_M[d.method]}`:""}${d.cheque_no?` · شيك ${esc(d.cheque_no)}${d.bank?` ${esc(d.bank)}`:""} استحقاق ${d.due_date||"—"}`:""}</div></div>
+    <div class="a"><span class="num" style="font-weight:800">${fmtM(amt)}</span><small> ج</small></div></div>
+    ${(d.lines||[]).length?`<div class="tbl"><table><thead><tr><th>الصنف</th><th>اللون</th><th>كجم</th><th>السعر</th><th>القيمة</th></tr></thead><tbody>${d.lines.map(l=>`<tr><td class="num">${esc(l.spec)}</td><td>${esc(l.color||"")}</td><td class="num">${fmt2(l.qty)}</td><td class="num ${l.price==null?"badc":""}">${l.price==null?"مش متحدد":fmt2(l.price)}</td><td class="num">${fmtM(l.amount)}</td></tr>`).join("")}</tbody></table></div>
+      <div class="sub">قبل الضريبة ${fmtM(d.subtotal)}${+d.vat_amount?` · ضريبة 14% ${fmtM(d.vat_amount)}`:" · من غير ضريبة"}</div>`:""}
+    ${d.note?`<div class="kv">${esc(d.note)}</div>`:""}${noPrice?`<div class="msg">الفاتورة دي من تسليم ومفيش سعر متسجل للصنف. دوس "عدّل" وحط السعر.</div>`:""}
+    <div class="row wrapbtns">${["invoice","return"].includes(d.kind)?`<button class="btn sm" data-act="edit">عدّل</button>`:""}<button class="btn sm primary" data-act="ok" ${noPrice?"disabled":""}>اعتمد</button><button class="btn sm" data-act="no">ارفض</button><button class="btn sm" data-act="open">كشف الحساب</button></div><div data-m></div></div>`; }
+async function viewARStatement(){
+  navRecord(); const v=$("#view"), code=S.arCust;
+  v.innerHTML=header("كشف حساب",refreshBtn())+`<nav class="crumbs"><button data-cr="ar">حسابات العملاء</button><span>‹</span><span aria-current="page" id="arcr">…</span></nav><div id="stb" class="stack"><div class="state">بيحمّل…</div></div>`;
+  bindHeader(); v.querySelector("[data-cr]").onclick=()=>{ S.arCust=null; goTab("ar",true); };
+  $("#rf").onclick=()=>viewARStatement();
+  const from=S.arFrom||"", to=S.arTo||"";
+  let st; try{ st=await rpc("fx_ar_statement",{p_customer:code,p_from:from||null,p_to:to||null}); }
+  catch(e){ $("#stb").innerHTML=`<div class="msg err">${esc(errText(e))}</div>${!isAcc()?`<button class="btn primary" id="reqa">اطلب الاطلاع من الحسابات</button>`:""}`; if($("#reqa")) $("#reqa").onclick=()=>arRequest(code); return; }
+  const c=st.customer||{}; $("#arcr").textContent=c.name||code;
+  let bal=+st.opening||0; const rows=(st.entries||[]).map(e=>{ const counted=["posted","reversed"].includes(e.status); if(counted) bal+=(+e.debit||0)-(+e.credit||0); return {...e,bal:counted?bal:null}; });
+  const sm=(S.arSum&&S.arSum.customers||[]).find(x=>x.code===code);
+  const acc=st.accounts, ownr=isOwner();
+  $("#stb").innerHTML=`<section class="card pad stack" id="arprint"><div class="row"><div class="grow"><h2 style="margin:0">${esc(c.name||"")} ${cd(c.code)}</h2>
+      <div class="sub">${c.limit?`حد الائتمان ${fmt(c.limit)} ج`:"من غير حد ائتمان"}${c.pay_days?` · السداد خلال ${c.pay_days} يوم`:""}${c.vat?" · عليه ضريبة":""}${c.sales?` · ${esc(c.sales)}`:""}</div>
+      ${st.valid_until&&!acc?`<div class="msg">الكشف متاح ليك لحد ${dt(st.valid_until)}</div>`:""}</div>
+      <div class="a"><span class="num" style="font-size:1.4rem;font-weight:800;${bal<0?"color:var(--ok)":""}">${fmtM(bal)}</span><small>ج ${bal<0?"له":"عليه"}</small></div></div>
+    ${sm?`<div class="agel">${[["a30","0–30"],["a60","31–60"],["a90","61–90"],["a91","+90"]].map(([k,l])=>`<span>${l} يوم <b class="num">${fmt(sm[k])}</b></span>`).join("")}${sm.overdue>0.5?`<span class="badc">متأخر ${fmt(sm.overdue)}</span>`:""}</div>`:""}
+    <div class="row noprint"><label class="grow"><span>من</span><input type="date" id="stf" value="${esc(from)}"></label><label class="grow"><span>لحد</span><input type="date" id="stt" value="${esc(to)}"></label><button class="btn sm" id="stgo" style="align-self:flex-end">اعرض</button></div>
+    <div class="tbl"><table class="stmt"><thead><tr><th>التاريخ</th><th>البيان</th><th>عليه</th><th>له</th><th>الرصيد</th>${ownr?`<th class="noprint"></th>`:""}</tr></thead><tbody>
+      ${from?`<tr class="op"><td>${esc(from)}</td><td>رصيد أول المدة</td><td></td><td></td><td class="num">${fmtM(st.opening)}</td>${ownr?"<td class='noprint'></td>":""}</tr>`:""}
+      ${rows.map(e=>`<tr class="${e.status==="draft"?"dr":e.status==="rejected"?"rj":e.status==="reversed"?"rv":""}"><td class="num">${esc(e.date)}</td><td><b>${AR_K[e.kind]||e.kind}</b>${e.status!=="posted"?` <span class="chip s">${AR_ST[e.status]}</span>`:""}
+        <div class="sub">${(e.lines||[]).map(l=>`${esc(l.spec)} ${esc(l.color||"")} ${fmt2(l.qty)} كجم × ${l.price==null?"؟":fmt2(l.price)}`).join("، ")}${+e.vat_amount?` + ضريبة ${fmtM(e.vat_amount)}`:""}${e.method?`${AR_M[e.method]}`:""}${e.cheque_no?` رقم ${esc(e.cheque_no)}${e.due_date?` استحقاق ${esc(e.due_date)}`:""}${e.cheque_status==="bounced"?" · ارتد":e.cheque_status==="collected"?" · اتصرف":""}`:""}${e.note?` · ${esc(e.note)}`:""}</div></td>
+        <td class="num">${+e.debit?fmtM(e.debit):""}</td><td class="num">${+e.credit?fmtM(e.credit):""}</td><td class="num">${e.bal!=null?fmtM(e.bal):""}</td>${ownr?`<td class="noprint">${e.status==="posted"&&e.kind!=="reversal"?`<button class="linkbtn" data-rev="${e.id}">إلغاء</button>`:""}</td>`:""}</tr>`).join("")||`<tr><td colspan="6"><div class="state">مفيش حركة في الفترة دي</div></td></tr>`}
+    </tbody></table></div></section>
+    <div class="row wrapbtns noprint">${acc?`<button class="btn" data-new="invoice">+ فاتورة</button><button class="btn" data-new="return">+ مرتجع</button><button class="btn primary" data-new="payment">+ تحصيل</button><button class="btn" data-new="discount">+ خصم</button><button class="btn" data-new="adjust">+ تسوية</button><button class="btn" data-new="opening">+ رصيد افتتاحي</button><button class="btn" id="stset">بيانات الحساب</button>`:`<button class="btn primary" data-new="payment">+ سجّل تحصيل</button>`}
+      <button class="btn" id="stshr">${ICONS.share} ابعت واتساب</button>${IN_CLAUDE()?"":`<button class="btn" id="stprt">اطبع</button>`}</div>`;
+  $("#stgo").onclick=()=>{ S.arFrom=$("#stf").value; S.arTo=$("#stt").value; viewARStatement(); };
+  $("#stb").querySelectorAll("[data-new]").forEach(b=>b.onclick=()=>openAREntry({kind:b.dataset.new,customer:{code:c.code,name:c.name},vat:c.vat}));
+  if($("#stset")) $("#stset").onclick=()=>arCustomerSettings(c);
+  $("#stshr").onclick=()=>shareSheet("كشف حساب",`*كشف حساب · ${c.name}*\n${from||"من البداية"} → ${to||"النهارده"}\n\n`+rows.filter(e=>e.bal!=null).map(e=>`${e.date} · ${AR_K[e.kind]} · ${+e.debit?"عليه "+fmtM(e.debit):"له "+fmtM(e.credit)} · الرصيد ${fmtM(e.bal)}`).join("\n")+`\n\n*الرصيد: ${fmtM(bal)} ج ${bal<0?"له":"عليه"}*\nصفار جروب`);
+  if($("#stprt")) $("#stprt").onclick=()=>window.print();
+  $("#stb").querySelectorAll("[data-rev]").forEach(b=>b.onclick=()=>{ sheet(`<div class="sheet-h"><h3>إلغاء حركة</h3></div><div class="sub">الحركة مش هتتمسح، هيتعمل قيد عكسي ليها ويفضل الاتنين في الكشف.</div><label><span>السبب (إجباري)</span><input type="text" id="rvr"></label><div id="rvm"></div><div class="row"><button class="btn danger grow" id="rvgo">إلغاء الحركة</button><button class="btn" id="rvx">رجوع</button></div>`);
+    $("#rvx").onclick=closeSheet; $("#rvgo").onclick=async()=>{ try{ await rpc("fx_ar_reverse",{p_id:+b.dataset.rev,p_reason:$("#rvr").value}); closeSheet(); toast("اتعمل قيد عكسي"); S.arSum=null; viewARStatement(); }catch(e){ $("#rvm").innerHTML=`<div class="msg err">${esc(errText(e))}</div>`; } }; });
+}
+function arCustomerSettings(c){
+  sheet(`<div class="sheet-h"><h3>بيانات حساب ${esc(c.name)}</h3></div>
+   <div class="row"><label class="grow"><span>حد الائتمان (ج)</span><input type="number" id="cl" value="${c.limit??""}" inputmode="decimal"></label><label class="grow"><span>مدة السداد (يوم)</span><input type="number" id="cd2" value="${c.pay_days??""}" inputmode="numeric"></label></div>
+   <label class="chk"><input type="checkbox" id="cv" ${c.vat?"checked":""}> العميل ده فواتيره عليها ضريبة قيمة مضافة 14%</label>
+   <label><span>البياع المسؤول</span><input type="text" id="cs" value="${esc(c.sales||"")}"></label>
+   <div id="cm"></div><div class="row"><button class="btn primary grow" id="cgo">احفظ</button><button class="btn" id="cx">إلغاء</button></div>`);
+  $("#cx").onclick=closeSheet;
+  $("#cgo").onclick=async()=>{ try{ await rpc("fx_customer_fin_save",{p_code:c.code,p_limit:$("#cl").value===""?null:+$("#cl").value,p_days:$("#cd2").value===""?null:+$("#cd2").value,p_vat:$("#cv").checked,p_sales:$("#cs").value}); closeSheet(); toast("اتحفظ"); S.arSum=null; viewARStatement(); }
+    catch(e){ $("#cm").innerHTML=`<div class="msg err">${esc(errText(e))}</div>`; } };
+}
+async function openAREntry(o){ // o: {kind, customer:{code,name}, vat, edit:draft}
+  await Promise.all([ensureCustomers(),ensureSpecs()]);
+  const acc=isAcc(); const ed=o.edit; let kind=ed?ed.kind:(o.kind||(acc?"invoice":"payment")); let cust=ed?{code:ed.customer_code,name:ed.customer}:o.customer||null;
+  const kinds=acc?["invoice","return","payment","discount","adjust","opening"]:["payment"];
+  const lines=ed&&ed.lines?ed.lines.map(l=>({...l})):[]; let vat=ed?(+ed.vat_amount>0):!!o.vat; let method="cash";
+  const render=()=>{
+    const isInv=["invoice","return"].includes(kind);
+    sheet(`<div class="sheet-h"><h3>${ed?"تعديل ":""}${AR_K[kind]}</h3></div>
+     ${!ed?`<div class="bsubs fwrap" id="ek">${kinds.map(k=>`<button type="button" data-k="${k}" aria-pressed="${k===kind}">${AR_K[k]}</button>`).join("")}</div>`:""}
+     <label><span>العميل</span><div id="ecp"></div></label>
+     <div class="row"><label class="grow"><span>التاريخ</span><input type="date" id="edate" value="${ed?ed.date:new Date().toISOString().slice(0,10)}" ${ed?"disabled":""}></label>${!isInv?`<label class="grow"><span>المبلغ (ج)${kind==="adjust"||kind==="opening"?" · بالسالب لو له":""}</span><input type="number" id="eamt" step="0.01" inputmode="decimal"></label>`:""}</div>
+     ${isInv?`<div class="flabel">السطور</div><div id="elines" class="stack"></div>${!ed?`<button type="button" class="btn sm" id="eladd">+ سطر</button>`:""}
+       <label class="chk"><input type="checkbox" id="evat" ${vat?"checked":""}> عليها ضريبة قيمة مضافة 14%</label><div class="alloc" id="etot"></div>`:""}
+     ${kind==="payment"?`<div class="seg sm" id="emeth">${Object.entries(AR_M).map(([k,l])=>`<button type="button" data-k="${k}" aria-pressed="${k===method}">${l}</button>`).join("")}</div>
+       <div class="row" id="echq" ${method==="cheque"?"":"hidden"}><label class="grow"><span>رقم الشيك</span><input type="text" id="eno"></label><label class="grow"><span>البنك</span><input type="text" id="ebank"></label><label class="grow"><span>تاريخ الاستحقاق</span><input type="date" id="edue"></label></div>`:""}
+     <label><span>ملاحظة</span><input type="text" id="enote" value="${esc(ed&&ed.note||"")}"></label>
+     ${!acc?`<div class="sub">التحصيل هيتسجل تحت المراجعة لحد ما الحسابات تأكده.</div>`:`<div class="sub">${["discount","adjust"].includes(kind)?"الخصم والتسوية محتاجين اعتماد المالك.":"الحركة هتتسجل تحت المراجعة لحد ما تتعتمد."}</div>`}
+     <div id="em2"></div><div class="row"><button class="btn primary grow" id="ego">احفظ</button><button class="btn" id="ex2">إلغاء</button></div>`);
+    $("#ex2").onclick=closeSheet;
+    if($("#ek")) $("#ek").onclick=e=>{const b=e.target.closest("button");if(!b)return;kind=b.dataset.k;render()};
+    if(ed) $("#ecp").innerHTML=`<div class="picked"><span>${esc(cust.name)} · ${esc(cust.code)}</span></div>`;
+    else picker($("#ecp"),S.customers,x=>`${x.name} · ${x.code}`,"اكتب اسم العميل أو كوده",p=>{ cust=p; },recentCustomers(),cust?S.customers.find(x=>x.code===cust.code):null);
+    if($("#emeth")) $("#emeth").onclick=e=>{const b=e.target.closest("button");if(!b)return;method=b.dataset.k;$("#emeth").querySelectorAll("button").forEach(x=>x.setAttribute("aria-pressed",x===b));$("#echq").hidden=method!=="cheque"};
+    if(isInv){ const tot=()=>{ let s=0; lines.forEach(l=>s+=(+l.qty||0)*(+l.price||0)); const v=$("#evat").checked?s*0.14:0; $("#etot").innerHTML=`<span>قبل الضريبة <b class="num">${fmtM(s)}</b></span>${v?`<span>ضريبة <b class="num">${fmtM(v)}</b></span>`:""}<span>الإجمالي <b class="num">${fmtM(s+v)}</b></span>`; };
+      const drawL=()=>{ $("#elines").innerHTML=lines.map((l,i)=>`<div class="eline card pad" data-i="${i}"><div class="row"><div class="grow" data-sp>${l.spec?`<div class="picked"><span>${esc(l.spec)} ${esc((S.specs.find(x=>x.code===l.spec)||{}).name||"")}</span>${ed?"":`<button type="button" class="btn sm" data-chs>تغيير</button>`}</div>`:""}</div>${!ed?`<button type="button" class="linkbtn" data-del>شيل</button>`:""}</div>
+          <div class="row"><label class="grow"><span>اللون</span><input type="text" data-f="color" value="${esc(l.color||"")}"></label><div class="seg sm" data-wh><button type="button" data-k="finished" aria-pressed="${l.wh!=="greige"}">مجهز</button><button type="button" data-k="greige" aria-pressed="${l.wh==="greige"}">خام</button></div></div>
+          <div class="row"><label class="grow"><span>كجم</span><input type="number" data-f="qty" step="0.01" value="${l.qty??""}" inputmode="decimal"></label><label class="grow"><span>سعر الكيلو</span><input type="number" data-f="price" step="0.01" value="${l.price??""}" inputmode="decimal"></label></div><div class="sub" data-ph></div></div>`).join("");
+        $("#elines").querySelectorAll(".eline").forEach(box=>{ const i=+box.dataset.i, l=lines[i];
+          if(!l.spec) picker(box.querySelector("[data-sp]"),S.specs,x=>`${x.code} · ${x.name}`,"الصنف",p=>{ if(p){ l.spec=p.code; look(); drawL(); } });
+          const look=async()=>{ if(!cust||!l.spec) return; try{ const r=await rpc("fx_price_lookup",{p_customer:cust.code,p_spec:l.spec,p_wh:l.wh||"finished",p_color:l.color||""}); if(r&&r.price!=null&&(l.price==null||l.price==="")){ l.price=+r.price; drawL(); } const ph=box.querySelector("[data-ph]"); if(ph) ph.textContent=r&&r.price!=null?`السعر من القايمة: ${fmt2(r.price)}`:"مفيش سعر متسجل، اكتبه بإيدك"; }catch(e){} };
+          box.querySelectorAll("[data-f]").forEach(inp=>inp.oninput=()=>{ l[inp.dataset.f]=inp.dataset.f==="color"?inp.value:(inp.value===""?null:+inp.value); tot(); });
+          box.querySelector("[data-f=color]").onchange=look;
+          box.querySelector("[data-wh]").onclick=e=>{const b=e.target.closest("button");if(!b)return;l.wh=b.dataset.k;box.querySelectorAll("[data-wh] button").forEach(x=>x.setAttribute("aria-pressed",x===b));look()};
+          const dl=box.querySelector("[data-del]"); if(dl) dl.onclick=()=>{ lines.splice(i,1); drawL(); };
+          const ch=box.querySelector("[data-chs]"); if(ch) ch.onclick=()=>{ l.spec=null; l.price=null; drawL(); };
+          if(l.spec&&(l.price==null||l.price==="")&&!l._looked){ l._looked=true; look(); } });
+        tot(); };
+      if(!lines.length) lines.push({spec:null,color:"",wh:"finished",qty:null,price:null});
+      drawL(); if($("#eladd")) $("#eladd").onclick=()=>{ lines.push({spec:null,color:"",wh:"finished",qty:null,price:null}); drawL(); }; $("#evat").onchange=()=>{ vat=$("#evat").checked; tot(); }; }
+    $("#ego").onclick=async()=>{ const m=$("#em2"); if(!cust) return m.innerHTML=`<div class="msg err">اختار العميل.</div>`;
+      const p={customer:cust.code,kind,date:$("#edate").value,note:$("#enote").value};
+      if(isInv){ const ok=lines.filter(l=>l.spec&&+l.qty>0); if(!ok.length||ok.some(l=>l.price==null||l.price==="")) return m.innerHTML=`<div class="msg err">كمّل الصنف والكمية والسعر في كل سطر.</div>`;
+        p.lines=ok.map(l=>({spec:l.spec,color:l.color||"",wh:l.wh||"finished",qty:+l.qty,price:+l.price})); p.vat=$("#evat").checked; }
+      else { const a=parseFloat($("#eamt").value); if(!a) return m.innerHTML=`<div class="msg err">اكتب المبلغ.</div>`; if(a<0&&!["adjust","opening"].includes(kind)) return m.innerHTML=`<div class="msg err">المبلغ لازم يبقى موجب.</div>`; p.amount=a; }
+      if(kind==="payment"){ p.method=method; if(method==="cheque"){ p.cheque_no=$("#eno").value; p.bank=$("#ebank").value; p.due_date=$("#edue").value; if(!p.cheque_no||!p.due_date) return m.innerHTML=`<div class="msg err">اكتب رقم الشيك وتاريخ الاستحقاق.</div>`; } }
+      $("#ego").disabled=true;
+      try{ if(ed) await rpc("fx_ar_invoice_update",{p_id:ed.id,p_lines:p.lines,p_vat:p.vat,p_note:p.note}); else await rpc("fx_ar_entry_add",{p_data:p});
+        closeSheet(); toast(ed?"اتعدّلت":"اتسجلت تحت المراجعة"); S.arSum=null; if(S.arCust) viewARStatement(); else if(S.tab==="ar") viewAR(); }
+      catch(e){ m.innerHTML=`<div class="msg err">${esc(errText(e))}</div>`; $("#ego").disabled=false; } };
+  };
+  render();
+}
+async function drawPrices(el){
+  el.innerHTML=`<div class="sub">السعر بيتحدد بالأولوية: سعر خاص للعميل واللون ← خاص للعميل ← سعر اللون ← سعر الصنف العام. ${isOwner()?"":"تعديل الأسعار للمالك بس."}</div>
+   ${isOwner()?`<button class="btn" id="prnew">+ سعر جديد</button>`:""}<div class="search">${ICONS.search}<input type="search" id="prq" placeholder="ابحث بالصنف أو العميل"></div><div class="card" id="prl"><div class="state">بيحمّل…</div></div>`;
+  let l; try{ l=await rpc("fx_prices",{p_spec:null})||[]; }catch(e){ $("#prl").innerHTML=`<div class="msg err">${esc(errText(e))}</div>`; return; }
+  const draw=()=>{ const q=norm($("#prq").value); const f=l.filter(r=>!q||norm([r.spec,r.spec_name,r.customer||"",r.color||""].join(" ")).includes(q));
+    $("#prl").innerHTML=f.map(r=>`<div class="row-i" data-id="${r.id}"><div class="mid"><div class="t">${esc(r.spec_name)} ${cd(r.spec)}${r.wh?` · ${r.wh==="greige"?"خام":"مجهز"}`:""}${r.color?` · ${esc(r.color)}`:""}</div><div class="m">${r.customer?`سعر خاص لـ ${esc(r.customer)}`:"سعر عام"} · من ${esc(r.from)}${r.note?` · ${esc(r.note)}`:""}</div></div>
+      <div class="a"><span class="num">${fmt2(r.price)}</span><small>ج/كجم</small></div>${isOwner()?`<button class="linkbtn" data-off>شيل</button>`:""}</div>`).join("")||`<div class="state"><strong>لسه مفيش أسعار</strong></div>`; };
+  $("#prq").oninput=draw; draw();
+  $("#prl").onclick=async e=>{ const b=e.target.closest("[data-off]"); if(!b) return; try{ await rpc("fx_price_off",{p_id:+b.closest("[data-id]").dataset.id}); toast("اتشال"); drawPrices(el); }catch(err){ toast(errText(err),true); } };
+  if($("#prnew")) $("#prnew").onclick=async()=>{ await Promise.all([ensureCustomers(),ensureSpecs()]); let sp=null, cu=null, wh="";
+    sheet(`<div class="sheet-h"><h3>سعر جديد</h3></div><label><span>الصنف *</span><div id="psp"></div></label><label><span>العميل (لو سعر خاص)</span><div id="pcu"></div></label>
+      <div class="seg sm" id="pwh"><button type="button" data-k="" aria-pressed="true">خام ومجهز</button><button type="button" data-k="finished" aria-pressed="false">مجهز</button><button type="button" data-k="greige" aria-pressed="false">خام</button></div>
+      <div class="row"><label class="grow"><span>اللون (لو السعر للون معين)</span><input type="text" id="pcol"></label><label class="grow"><span>سعر الكيلو *</span><input type="number" id="ppr" step="0.01" inputmode="decimal"></label></div>
+      <div class="row"><label class="grow"><span>يبدأ من</span><input type="date" id="pfr" value="${new Date().toISOString().slice(0,10)}"></label><label class="grow"><span>ملاحظة</span><input type="text" id="pno"></label></div>
+      <div id="pm3"></div><div class="row"><button class="btn primary grow" id="pgo">احفظ</button><button class="btn" id="px">إلغاء</button></div>`);
+    picker($("#psp"),S.specs,x=>`${x.code} · ${x.name}`,"الصنف",p=>sp=p); picker($("#pcu"),S.customers,x=>`${x.name} · ${x.code}`,"سيبه فاضي للسعر العام",p=>cu=p);
+    $("#pwh").onclick=e=>{const b=e.target.closest("button");if(!b)return;wh=b.dataset.k;$("#pwh").querySelectorAll("button").forEach(x=>x.setAttribute("aria-pressed",x===b))};
+    $("#px").onclick=closeSheet;
+    $("#pgo").onclick=async()=>{ if(!sp||!($("#ppr").value>=0&&$("#ppr").value!=="")) return $("#pm3").innerHTML=`<div class="msg err">اختار الصنف واكتب السعر.</div>`;
+      try{ await rpc("fx_price_save",{p_id:null,p_customer:cu?cu.code:null,p_spec:sp.code,p_wh:wh||null,p_color:$("#pcol").value||null,p_price:+$("#ppr").value,p_from:$("#pfr").value||null,p_note:$("#pno").value||null}); closeSheet(); toast("السعر اتحفظ"); drawPrices(el); }
+      catch(e){ $("#pm3").innerHTML=`<div class="msg err">${esc(errText(e))}</div>`; } }; };
+}
+async function arRequest(code){ await ensureCustomers(); let cust=code?S.customers.find(x=>x.code===code):null;
+  sheet(`<div class="sheet-h"><h3>طلب اطلاع على حساب عميل</h3></div><div class="sub">الطلب بيروح لقسم الحسابات، ولو اتوافق تقدر تعرض كشف الحساب وتطبعه وتبعته لحد آخر النهارده بس.</div>
+   <label><span>العميل</span><div id="rqc"></div></label><label><span>اسمك</span><input type="text" id="rqn" value="${esc(lsGet("soffar_sales_name"))}"></label><label><span>السبب</span><input type="text" id="rqp" placeholder="مثلاً: العميل طالب كشف حساب"></label>
+   <div id="rqm"></div><div class="row"><button class="btn primary grow" id="rqgo">ابعت الطلب</button><button class="btn" id="rqx">إلغاء</button></div>`);
+  picker($("#rqc"),S.customers,x=>`${x.name} · ${x.code}`,"اكتب اسم العميل أو كوده",p=>cust=p,recentCustomers(),cust);
+  $("#rqx").onclick=closeSheet;
+  $("#rqgo").onclick=async()=>{ if(!cust) return $("#rqm").innerHTML=`<div class="msg err">اختار العميل.</div>`; lsSet("soffar_sales_name",$("#rqn").value.trim());
+    try{ await rpc("fx_ar_access_request",{p_customer:cust.code,p_purpose:$("#rqp").value,p_requester:$("#rqn").value}); closeSheet(); toast("الطلب اتبعت للحسابات 👍"); if(S.tab==="ar"&&!S.arCust) viewAR(); }
+    catch(e){ $("#rqm").innerHTML=`<div class="msg err">${esc(errText(e))}</div>`; } };
+}
+async function viewARSales(){
+  const v=$("#view");
+  v.innerHTML=header("حسابات العملاء",refreshBtn())+`<div class="card pad stack"><div class="sub">عشان تشوف كشف حساب عميل، اطلبه من قسم الحسابات. لما يوافقوا يبقى متاح ليك تعرضه وتطبعه وتبعته لحد آخر النهارده.</div>
+     <div class="row wrapbtns"><button class="btn primary" id="sreq">اطلب كشف حساب</button><button class="btn" id="spay">سجّل تحصيل من عميل</button></div></div>
+   <div class="section-h"><h2>طلباتك</h2></div><div class="card" id="smy"><div class="state">بيحمّل…</div></div>`;
+  bindHeader(); $("#rf").onclick=()=>viewAR(); $("#sreq").onclick=()=>arRequest(null); $("#spay").onclick=()=>openAREntry({kind:"payment"});
+  try{ const l=await rpc("fx_ar_my_access")||[];
+    $("#smy").innerHTML=l.length?l.map(a=>`<div class="row-i" data-c="${esc(a.customer_code)}"><div class="mid"><div class="t">${esc(a.customer)} ${cd(a.customer_code)}</div><div class="m">${a.active?`متاح لحد ${dt(a.valid_until)}`:a.status==="pending"?"مستني موافقة الحسابات":a.status==="rejected"?"اترفض":"انتهى"} · ${dt(a.created_at)}</div></div>${a.active?`<button class="btn sm primary" data-open>اعرض الكشف</button>`:""}</div>`).join("")
+      :`<div class="state"><strong>مفيش طلبات</strong></div>`;
+    $("#smy").onclick=e=>{ const b=e.target.closest("[data-open]"); if(b) openARCustomer(b.closest("[data-c]").dataset.c); };
+  }catch(e){ $("#smy").innerHTML=`<div class="msg err">${esc(errText(e))}</div>`; }
 }
 
 /* ============ pickers ============ */
@@ -1941,7 +2181,9 @@ async function openCustomerDetail(code){
    ${wos.length?`<div class="dsec">أوامر الشغل</div><div class="card">${wos.slice(0,30).map(w=>`<div class="item"><div class="item-top"><div class="item-title"><span class="num">${esc(w.wo_no)}</span> · ${esc(w.spec||"")} ${cd(w.spec_code)}</div><span class="chip st-${w.status}">${WO_ST[w.status]||w.status}</span></div><div class="kv"><span>${esc(w.color||"")}</span><span>المطلوب <b class="num">${fmt(w.qty)}</b></span><span>اتسلّم <b class="num">${fmt(w.delivered)}</b></span></div></div>`).join("")}</div>`:""}
    ${res.length?`<div class="dsec">الحجوزات</div><div class="card">${res.slice(0,30).map(x=>`<div class="item"><div class="item-top"><div class="item-title">${esc(x.spec||"")} ${cd(x.spec_code)} · ${esc(x.color||"")}</div><span class="chip st-${x.status}">${RES_ST[x.status]||x.status}</span></div><div class="kv"><span>الكمية <b class="num">${fmt2(x.qty)}</b></span>${x.status==="sold"?`<span>اتسلّم <b class="num">${fmt2(x.delivered)}</b></span>`:""}<span>${dt(x.at)}</span></div></div>`).join("")}</div>`:""}
    ${!wos.length&&!res.length&&!st.length?`<div class="state">مفيش حركة على العميل ده لسه.</div>`:""}
+   <button class="btn" id="cdar">${isAcc()?"كشف حساب العميل":"اطلب كشف حساب من الحسابات"}</button>
    ${sheetClose}`);
+  $("#cdar").onclick=()=>{ if(isAcc()){ closeSheet(); openARCustomer(d.code); } else arRequest(d.code); };
 }
 async function openSupplierDetail(code){
   sheet(`<div class="state">بيحمّل…</div>`);
@@ -2855,6 +3097,8 @@ async function openLink(kind,id){
     if(kind==="wo"){ const l=await rpc("fx_work_orders",{p_open_only:false}); const w=(l||[]).find(x=>String(x.id)===String(id)); if(w) openWODetail(w); else toast("الأمر ده مش موجود",true); }
     else if(kind==="reservation"){ const l=await rpc("fx_reservations",{p_status:"all"}); const r=(l||[]).find(x=>String(x.id)===String(id)); if(r) openResDetail(r); else toast("الحجز ده مش ظاهر لك",true); }
     else if(kind==="so"){ openSO(+id); }
+    else if(kind==="ar"){ if(isAcc()) openARCustomer(id); else goTab("ar"); }
+    else if(kind==="aracc"){ S.arTab="access"; S.arCust=null; goTab("ar"); }
     else if(kind==="plan"){ goTab("plan"); if(!S.plan) await loadPlan(); const n=findNode(String(id)); if(n) openPlanNode(n); }
     else if(kind==="stock"){ const [w,sp,ck]=String(id).split("|"); if(!S.stock) await loadStock(); const r=S.stock.rows.find(x=>x.w===w&&x.spec===sp&&x.ck===ck&&x.free); if(r) openStockDetail(r); else openMaterial(String(sp).slice(0,5)); }
   }catch(e){ toast(errText(e),true); }
