@@ -517,6 +517,7 @@ details.card summary{padding:10px 14px;cursor:pointer}
 .tcxcode{font-weight:700;font-size:.82rem;padding:0 8px}
 .tcxn{font-size:.72rem;color:var(--muted);padding:0 8px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .tcxhead{align-items:center;gap:14px} .tcxhead h3{margin:0}
+.bsubs.ticking{-webkit-mask-image:linear-gradient(to left,transparent 0,#000 18px,#000 calc(100% - 18px),transparent 100%);mask-image:linear-gradient(to left,transparent 0,#000 18px,#000 calc(100% - 18px),transparent 100%)}
 </style>
 </head>
 <body>
@@ -530,7 +531,7 @@ const DEV_KEY = "";
 const APP_URL = "https://mohamedsofar77-lgtm.github.io/soffar-sales/";
 // نسخة التدريب: لو حد فتح التطبيق من غير رابط، بيدخل على وضع المراجعة والتدريب (قراءة بس)
 const PREVIEW_KEY = "";
-const APP_VERSION = "20261124143138";
+const APP_VERSION = "20261124143709";
 // رابط الدخول: الموظف بيفتح الرابط اللي فيه #k=... مرة واحدة، والتطبيق بيفتكره على الموبايل
 const KEY = (()=>{ let k=""; const m=(location.hash||"").match(/k=([A-Za-z0-9]+)/);
   if(m){ k=m[1]; try{ localStorage.setItem("soffar_key",k); }catch(e){} try{ history.replaceState(null,"",location.pathname+location.search); }catch(e){} }
@@ -783,7 +784,7 @@ function renderShell(){
     S.tab=b.dataset.tab; S.planCard=""; S.soId=null; if(S.tab==="stock"){ S.f.mat=""; S.f.spec=""; S.f.fam=""; }
     app.querySelectorAll("[data-tab]").forEach(x=>{ if(x===b) x.setAttribute("aria-current","page"); else x.removeAttribute("aria-current"); });
     show(); });
-  show(); startPolling(); startUpdateCheck();
+  show(); startPolling(); startUpdateCheck(); tickerStart();
 }
 /* auto-update: the mobile version checks version.json and reloads itself when a newer build is published */
 function startUpdateCheck(){
@@ -2785,6 +2786,24 @@ async function pollInbox(silent){
     if(S.tab==="inbox" && !silent) drawInbox();
   }catch(e){}
 }
+
+/* ---- chip rows scroll like a news ticker ---- */
+const TICK={st:new WeakMap(), on:false, last:0};
+function tickerStart(){ if(TICK.on) return; TICK.on=true;
+  const reduce=window.matchMedia&&window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  const pause=(el,ms)=>{ const st=TICK.st.get(el)||{}; st.until=performance.now()+ms; TICK.st.set(el,st); };
+  ["pointerdown","wheel","touchstart","focusin","mouseover"].forEach(ev=>document.addEventListener(ev,e=>{ const el=e.target&&e.target.closest&&e.target.closest(".bsubs:not(.fwrap)"); if(el) pause(el, ev==="mouseover"?1500:5000); },{passive:true,capture:true}));
+  const step=(t)=>{ const dt=Math.min(64,t-(TICK.last||t)); TICK.last=t;
+    if(!reduce&&!document.hidden) document.querySelectorAll(".bsubs:not(.fwrap)").forEach(el=>{
+      const max=el.scrollWidth-el.clientWidth; const tick=max>8&&el.offsetParent!==null; el.classList.toggle("ticking",tick); if(!tick) return;
+      let st=TICK.st.get(el); if(!st){ st={until:t+2500,pos:0}; TICK.st.set(el,st); }
+      if(t<st.until){ st.pos=Math.abs(el.scrollLeft); return; }
+      const rtl=getComputedStyle(el).direction==="rtl"; st.pos=(st.pos||0)+dt*0.035;
+      if(st.pos>=max){ st.pos=max; el.scrollLeft=rtl?-max:max; st.until=t+1800; st.reset=true; return; }
+      if(st.reset){ st.reset=false; st.pos=0; el.scrollTo({left:0,behavior:"smooth"}); st.until=t+2200; return; }
+      el.scrollLeft=rtl?-st.pos:st.pos; });
+    requestAnimationFrame(step); };
+  requestAnimationFrame(step); }
 function startPolling(){ if(S._poll) return; pollInbox(true); S._poll=setInterval(()=>{ if(!document.hidden) pollInbox(false); },45000);
   document.addEventListener("visibilitychange",()=>{ if(!document.hidden) pollInbox(false); }); }
 
