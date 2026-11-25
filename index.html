@@ -564,7 +564,7 @@ const DEV_KEY = "";
 const APP_URL = "https://mohamedsofar77-lgtm.github.io/soffar-sales/";
 // نسخة التدريب: لو حد فتح التطبيق من غير رابط، بيدخل على وضع المراجعة والتدريب (قراءة بس)
 const PREVIEW_KEY = "";
-const APP_VERSION = "20261125155940";
+const APP_VERSION = "20261125194603";
 // رابط الدخول: الموظف بيفتح الرابط اللي فيه #k=... مرة واحدة، والتطبيق بيفتكره على الموبايل
 const KEY = (()=>{ let k=""; const m=(location.hash||"").match(/k=([A-Za-z0-9]+)/);
   if(m){ k=m[1]; try{ localStorage.setItem("soffar_key",k); }catch(e){} try{ history.replaceState(null,"",location.pathname+location.search); }catch(e){} }
@@ -813,8 +813,8 @@ function tabsFor(role){
   const t = [["home","الرئيسية",ICONS.home],["stock","الرصيد",ICONS.stock],["res","الحجوزات",ICONS.res],["wo","التشغيل",ICONS.wo]];
   if (role==="sales") t.splice(1,0,["order","حجز طلبية",ICONS.new]);
   if (role==="accounts") t.splice(1,0,["ar","الحسابات",ICONS.chart]);
-  if (role==="warehouse"||role==="admin") t.push(["warehouse","المخزن",ICONS.box]);
-  if (role==="warehouse"||role==="admin"||role==="planning") t.push(["yarn","الغزل",ICONS.yarn]);
+  if (role==="warehouse"||role==="admin") t.push(["warehouse","مخزن القماش",ICONS.box]);
+  if (role==="warehouse"||role==="admin"||role==="planning") t.push(["yarn","مخزن الغزل",ICONS.yarn]);
   if (role==="quality") t.push(["warehouse","الجودة",ICONS.box]);
   t.push(["basics","الأساسيات",ICONS.grid]);
   return t;
@@ -2741,7 +2741,7 @@ async function loadYarn(force){
 const yCan = k => !!(S.ym && S.ym.can && S.ym.can[k]);
 async function viewYarn(){
   navRecord(); const v=$("#view");
-  v.innerHTML = header("مخزن الغزل", refreshBtn()) +
+  v.innerHTML = header("مخزن الغزل", refreshBtn()) + `<div class="sub">مواد أولية: الغزل المحلي والمستورد</div>` +
     `<div class="bsubs fwrap" id="ytab">${[["stock","الرصيد"],["reqs","طلبات الصرف"],["colors","ألوان الشانيه"]].map(([k,l])=>`<button data-k="${k}" aria-pressed="${S.yTab===k}">${l}</button>`).join("")}</div>
      <div id="ybody" class="stack"><div class="state">بيحمّل الغزل…</div></div>`;
   bindHeader();
@@ -3259,7 +3259,7 @@ async function viewWarehouse(){
     : role==="warehouse" ? [["accept","استلام من الجودة"],["out","صرف"],["in","وارد"],["find","بحث توب"],["moves","الحركات"],["labels","ملصقات"]]
     : [["quality","الجودة"],["accept","استلام من الجودة"],["out","صرف"],["in","وارد"],["find","بحث توب"],["moves","الحركات"],["labels","ملصقات"]];
   if(!subs.some(x=>x[0]===S.whTab)) S.whTab=subs[0][0];
-  v.innerHTML=header(role==="quality"?"الجودة":"المخزن")+`<div class="bsubs" id="wsubs">${subs.map(([k,l])=>`<button data-k="${k}" aria-pressed="${S.whTab===k}">${l}</button>`).join("")}</div><div class="stack" id="wbox"><div class="state">بيحمّل…</div></div>`;
+  v.innerHTML=header(role==="quality"?"الجودة":"مخزن القماش")+`${role==="quality"?"":`<div class="sub">منتجات تامة: قماش خام وقماش مجهز</div>`}<div class="bsubs" id="wsubs">${subs.map(([k,l])=>`<button data-k="${k}" aria-pressed="${S.whTab===k}">${l}</button>`).join("")}</div><div class="stack" id="wbox"><div class="state">بيحمّل…</div></div>`;
   bindHeader();
   $("#wsubs").onclick=e=>{const b=e.target.closest("button");if(!b)return;S.whTab=b.dataset.k;viewWarehouse()};
   const box=$("#wbox");
