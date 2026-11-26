@@ -671,6 +671,81 @@ nav.tabs button[aria-current="page"]::before{content:"";position:absolute;top:-4
 .tklist .row-i.dtk .a{border-right:1px dashed var(--line);padding-right:12px}
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .logo{background:#1d3a78}}
 :root[data-theme="dark"] .logo{background:#1d3a78}
+
+/* ===== depth, colour & desktop platform ===== */
+:root{ --shadow:0 1px 2px rgba(16,24,40,.05),0 4px 14px rgba(16,24,40,.06); --shadow-h:0 2px 4px rgba(16,24,40,.06),0 12px 28px rgba(16,24,40,.10);
+  --c-blue:#2f5bd3; --c-blue-s:#e8eefc; --c-teal:#0e8a6a; --c-teal-s:#e2f5ef; --c-amber:#b7791f; --c-amber-s:#fdf3e1; --c-violet:#6741d9; --c-violet-s:#efeafd; --c-rose:#c92a2a; --c-rose-s:#fdecec }
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){ --shadow:0 1px 2px rgba(0,0,0,.4),0 6px 18px rgba(0,0,0,.25); --shadow-h:0 2px 4px rgba(0,0,0,.45),0 14px 30px rgba(0,0,0,.35);
+  --c-blue:#8eaaf5; --c-blue-s:#1c2747; --c-teal:#5fd0ae; --c-teal-s:#123329; --c-amber:#f1c06e; --c-amber-s:#33270f; --c-violet:#b39cf5; --c-violet-s:#261e44; --c-rose:#f28b8b; --c-rose-s:#3a1717 }}
+:root[data-theme="dark"]{ --shadow:0 1px 2px rgba(0,0,0,.4),0 6px 18px rgba(0,0,0,.25); --shadow-h:0 2px 4px rgba(0,0,0,.45),0 14px 30px rgba(0,0,0,.35);
+  --c-blue:#8eaaf5; --c-blue-s:#1c2747; --c-teal:#5fd0ae; --c-teal-s:#123329; --c-amber:#f1c06e; --c-amber-s:#33270f; --c-violet:#b39cf5; --c-violet-s:#261e44; --c-rose:#f28b8b; --c-rose-s:#3a1717 }
+.card,.spec,.kpi,.totals div,.quick button,.item.tkt,.tklist .row-i.dtk,.fam-card{box-shadow:var(--shadow) !important;border-color:transparent !important}
+.hero{box-shadow:var(--shadow);border-color:transparent}
+button.kpi,.quick button,.fam-card,.item.tkt,.tklist .row-i.dtk{transition:box-shadow .15s,transform .15s}
+button.kpi:hover,.quick button:hover,.fam-card:hover,.item.tkt:hover,.tklist .row-i.dtk:hover{box-shadow:var(--shadow-h) !important;transform:translateY(-1px)}
+.t-g .dot{background:var(--c-amber-s);color:var(--c-amber)} .t-f .dot{background:var(--c-blue-s);color:var(--c-blue)}
+.t-r .dot{background:var(--c-violet-s);color:var(--c-violet)} .t-w .dot{background:var(--c-teal-s);color:var(--c-teal)}
+.kpi .dot{width:34px;height:34px;border-radius:10px}.kpi .dot svg{width:18px;height:18px}
+.kpi .v .num{font-size:1.45rem;font-weight:700}
+.quick button:nth-child(6n+1) span.qi{background:var(--c-blue-s);color:var(--c-blue)}
+.quick button:nth-child(6n+2) span.qi{background:var(--c-teal-s);color:var(--c-teal)}
+.quick button:nth-child(6n+3) span.qi{background:var(--c-violet-s);color:var(--c-violet)}
+.quick button:nth-child(6n+4) span.qi{background:var(--c-amber-s);color:var(--c-amber)}
+.quick button:nth-child(6n+5) span.qi{background:var(--c-rose-s);color:var(--c-rose)}
+.mi:nth-child(4n+2) .mic{background:var(--c-teal-s);color:var(--c-teal)}
+.mi:nth-child(4n+3) .mic{background:var(--c-violet-s);color:var(--c-violet)}
+.mi:nth-child(4n+4) .mic{background:var(--c-amber-s);color:var(--c-amber)}
+.sumx{background:linear-gradient(135deg,#0f2a5f 0%,#1d4594 60%,#2a5bc0 100%) !important;color:#fff;box-shadow:0 10px 30px rgba(15,42,95,.28) !important}
+.sumx .sub,.sumx .sx-v small,.sumx .sx-c .k,.sumx .sx-c small{color:rgba(255,255,255,.78)}
+.sumx .sx-v .num{color:#fff}
+.sumx .chip.s{border-color:rgba(255,255,255,.35);color:#fff;background:rgba(255,255,255,.1)}
+.sumx .sx-bar{background:rgba(255,255,255,.18)} .sumx .sx-bar .f{background:#8fb0ff} .sumx .sq.f{background:#8fb0ff}
+.sumx .sx-split{border-top-color:rgba(255,255,255,.16)} .sumx .sx-c+.sx-c{border-right-color:rgba(255,255,255,.16)}
+.sumx .sx-c{color:#fff}
+.side{display:none}
+@media (min-width:1024px){
+  body{font-size:14.5px}
+  .side{display:flex;flex-direction:column;position:fixed;top:0;bottom:0;right:0;width:256px;background:#0f2a5f;color:#dfe6f5;z-index:5;box-shadow:-4px 0 24px rgba(15,42,95,.12)}
+  .side-brand{display:flex;align-items:center;gap:10px;padding:20px 18px 18px;border-bottom:1px solid rgba(255,255,255,.08)}
+  .side-brand .logo{background:#fff;color:#0f2a5f}
+  .side-brand .bnm{display:flex;flex-direction:column;line-height:1.2}
+  .side-brand .bnm b{font-size:16px;color:#fff}
+  .side-brand .bnm small{font-size:10px;letter-spacing:1.2px;color:#9fb1d8}
+  .side-sc{flex:1;overflow:auto;padding:10px 10px 16px}
+  .sg{font-size:11px;font-weight:700;color:#8ea3cf;letter-spacing:.4px;padding:14px 10px 6px}
+  .sb{display:flex;align-items:center;gap:10px;width:100%;border:0;background:transparent;color:#dfe6f5;font-size:13.5px;font-weight:500;padding:9px 10px;border-radius:9px;text-align:right;cursor:pointer}
+  .sb svg{width:18px;height:18px;opacity:.85;flex:none}
+  .sb:hover{background:rgba(255,255,255,.07)}
+  .sb[aria-current="page"]{background:#fff;color:#0f2a5f;font-weight:700;box-shadow:0 4px 12px rgba(0,0,0,.15)}
+  .sb[aria-current="page"] svg{opacity:1}
+  .side-ft{display:flex;align-items:center;gap:10px;padding:14px 16px;border-top:1px solid rgba(255,255,255,.08)}
+  .side-ft .mic{background:rgba(255,255,255,.1);color:#fff}
+  .side-ft b{display:block;font-size:13px;color:#fff}.side-ft small{font-size:11px;color:#9fb1d8}
+  nav.tabs{display:none}
+  .wrap{max-width:none;width:auto;margin:0 256px 0 0;padding:24px 32px 48px !important}
+  .wrap > *{max-width:1280px;width:100%;margin-inline:auto}
+  .hero{display:flex;align-items:center;justify-content:space-between;padding:4px 8px}
+  .hero .appbar{order:2;border:0;padding:10px}
+  .hero .appbar .brandx{display:none}
+  .hero .hero-in{order:1;flex:1;padding:12px 12px;gap:16px;justify-content:flex-start;align-items:center}
+  .hero h1{font-size:1.55rem}
+  .hero .role{order:2}
+  .kpis{grid-template-columns:repeat(auto-fit,minmax(240px,1fr))}
+  .quick{grid-template-columns:repeat(6,minmax(0,1fr))}
+  .sumx{display:grid;grid-template-columns:1.2fr 1fr;align-items:stretch}
+  .sumx .sx-top,.sumx .sx-v,.sumx .sx-bar{grid-column:1}
+  .sumx .sx-split{grid-column:2;grid-row:1/4;border-top:0;border-right:1px solid rgba(255,255,255,.16)}
+  .sumx .sx-c{justify-content:center;padding:18px 24px}
+  .sumx .sx-c b{font-size:1.6rem}
+  .sumx .sx-v .num{font-size:2.6rem}
+  #wlist{display:grid !important;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px;align-items:start}
+  .tklist{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+  .fam-grid{grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:14px}
+  .top-list .row-i{padding:13px 20px}
+  .sheet{width:min(760px,92vw);max-height:88vh}
+  .orgc{padding:20px 24px}
+}
+@media (min-width:1440px){ #wlist,.tklist{grid-template-columns:repeat(3,minmax(0,1fr))} }
 </style>
 </head>
 <body>
@@ -684,7 +759,7 @@ const DEV_KEY = "";
 const APP_URL = "https://mohamedsofar77-lgtm.github.io/soffar-sales/";
 // نسخة التدريب: لو حد فتح التطبيق من غير رابط، بيدخل على وضع المراجعة والتدريب (قراءة بس)
 const PREVIEW_KEY = "";
-const APP_VERSION = "20261126184320";
+const APP_VERSION = "20261126190244";
 // رابط الدخول: الموظف بيفتح الرابط اللي فيه #k=... مرة واحدة، والتطبيق بيفتكره على الموبايل
 const KEY = (()=>{ let k=""; const m=(location.hash||"").match(/k=([A-Za-z0-9]+)/);
   if(m){ k=m[1]; try{ localStorage.setItem("soffar_key",k); }catch(e){} try{ history.replaceState(null,"",location.pathname+location.search); }catch(e){} }
@@ -950,7 +1025,7 @@ function allSections(role){
   L.push(["reports","التقارير",ICONS.chart,"المتابعة"],["inbox","التنبيهات والتحويلات",ICONS.bell,"المتابعة"],["basics","الأساسيات والتكويد",ICONS.grid,"الإعدادات"],["guide","دليل التشغيل",ICONS.book,"الإعدادات"]);
   return L;
 }
-function markTab(k){ const bs=[...app.querySelectorAll("nav.tabs [data-tab]")]; const has=bs.some(x=>x.dataset.tab===k); bs.forEach(x=>{ if(x.dataset.tab===(has?k:"more")) x.setAttribute("aria-current","page"); else x.removeAttribute("aria-current"); }); }
+function markTab(k){ app.querySelectorAll(".side [data-tab]").forEach(x=>{ if(x.dataset.tab===k) x.setAttribute("aria-current","page"); else x.removeAttribute("aria-current"); }); const bs=[...app.querySelectorAll("nav.tabs [data-tab]")]; const has=bs.some(x=>x.dataset.tab===k); bs.forEach(x=>{ if(x.dataset.tab===(has?k:"more")) x.setAttribute("aria-current","page"); else x.removeAttribute("aria-current"); }); }
 async function viewMore(){
   const v=$("#view"); const L=allSections(S.me.role); const groups=[...new Set(L.map(x=>x[3]))];
   v.innerHTML=header("كل الأقسام")+`<section class="card orgc"><span class="logo lg" aria-hidden="true">ص</span><div class="mid"><b>صفار جروب</b><div class="sub">مصنع تريكو دائري · نظام المبيعات والإنتاج</div></div><span class="chip f">${esc(S.me.department_name||ROLE_AR[S.me.realRole||S.me.role]||"")}</span></section>`
@@ -959,7 +1034,11 @@ async function viewMore(){
   v.onclick=e=>{ const g=e.target.closest("[data-go]"); if(!g) return; const k=g.dataset.go; if(k==="plan"){ S.planCard=""; S.soId=null; } if(k==="ar") S.arCust=null; goTab(k); };
 }
 function renderShell(){
-  app.innerHTML = `<div class="wrap" id="view"></div>
+  const SL=allSections(S.me.role), SG=[...new Set(SL.map(x=>x[3]))];
+  app.innerHTML = `<aside class="side" aria-label="القائمة الرئيسية"><div class="side-brand"><span class="logo" aria-hidden="true">ص</span><span class="bnm"><b>صفار جروب</b><small dir="ltr">SOFFAR GROUP</small></span></div>
+  <div class="side-sc"><button type="button" class="sb" data-tab="home">${ICONS.home}<span>لوحة المتابعة</span></button>${SG.map(g=>`<div class="sg">${g}</div>${SL.filter(x=>x[3]===g).map(([k,l,i])=>`<button type="button" class="sb" data-tab="${k}">${i}<span>${l}</span></button>`).join("")}`).join("")}</div>
+  <div class="side-ft"><span class="mic">${ICONS.user}</span><span><b>${esc(S.me.department_name||ROLE_AR[S.me.realRole||S.me.role]||"")}</b><small>${S.me.preview?"مراجعة وتدريب":"نظام المبيعات والإنتاج"}</small></span></div></aside>
+  <div class="wrap" id="view"></div>
   <nav class="tabs"><div class="in">${tabsFor(S.me.role).map(([k,l,i])=>`<button data-tab="${k}" ${S.tab===k?'aria-current="page"':""}>${i}<span>${l}</span></button>`).join("")}</div></nav>
   <div id="sheet"></div>`;
   app.querySelectorAll("[data-tab]").forEach(b=>b.onclick=()=>{
