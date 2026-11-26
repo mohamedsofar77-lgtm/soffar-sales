@@ -440,6 +440,14 @@ textarea{width:100%;font:inherit;border:1px solid var(--line);background:var(--s
 .bsubs.fwrap{flex-wrap:wrap;overflow:visible}
 .fgrp{margin-top:-4px}
 .bsubs button[aria-pressed="true"]{background:var(--indigo);color:#fff}
+.shnav{position:sticky;top:-18px;z-index:3;margin:-18px calc(-1 * max(16px,env(safe-area-inset-left,0px))) 0;padding:10px max(12px,env(safe-area-inset-left,0px));display:flex;align-items:center;gap:6px;background:var(--surface);border-bottom:1px solid var(--line);border-radius:18px 18px 0 0}
+.shnav .shb{display:inline-flex;align-items:center;gap:4px;min-height:36px;max-width:42%;border:1px solid var(--line);border-radius:99px;padding:4px 12px 4px 10px;background:transparent;color:inherit;font:inherit;font-size:.82rem;font-weight:600;cursor:pointer}
+.shnav .shb svg{width:16px;height:16px;flex:none}
+.shnav .shb .shl{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;min-width:0}
+.shnav .shb:disabled{opacity:.35;cursor:default}
+.shnav .shb:not(:disabled){border-color:var(--indigo);color:var(--indigo);background:var(--indigo-soft)}
+.shnav .shstep{flex:1;text-align:center;font-size:.75rem;color:var(--muted)}
+.shnav .shx{width:36px;height:36px;flex:none;border:0;border-radius:50%;background:var(--indigo-soft);color:var(--ink);font-size:1rem;cursor:pointer}
 .sheet-h{display:flex;justify-content:space-between;align-items:center}
 .sheet-h h3{margin:0;font-size:1.05rem}
 .seg.sm button{padding:6px 6px;font-size:.85rem}
@@ -866,7 +874,7 @@ const DEV_KEY = "";
 const APP_URL = "https://mohamedsofar77-lgtm.github.io/soffar-sales/";
 // نسخة التدريب: لو حد فتح التطبيق من غير رابط، بيدخل على وضع المراجعة والتدريب (قراءة بس)
 const PREVIEW_KEY = "";
-const APP_VERSION = "20261126233527";
+const APP_VERSION = "20261126234117";
 // رابط الدخول: الموظف بيفتح الرابط اللي فيه #k=... مرة واحدة، والتطبيق بيفتكره على الموبايل
 const KEY = (()=>{ let k=""; const m=(location.hash||"").match(/k=([A-Za-z0-9]+)/);
   if(m){ k=m[1]; try{ localStorage.setItem("soffar_key",k); }catch(e){} try{ history.replaceState(null,"",location.pathname+location.search); }catch(e){} }
@@ -1201,10 +1209,10 @@ function navRecord(){ if(NAV.restoring) return; const s=navSnap(), k=JSON.string
 function updNav(){ const b=$("#navb"), f=$("#navf"); if(b) b.disabled=NAV.i<=0; if(f) f.disabled=NAV.i>=NAV.stack.length-1; }
 function navGo(d){ const j=NAV.i+d; if(j<0||j>=NAV.stack.length) return; NAV.i=j; const s=NAV.stack[j];
   NAV.restoring=true;
-  try{ S.f.fam=s.fam; S.f.mat=s.mat; S.f.spec=s.spec; if(s.bTab) S.bTab=s.bTab; if(s.whTab) S.whTab=s.whTab; if(s.yt) S.yTab=s.yt; if(s.dt) S.dTab=s.dt; S.f.limit=40; if(s.tab==="plan"){ S.planCard=s.pc||""; S.soId=s.so||null; } if(s.tab==="ar") S.arCust=s.ac||null; closeSheet(); goTab(s.tab,true); }
+  try{ S.f.fam=s.fam; S.f.mat=s.mat; S.f.spec=s.spec; if(s.bTab) S.bTab=s.bTab; if(s.whTab) S.whTab=s.whTab; if(s.yt) S.yTab=s.yt; if(s.dt) S.dTab=s.dt; S.f.limit=40; if(s.tab==="plan"){ S.planCard=s.pc||""; S.soId=s.so||null; } if(s.tab==="ar") S.arCust=s.ac||null; closeAllSheets(); goTab(s.tab,true); }
   finally{ NAV.restoring=false; } updNav(); }
 window.addEventListener("popstate",()=>{ if(!S.me) return;
-  if($("#sheet")&&$("#sheet").innerHTML){ closeSheet(); try{ history.pushState({soffarNav:NAV.i},""); }catch(e){} return; }
+  if($("#sheet")&&$("#sheet").innerHTML){ if(SH.back.length) shBack(); else closeAllSheets(); try{ history.pushState({soffarNav:NAV.i},""); }catch(e){} return; }
   if(NAV.i>0) navGo(-1); });
 function show(){ navRecord(); try{ markTab(S.tab); }catch(e){} const v=$("#view"); if(v) v.onclick=null; ({home:viewHome, more:viewMore, find:viewFind, cfind:viewCFind, guide:viewGuide, inbox:viewInbox, warehouse:viewWarehouse, reports:viewReports, stock:viewStock, plan:viewPlan, order:viewOrder, ar:viewAR, new:viewNew, yarn:viewYarn, dye:viewDye, res:viewRes, wo:viewWO, basics:viewBasics}[S.tab]||viewStock)(); window.scrollTo(0,0); }
 
@@ -2573,9 +2581,42 @@ function picker(container, items, label, placeholder, onPick, recent, initial){
   };
   draw();
 }
-function sheet(html){ $("#sheet").innerHTML=`<div class="sheet-bg"><div class="sheet" role="dialog" aria-modal="true">${html}</div></div>`;
-  $("#sheet .sheet-bg").onclick=e=>{ if(e.target.classList.contains("sheet-bg")) closeSheet(); }; }
-function closeSheet(){ $("#sheet").innerHTML=""; }
+/* sheet history: back / forward between side pages (DOM nodes kept with their handlers) */
+const SH={back:[],fwd:[],pend:null};
+const shTitle=n=>{ if(!n) return ""; const h=n.querySelector(".sheet-h h3")||n.querySelector(".dhead h2")||n.querySelector(".sheet h2, .sheet h3"); return h?h.textContent.replace(/\s+/g," ").trim():""; };
+const shLoading=n=>{ const st=n&&n.querySelector(".sheet > .state"); return !!(st&&/^بيحمّل/.test(st.textContent.trim())); };
+function shBar(){ const host=$("#sheet"); if(!host) return; const bar=host.querySelector(".shnav"); if(!bar) return;
+  const b=bar.querySelector("[data-shnav=b]"), f=bar.querySelector("[data-shnav=f]");
+  const pt=SH.back.length?shTitle(SH.back[SH.back.length-1]):"", nt=SH.fwd.length?shTitle(SH.fwd[SH.fwd.length-1]):"";
+  b.disabled=!SH.back.length; f.disabled=!SH.fwd.length;
+  b.title=pt?"رجوع لـ: "+pt:"مفيش صفحة قبلها"; f.title=nt?"قدّام لـ: "+nt:"مفيش صفحة بعدها";
+  b.querySelector(".shl").textContent=pt||"رجوع"; f.querySelector(".shl").textContent=nt||"قدّام";
+  const st=bar.querySelector(".shstep"); const tot=SH.back.length+1+SH.fwd.length; st.textContent=tot>1?`${SH.back.length+1} / ${tot}`:""; }
+function shSwap(from,to){ const host=$("#sheet"), cur=host&&host.querySelector(".sheet-bg"); if(!cur||!from.length) return;
+  cur.remove(); to.push(cur); host.appendChild(from.pop()); shBar(); const sh=host.querySelector(".sheet"); if(sh) sh.scrollTop=0; }
+const shBack=()=>shSwap(SH.back,SH.fwd), shFwd=()=>shSwap(SH.fwd,SH.back);
+function shReset(){ if(SH.pend){ clearTimeout(SH.pend.t); SH.pend=null; } SH.back=[]; SH.fwd=[]; }
+function closeAllSheets(){ shReset(); const h=$("#sheet"); if(h) h.innerHTML=""; }
+function sheet(html){ const host=$("#sheet"), cur=host.querySelector(".sheet-bg");
+  if(cur){ cur.remove(); if(!shLoading(cur)) SH.back.push(cur); }
+  else if(SH.pend){ clearTimeout(SH.pend.t); SH.back.push(SH.pend.node); }
+  SH.pend=null; SH.fwd=[]; if(SH.back.length>30) SH.back.shift();
+  host.innerHTML=`<div class="sheet-bg"><div class="sheet" role="dialog" aria-modal="true"><div class="shnav">
+    <button type="button" data-shnav="b" class="shb">${ICONS.back}<span class="shl" dir="auto">رجوع</span></button>
+    <span class="shstep num"></span>
+    <button type="button" data-shnav="f" class="shb"><span class="shl" dir="auto">قدّام</span>${ICONS.fwd}</button>
+    <button type="button" data-shnav="x" class="shx" aria-label="قفل" title="قفل">✕</button></div>${html}</div></div>`;
+  host.querySelector(".sheet-bg").onclick=e=>{ if(e.target.classList.contains("sheet-bg")) closeAllSheets(); };
+  shBar(); }
+/* programmatic close: if another side page opens right after, keep it in the history */
+function closeSheet(){ const host=$("#sheet"), cur=host&&host.querySelector(".sheet-bg"); if(host) host.innerHTML="";
+  if(SH.pend) clearTimeout(SH.pend.t);
+  if(cur) SH.pend={node:cur,t:setTimeout(()=>{ SH.pend=null; SH.back=[]; SH.fwd=[]; },700)}; else { SH.pend=null; SH.back=[]; SH.fwd=[]; } }
+document.addEventListener("click",e=>{ const b=e.target.closest&&e.target.closest("[data-shnav]"); if(!b||!b.closest("#sheet")) return;
+  e.preventDefault(); const k=b.dataset.shnav; if(k==="b") shBack(); else if(k==="f") shFwd(); else closeAllSheets(); });
+document.addEventListener("keydown",e=>{ const h=$("#sheet"); if(!h||!h.querySelector(".sheet-bg")||document.querySelector(".lightbox")) return;
+  if(e.key==="Escape"){ closeAllSheets(); return; }
+  if(e.altKey&&(e.key==="ArrowRight"||e.key==="ArrowLeft")){ e.preventDefault(); (e.key==="ArrowRight")?shBack():shFwd(); } });
 
 /* ============ reserve ============ */
 async function openReserve(r){
@@ -2801,7 +2842,7 @@ function openReturn(w){
 /* ============ detail sheets ============ */
 const WH_AR = w => (w==="g"||w==="greige") ? "خام" : "مجهز";
 const dl = pairs => `<div class="dl">${pairs.filter(p=>p[1]!==undefined&&p[1]!==null&&p[1]!=="").map(([k,v])=>`<div class="dk">${k}</div><div class="dv">${v}</div>`).join("")}</div>`;
-const sheetClose = `<div class="row"><button class="btn grow" onclick="closeSheet()">قفل</button></div>`;
+const sheetClose = `<div class="row"><button class="btn grow" onclick="closeAllSheets()">قفل</button></div>`;
 async function openStockDetail(r){
   const canReserve=(S.me.role==="sales"||S.me.role==="admin")&&r.free&&r.av>=0.5;
   const head=`<div class="dhead"><span class="chip ${r.w}">${WH_AR(r.w)}</span><h2>${esc(r.sname)} ${cd(r.spec)}</h2></div>
