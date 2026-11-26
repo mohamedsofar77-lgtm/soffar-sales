@@ -834,6 +834,25 @@ button.kpi:hover,.quick button:hover,.fam-card:hover,.item.tkt:hover,.tklist .ro
 .fex .pill small{color:var(--muted)}
 .badc-b b{color:var(--bad)}
 @media (min-width:1024px){ .fcols{grid-template-columns:repeat(2,minmax(0,1fr))} }
+
+/* ===== colour chips (real + Pantone) ===== */
+.swx{display:inline-flex;align-items:center;margin-inline-end:8px;vertical-align:-5px;flex:none}
+.swx .sw{width:26px;height:26px;margin:0;border:2px solid var(--surface);box-shadow:0 0 0 1px rgba(0,0,0,.18)}
+.swx .sw+.sw{margin-inline-start:-6px}
+.swx .sw.tcx{border-radius:6px}
+.swx .sw.approx{outline:1.5px dashed rgba(0,0,0,.35);outline-offset:1px}
+.swk{display:inline-block;font-size:10.5px;font-weight:700;padding:0 6px;border-radius:5px;margin-inline-start:6px;vertical-align:1px;line-height:18px}
+.swk.real{background:var(--c-teal-s);color:var(--c-teal)}
+.swk.tcx{background:var(--c-blue-s);color:var(--c-blue)}
+.swk.approx{background:var(--bg);color:var(--muted);border:1px dashed var(--line)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .btn.primary{background:#3b63c4;border-color:#3b63c4;color:#fff}:root:not([data-theme="light"]) .swx .sw.approx{outline-color:rgba(255,255,255,.45)}}
+:root[data-theme="dark"] .btn.primary{background:#3b63c4;border-color:#3b63c4;color:#fff}
+
+.swcmp{display:flex;gap:12px;flex-wrap:wrap}
+.swc{display:flex;flex-direction:column;align-items:center;gap:4px;text-align:center;min-width:96px}
+.swc small{font-size:11.5px;color:var(--muted)}
+.swbig{width:72px;height:72px;border-radius:50%;box-shadow:inset 0 0 0 1px rgba(0,0,0,.15)}
+.swbig.tcx{border-radius:12px}.swbig.approx{outline:2px dashed var(--line);outline-offset:2px}
 </style>
 </head>
 <body>
@@ -847,7 +866,7 @@ const DEV_KEY = "";
 const APP_URL = "https://mohamedsofar77-lgtm.github.io/soffar-sales/";
 // نسخة التدريب: لو حد فتح التطبيق من غير رابط، بيدخل على وضع المراجعة والتدريب (قراءة بس)
 const PREVIEW_KEY = "";
-const APP_VERSION = "20261126200050";
+const APP_VERSION = "20261126233527";
 // رابط الدخول: الموظف بيفتح الرابط اللي فيه #k=... مرة واحدة، والتطبيق بيفتكره على الموبايل
 const KEY = (()=>{ let k=""; const m=(location.hash||"").match(/k=([A-Za-z0-9]+)/);
   if(m){ k=m[1]; try{ localStorage.setItem("soffar_key",k); }catch(e){} try{ history.replaceState(null,"",location.pathname+location.search); }catch(e){} }
@@ -1590,7 +1609,7 @@ function specInfo(yarns){
   return { yt:[...yt], lyc, cnt: main?main.c:"", text: lines.map(l=>l.c+l.y).join(" * ") };
 }
 async function loadStock(){
-  const j = await rpc("fx_stock");
+  const [j] = await Promise.all([rpc("fx_stock"), loadPrints(true).catch(()=>null)]);
   const owners=j.owners||{}, specs=j.specs||{}, mats=j.mats||{}, attrs=j.attrs||{};
   const cat={ mats:{}, specs:{} };
   Object.entries(mats).forEach(([c,[n,f]])=>cat.mats[c]={code:c,name:n||"",fam:f||"موديلات خاصة"});
@@ -1625,7 +1644,7 @@ const tcxQuery=q=>{ const m=String(q||"").match(/(?:^|\s)(\d{2})-?(\d{4})(?:\s|$
 async function openTCXPicker(r){
   const cur=S.stock.tcx[r.ck];
   sheet(`<div class="sheet-h"><h3>كود Pantone TCX</h3><button class="linkbtn" id="tcx_back">رجوع</button></div>
-   <div class="kv">${swatch(r)}<b>${esc(r.cn||"بدون لون")}</b>${!r.ck.startsWith("N:")?cd(r.ck):""}</div>
+   <div class="kv">${swatch(r)}<b>${esc(r.cn||"بدون لون")}</b>${!r.ck.startsWith("N:")?cd(r.ck):""}${swKey(r)}</div>
    <div class="search">${ICONS.search}<input type="search" id="tcxq" placeholder="اكتب الكود (19-4052) أو اسم اللون بالإنجليزي (Navy)" value=""></div>
    <div class="sub" id="tcxs"></div><div class="card tcxl" id="tcxl"><div class="state">بيحمّل كتالوج Pantone…</div></div>
    ${cur?`<button class="btn danger" id="tcxdel">شيل الكود من اللون ده</button>`:""}<div id="tcxm"></div>`);
@@ -1814,7 +1833,7 @@ function drawStock(){
       const pa=r.tot>0?Math.max(0,Math.min(1,r.av/r.tot))*100:0, pr=r.tot>0?Math.min(1,r.res/r.tot)*100:0;
       const cls=r.av<-0.5?"neg":(r.av<0.5?"zero":"");
       const att=r.att&&Object.keys(r.att).length?["A","B","C"].filter(x=>r.att["g"+x]>=0.5).map(x=>`${x} <span class="num">${fmt(r.att["g"+x])}</span>`).concat(["o","c"].filter(x=>r.att["o"+x]>=0.5).map(x=>`${OP_L[x]} <span class="num">${fmt(r.att["o"+x])}</span>`)).join(" · "):"";
-      return `<div class="c click" data-i="${i}" role="button" tabindex="0"><div><div class="c-name">${swatch(r)}${esc(r.cn||"بدون لون")}</div><div class="c-meta">${!r.ck.startsWith("N:")?`<span class="num">${esc(r.ck)}</span>`:""}${!r.free?`<span class="owner">${esc(r.ownerName)}</span>${cd(r.own)}`:""}</div></div>
+      return `<div class="c click" data-i="${i}" role="button" tabindex="0"><div><div class="c-name">${swatch(r)}${esc(r.cn||"بدون لون")}</div><div class="c-meta">${!r.ck.startsWith("N:")?`<span class="num">${esc(r.ck)}</span>`:""}${swKey(r)}${!r.free?`<span class="owner">${esc(r.ownerName)}</span>${cd(r.own)}`:""}</div></div>
       <div class="c-side">${r.free?`<div class="c-avail ${cls}"><span class="num">${fmt(Math.max(0,r.av))}</span> <small>كجم متاح</small></div>${canReserve&&r.av>=0.5?`<button class="btn sm primary" data-reserve="${i}">احجز</button>`:""}`:`<span class="chip s">بضاعة عميل</span>`}</div>
       <div class="bar" aria-hidden="true"><i class="a" style="width:${r.free?pa:0}%"></i><i class="r" style="width:${pr}%"></i></div>
       <div class="c-nums"><span>موجود <span class="num">${fmt(r.tot)}</span></span><span>محجوز <span class="num">${fmt(r.res)}</span></span><span><span class="num">${r.pcs.toLocaleString("en-US")}</span> توب</span>${att?`<span class="${grSel?"hl":""}">${att}</span>`:""}${cls==="neg"&&r.free?`<span class="flag">الحجز أكبر من الموجود بـ <span class="num">${fmt(-r.av)}</span></span>`:""}</div></div>`}).join("")}</div></article>`}).join("");
@@ -2786,7 +2805,7 @@ const sheetClose = `<div class="row"><button class="btn grow" onclick="closeShee
 async function openStockDetail(r){
   const canReserve=(S.me.role==="sales"||S.me.role==="admin")&&r.free&&r.av>=0.5;
   const head=`<div class="dhead"><span class="chip ${r.w}">${WH_AR(r.w)}</span><h2>${esc(r.sname)} ${cd(r.spec)}</h2></div>
-    <div class="kv"><b>${esc(r.cn||"بدون لون")}</b>${!r.ck.startsWith("N:")?cd(r.ck):""}${r.season?`<span class="chip s">${esc(r.season)}</span>`:""}<span class="owner">${esc(r.ownerName)}</span>${cd(r.own)}</div>
+    <div class="kv">${swatch(r)}<b>${esc(r.cn||"بدون لون")}</b>${!r.ck.startsWith("N:")?cd(r.ck):""}${swKey(r)}${r.season?`<span class="chip s">${esc(r.season)}</span>`:""}<span class="owner">${esc(r.ownerName)}</span>${cd(r.own)}</div>
     ${r.yarn?`<div class="yarn">${esc(r.yarn)}</div>`:""}
     <div class="dstats"><div><span>الموجود</span><b class="num">${fmt2(r.tot)}</b></div><div><span>المحجوز</span><b class="num">${fmt2(r.res)}</b></div><div class="okc"><span>المتاح</span><b class="num">${r.free?fmt2(Math.max(0,r.av)):"—"}</b></div><div><span>الأتواب</span><b class="num">${r.pcs}</b></div></div>`;
   sheet(head+`<div class="state">بيحمّل التفاصيل…</div>`);
@@ -2800,11 +2819,16 @@ async function openStockDetail(r){
     ${rolls.map(x=>`<tr${x.note?` class="warnrow" title="${esc(x.note)}"`:""}><td class="num">${esc(x.roll_no)}</td><td class="num">${fmt2(x.weight)}</td><td class="num">${x.pieces??""}</td>${r.w==="g"?`<td>${esc(x.grade||"")}</td><td class="num">${esc(x.work_order_no||"")}</td>`:`<td>${esc(x.dyehouse||"")}</td><td class="num">${esc(x.dye_order_no||"")}</td><td class="num">${esc(x.location&&x.location!=="0"?x.location:"")}</td>`}<td class="num">${x.legacy_reserved?fmt2(x.legacy_reserved):""}</td></tr>`).join("")}</tbody></table></div>
     ${rolls.some(x=>x.note)?`<div class="sub">السطور الملوّنة عليها ملاحظة مراجعة.</div>`:""}
     ${wos.length?`<div class="dsec">أوامر تشغيل مفتوحة على الصنف ده</div><div class="card">${wos.map(w=>`<div class="item"><div class="item-top"><div class="item-title"><span class="num">${esc(w.wo_no)}</span> · ${esc(w.customer||"")}</div><span class="chip st-${w.status}">${WO_ST[w.status]||w.status}</span></div><div class="kv"><span>المطلوب <b class="num">${fmt(w.qty)}</b></span><span>اتسلّم <b class="num">${fmt(w.delivered)}</b></span></div></div>`).join("")}</div>`:""}
+    <div class="dsec">شكل اللون</div>${(()=>{ const pr=S.prints&&S.prints[r.ck], p=S.stock.tcx&&S.stock.tcx[r.ck], nl=nameLab(r.cn); const canP=!S.me.preview&&["admin","dyeing","warehouse","quality","planning"].includes(S.me.role);
+      return `<div class="swcmp"><div class="swc"><span class="swbig" style="${pr?`background:${CM.hex(pr.lab)}`:"background:repeating-linear-gradient(45deg,var(--bg) 0 6px,var(--surface) 6px 12px)"}"></span><b>اللون الحقيقي</b><small>${pr?`من <span class="num">${pr.n}</span> صورة`:"لسه مااتصوّرش"}</small>${!pr&&canP?`<button type="button" class="btn sm" id="swshot">${ICONS.camera} صوّره</button>`:""}</div>
+        <div class="swc"><span class="swbig tcx" style="${p?`background:${p[1]}`:"background:repeating-linear-gradient(45deg,var(--bg) 0 6px,var(--surface) 6px 12px)"}"></span><b>كارتلة Pantone</b><small>${p?`<span class="num">${esc(p[0])}</span> TCX`:"مش متحدد"}</small></div>
+        ${!pr&&!p&&nl?`<div class="swc"><span class="swbig approx" style="background:${CM.hex(nl)}"></span><b>تقريبي من الاسم</b><small>لحد ما يتصوّر</small></div>`:""}</div>`; })()}
     <div class="dsec">كود Pantone TCX</div>${(()=>{ const p=S.stock.tcx&&S.stock.tcx[r.ck]; return p?`<div class="row tcxcur"><span class="tcxsw lg" style="background:${p[1]}"></span><div class="grow"><b class="num">${esc(p[0])} TCX</b><div class="sub">${esc(p[2]||"")}</div></div>${S.me.preview?"":`<button class="btn sm" id="dtcx">غيّر</button>`}</div>`:(S.me.preview?`<div class="sub">مش متحدد</div>`:`<button class="btn" id="dtcx">حدد كود Pantone TCX للون ده</button>`); })()}
     ${!r.ck.startsWith("N:")?`<div class="dsec">صور اللون</div><div id="dgal"></div>`:""}
     <div class="row">${canReserve?`<button class="btn primary grow" id="dres">احجز من اللون ده</button>`:""}${r.free&&r.av>=0.5?`<button class="btn" id="dshr">${ICONS.share} شارك</button>`:""}<button class="btn grow" onclick="closeSheet()">قفل</button></div>`);
   if($("#dres")) $("#dres").onclick=()=>openReserve(r);
   if($("#dtcx")) $("#dtcx").onclick=()=>openTCXPicker(r);
+  if($("#swshot")) $("#swshot").onclick=()=>{ closeSheet(); S.cf={...(S.cf||{}),mode:"print",pick:{ck:r.ck,cn:r.cn,kg:r.av},img:null,lab:null}; goTab("cfind"); };
   if($("#dshr")) $("#dshr").onclick=()=>shareSheet("شارك اللون", shareText([r], `${r.sname} (${r.spec})`));
   if($("#dgal")) gallery($("#dgal"),"color",r.ck,{caption:r.cn,onChange:()=>{ delete S.m.colors_lib; }});
   $("#sheet .sheet").insertAdjacentHTML("beforeend",`<button class="btn" id="ssend">${ICONS.send} ابعت الصنف ده لقسم</button>`);
@@ -3920,7 +3944,7 @@ async function openMultiReserve(spec, w){
   let cust=null; const r0=rows[0][0];
   sheet(`<h2>حجز أكتر من لون</h2><div class="kv"><span class="chip ${w}">${WH_AR(w)}</span><b>${esc(r0.sname)}</b>${cd(spec)}</div>
    <label><span>العميل</span><div id="mcp"></div></label>
-   <div class="mlist">${rows.map(([r,i])=>`<div class="mline"><div class="mid">${swatch(r)}<div><div class="t">${esc(r.cn||"بدون لون")}</div><div class="m">متاح <span class="num">${fmt2(r.av)}</span> كجم</div></div></div>
+   <div class="mlist">${rows.map(([r,i])=>`<div class="mline"><div class="mid">${swatch(r)}<div><div class="t">${esc(r.cn||"بدون لون")} ${swKey(r)}</div><div class="m">متاح <span class="num">${fmt2(r.av)}</span> كجم</div></div></div>
      <input type="number" min="0" step="0.01" inputmode="decimal" data-i="${i}" placeholder="كجم"></div>`).join("")}</div>
    <div class="row"><label class="grow"><span>السماح ±%</span><input type="number" id="mt" value="5" min="0" max="50"></label><label class="grow"><span>ملاحظة</span><input type="text" id="mn"></label></div>
    <div><div class="flabel">صور الديزاين (اختياري)</div><div id="mimg"></div></div>
@@ -3941,7 +3965,15 @@ async function openMultiReserve(spec, w){
     $("#dok").onclick=()=>{ closeSheet(); show(); };
   };
 }
-const swatch = r => { const t=S.stock&&S.stock.thumbs&&S.stock.thumbs[r.ck]; if(t) return `<img class="sw" src="${t}" alt="">`; const p=S.stock&&S.stock.tcx&&S.stock.tcx[r.ck]; return p?`<span class="sw" style="background:${p[1]}" title="Pantone ${p[0]} TCX · ${esc(p[2]||"")}"></span>`:`<span class="sw ${r.w}"></span>`; };
+/* colour chips beside every colour name: the real colour (photo / confirmed print) + the Pantone card colour; approximate from the name when nothing else exists */
+const swatch = r => { const t=S.stock&&S.stock.thumbs&&S.stock.thumbs[r.ck], p=S.stock&&S.stock.tcx&&S.stock.tcx[r.ck], pr=S.prints&&S.prints[r.ck], parts=[];
+  if(pr) parts.push(`<span class="sw real" style="background:${CM.hex(pr.lab)}" title="اللون الحقيقي (من صورة القماش)"></span>`);
+  else if(t) parts.push(`<img class="sw real" src="${t}" alt="" title="صورة اللون">`);
+  if(p) parts.push(`<span class="sw tcx" style="background:${p[1]}" title="كارتلة Pantone ${esc(p[0])} TCX · ${esc(p[2]||"")}"></span>`);
+  if(!parts.length){ const l=typeof nameLab==="function"?nameLab(r.cn):null; parts.push(l?`<span class="sw approx" style="background:${CM.hex(l)}" title="لون تقريبي من اسم اللون، لسه مااتصوّرش"></span>`:`<span class="sw ${r.w}" title="اللون مالهوش بصمة لسه"></span>`); }
+  return `<span class="swx">${parts.join("")}</span>`; };
+const swKey = r => { const p=S.stock&&S.stock.tcx&&S.stock.tcx[r.ck], pr=S.prints&&S.prints[r.ck]; const t=[];
+  if(pr) t.push(`<span class="swk real">حقيقي</span>`); if(p) t.push(`<span class="swk tcx num" title="${esc(p[2]||"")}">TCX ${esc(p[0])}</span>`); if(!pr&&!p) t.push(`<span class="swk approx">تقريبي</span>`); return t.join(""); };
 
 /* ============ colors library (basics tab) ============ */
 
