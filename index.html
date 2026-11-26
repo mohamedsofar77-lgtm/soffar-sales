@@ -804,6 +804,36 @@ button.kpi:hover,.quick button:hover,.fam-card:hover,.item.tkt:hover,.tklist .ro
 .cfd-alts{display:flex;flex-direction:column;border:1px solid var(--line);border-radius:12px;overflow:hidden;margin-bottom:10px}
 .cfd-alt{display:flex;align-items:center;gap:10px;border:0;border-top:1px solid var(--line);background:var(--surface);padding:9px 12px;text-align:right;cursor:pointer;color:var(--ink);font:inherit}
 .cfd-alt:first-child{border-top:0}.cfd-alt .grow{flex:1}
+
+/* ===== sales search hub ===== */
+.fhub{padding:14px !important;display:flex;flex-direction:column;gap:12px}
+.fbox{display:flex;align-items:center;gap:10px;height:52px;padding:0 6px 0 14px;border:1.5px solid var(--line);border-radius:14px;background:var(--surface)}
+.fbox:focus-within{border-color:var(--c-blue);box-shadow:0 0 0 4px var(--c-blue-s)}
+.fbox > svg{width:20px;height:20px;color:var(--muted);flex:none}
+.fbox input{flex:1;border:0 !important;outline:0;background:transparent;font-size:15px;padding:0 !important;box-shadow:none !important;height:auto}
+.fcam{width:42px;height:42px;border-radius:11px;border:0;background:linear-gradient(135deg,#6741d9,#2f5bd3);color:#fff;display:grid;place-items:center;flex:none;cursor:pointer}
+.fcam svg{width:20px;height:20px}
+.home-fbox{cursor:text;box-shadow:var(--shadow)}.home-fbox .ph{flex:1;color:var(--muted);font-size:14px}
+.fchips{display:flex;gap:6px;overflow-x:auto;padding-bottom:2px;scrollbar-width:none}
+.fchips button{flex:none;display:inline-flex;align-items:center;gap:5px;height:34px;padding:0 12px;border-radius:999px;border:1px solid var(--line);background:var(--surface);color:var(--ink);font-size:13px;font-weight:600;cursor:pointer;white-space:nowrap}
+.fchips button svg{width:15px;height:15px}
+.fchips button[aria-pressed="true"]{background:#0f2a5f;color:#fff;border-color:#0f2a5f}
+.ffil{display:flex;gap:10px;align-items:flex-end;flex-wrap:wrap}.ffil .seg{flex:1;min-width:230px}.fneed{width:160px}
+.ftabs{display:flex;gap:6px;border-bottom:1px solid var(--line);overflow-x:auto}
+.ftabs button{border:0;background:none;padding:10px 12px;font-weight:600;color:var(--muted);border-bottom:2.5px solid transparent;cursor:pointer;white-space:nowrap}
+.ftabs button[aria-pressed="true"]{color:var(--indigo);border-bottom-color:var(--indigo)}
+.ftabs .num{display:inline-block;min-width:20px;padding:0 6px;border-radius:999px;background:var(--indigo-soft);font-size:11.5px}
+.fhint{font-size:.85rem;color:var(--warn);background:var(--warn-soft);border-radius:10px;padding:8px 12px}
+.fcols{display:grid;gap:10px}
+.fcol{display:flex;align-items:center;gap:12px;width:100%;border:0;background:var(--surface);border-radius:var(--radius);box-shadow:var(--shadow);padding:12px 14px;text-align:right;cursor:pointer;color:var(--ink);font:inherit}
+.fcol:hover{box-shadow:var(--shadow-h)}.fcol .grow{flex:1;min-width:0;display:flex;flex-direction:column}
+.fcol .fq{display:flex;flex-direction:column;align-items:flex-end}.fcol .fq small{font-size:11px;color:var(--muted)}
+.fempty{display:flex;flex-direction:column;gap:12px}
+.fex{display:flex;flex-wrap:wrap;gap:8px}
+.fex .pill{display:inline-flex;gap:6px;align-items:baseline;border:1px solid var(--line);background:var(--bg);border-radius:999px;padding:6px 12px;cursor:pointer;font-size:13px}
+.fex .pill small{color:var(--muted)}
+.badc-b b{color:var(--bad)}
+@media (min-width:1024px){ .fcols{grid-template-columns:repeat(2,minmax(0,1fr))} }
 </style>
 </head>
 <body>
@@ -817,7 +847,7 @@ const DEV_KEY = "";
 const APP_URL = "https://mohamedsofar77-lgtm.github.io/soffar-sales/";
 // نسخة التدريب: لو حد فتح التطبيق من غير رابط، بيدخل على وضع المراجعة والتدريب (قراءة بس)
 const PREVIEW_KEY = "";
-const APP_VERSION = "20261126194357";
+const APP_VERSION = "20261126200050";
 // رابط الدخول: الموظف بيفتح الرابط اللي فيه #k=... مرة واحدة، والتطبيق بيفتكره على الموبايل
 const KEY = (()=>{ let k=""; const m=(location.hash||"").match(/k=([A-Za-z0-9]+)/);
   if(m){ k=m[1]; try{ localStorage.setItem("soffar_key",k); }catch(e){} try{ history.replaceState(null,"",location.pathname+location.search); }catch(e){} }
@@ -1065,15 +1095,16 @@ function renderNoAccess(email){
 
 /* ============ shell ============ */
 function tabsFor(role){
-  const P={admin:["stock","wo","dye"],sales:["cfind","stock","order"],accounts:["ar","stock","res"],warehouse:["warehouse","yarn","dye"],planning:["wo","yarn","dye"],dyeing:["dye","wo","stock"],quality:["warehouse","stock","wo"]};
+  const P={admin:["stock","wo","dye"],sales:["find","order","res"],accounts:["ar","stock","res"],warehouse:["warehouse","yarn","dye"],planning:["wo","yarn","dye"],dyeing:["dye","wo","stock"],quality:["warehouse","stock","wo"]};
   const prim=P[role]||["stock","res","wo"];
-  const lab={cfind:"بالصورة",stock:"المخزون",wo:"التشغيل",dye:"الصباغة",order:"حجز طلبية",res:"الحجوزات",ar:"الحسابات",warehouse:role==="quality"?"الجودة":"المخزن",yarn:"الغزل"};
-  const ic={cfind:ICONS.camera,stock:ICONS.stock,wo:ICONS.wo,dye:ICONS.dye,order:ICONS.new,res:ICONS.res,ar:ICONS.chart,warehouse:ICONS.box,yarn:ICONS.yarn};
+  const lab={find:"البحث",cfind:"بالصورة",stock:"المخزون",wo:"التشغيل",dye:"الصباغة",order:"حجز طلبية",res:"الحجوزات",ar:"الحسابات",warehouse:role==="quality"?"الجودة":"المخزن",yarn:"الغزل"};
+  const ic={find:ICONS.search,cfind:ICONS.camera,stock:ICONS.stock,wo:ICONS.wo,dye:ICONS.dye,order:ICONS.new,res:ICONS.res,ar:ICONS.chart,warehouse:ICONS.box,yarn:ICONS.yarn};
   return [["home","الرئيسية",ICONS.home],...prim.map(k=>[k,lab[k],ic[k]]),["more","المزيد",ICONS.grid]];
 }
 function allSections(role){
   const L=[], canSell=["sales","admin","planning"].includes(role);
-  L.push(["cfind","البحث باللون من صورة",ICONS.camera,"المبيعات والحسابات"],["order","حجز طلبية",ICONS.new,"المبيعات والحسابات"],["res","الحجوزات",ICONS.res,"المبيعات والحسابات"],["ar","حسابات العملاء",ICONS.chart,"المبيعات والحسابات"]);
+  L.push(["find","البحث (صنف · خامة · لون · أوردر · عميل)",ICONS.search,"المبيعات"],["cfind","البحث بالصورة",ICONS.camera,"المبيعات"],["order","حجز طلبية",ICONS.new,"المبيعات"],["res","الحجوزات",ICONS.res,"المبيعات"]);
+  if(["accounts","admin"].includes(role)) L.push(["ar","حسابات العملاء",ICONS.chart,"الحسابات"]);
   if(canSell) L.push(["new","طلب تشغيل جديد",ICONS.new,"الإنتاج"]);
   L.push(["wo","أوامر التشغيل",ICONS.wo,"الإنتاج"],["plan","تقرير المتابعة",ICONS.wo,"الإنتاج"]);
   if(["dyeing","admin","planning","warehouse"].includes(role)) L.push(["dye","الصباغة والتجهيز",ICONS.dye,"الإنتاج"]);
@@ -1083,7 +1114,7 @@ function allSections(role){
   L.push(["reports","التقارير",ICONS.chart,"المتابعة"],["inbox","التنبيهات والتحويلات",ICONS.bell,"المتابعة"],["basics","الأساسيات والتكويد",ICONS.grid,"الإعدادات"],["guide","دليل التشغيل",ICONS.book,"الإعدادات"]);
   return L;
 }
-function markTab(k){ app.querySelectorAll(".side [data-tab]").forEach(x=>{ if(x.dataset.tab===k) x.setAttribute("aria-current","page"); else x.removeAttribute("aria-current"); }); const bs=[...app.querySelectorAll("nav.tabs [data-tab]")]; const has=bs.some(x=>x.dataset.tab===k); bs.forEach(x=>{ if(x.dataset.tab===(has?k:"more")) x.setAttribute("aria-current","page"); else x.removeAttribute("aria-current"); }); }
+function markTab(k){ if(k==="cfind"&&app.querySelector('nav.tabs [data-tab="find"]')&&!app.querySelector('nav.tabs [data-tab="cfind"]')) k="find"; app.querySelectorAll(".side [data-tab]").forEach(x=>{ if(x.dataset.tab===k) x.setAttribute("aria-current","page"); else x.removeAttribute("aria-current"); }); const bs=[...app.querySelectorAll("nav.tabs [data-tab]")]; const has=bs.some(x=>x.dataset.tab===k); bs.forEach(x=>{ if(x.dataset.tab===(has?k:"more")) x.setAttribute("aria-current","page"); else x.removeAttribute("aria-current"); }); }
 async function viewMore(){
   const v=$("#view"); const L=allSections(S.me.role); const groups=[...new Set(L.map(x=>x[3]))];
   v.innerHTML=header("كل الأقسام")+`<section class="card orgc"><span class="logo lg" aria-hidden="true">ص</span><div class="mid"><b>صفار جروب</b><div class="sub">مصنع تريكو دائري · نظام المبيعات والإنتاج</div></div><span class="chip f">${esc(S.me.department_name||ROLE_AR[S.me.realRole||S.me.role]||"")}</span></section>`
@@ -1156,13 +1187,15 @@ function navGo(d){ const j=NAV.i+d; if(j<0||j>=NAV.stack.length) return; NAV.i=j
 window.addEventListener("popstate",()=>{ if(!S.me) return;
   if($("#sheet")&&$("#sheet").innerHTML){ closeSheet(); try{ history.pushState({soffarNav:NAV.i},""); }catch(e){} return; }
   if(NAV.i>0) navGo(-1); });
-function show(){ navRecord(); try{ markTab(S.tab); }catch(e){} const v=$("#view"); if(v) v.onclick=null; ({home:viewHome, more:viewMore, cfind:viewCFind, guide:viewGuide, inbox:viewInbox, warehouse:viewWarehouse, reports:viewReports, stock:viewStock, plan:viewPlan, order:viewOrder, ar:viewAR, new:viewNew, yarn:viewYarn, dye:viewDye, res:viewRes, wo:viewWO, basics:viewBasics}[S.tab]||viewStock)(); window.scrollTo(0,0); }
+function show(){ navRecord(); try{ markTab(S.tab); }catch(e){} const v=$("#view"); if(v) v.onclick=null; ({home:viewHome, more:viewMore, find:viewFind, cfind:viewCFind, guide:viewGuide, inbox:viewInbox, warehouse:viewWarehouse, reports:viewReports, stock:viewStock, plan:viewPlan, order:viewOrder, ar:viewAR, new:viewNew, yarn:viewYarn, dye:viewDye, res:viewRes, wo:viewWO, basics:viewBasics}[S.tab]||viewStock)(); window.scrollTo(0,0); }
 
 /* ============ home ============ */
 async function viewHome(){
   const v=$("#view");
   const canSell = ["sales","admin","planning"].includes(S.me.role);
   v.innerHTML = header("لوحة المتابعة", refreshBtn()) + `
+  <div class="fbox home-fbox" data-go="find" role="button" tabindex="0">${ICONS.search}<span class="ph">دوّر على صنف، خامة، لون، أوردر أو عميل</span><button type="button" class="fcam" data-go="cfind" aria-label="دوّر بالصورة">${ICONS.camera}</button></div>
+  <button type="button" class="cf-cta" data-go="cfind"><span class="mic">${ICONS.camera}</span><span class="grow"><b>دوّر على لون بالصورة</b><small>صوّر قطعة العميل وشوف أقرب الألوان في المخزن</small></span><span class="chev">‹</span></button>
   <section class="card sumx">
     <div class="sx-top"><span class="sub">المخزون المتاح للبيع</span><span class="chip s" id="k0c">&nbsp;</span></div>
     <div class="sx-v"><span class="num" id="k0">—</span><small>كجم</small></div>
@@ -1177,10 +1210,9 @@ async function viewHome(){
     <button class="kpi t-w" data-go="wo"><span class="k"><span class="dot">${ICONS.wo}</span>أوامر تشغيل مفتوحة</span><span class="v"><span class="num" id="k4">—</span></span><span class="s" id="k4s">&nbsp;</span></button>
   </section>
   <div class="section-h"><h2>اختصارات</h2></div>
-  <button type="button" class="cf-cta" data-go="cfind"><span class="mic">${ICONS.camera}</span><span class="grow"><b>دوّر على لون بالصورة</b><small>صوّر قطعة العميل وشوف أقرب الألوان في المخزن</small></span><span class="chev">‹</span></button>
   <section class="quick">
     <button data-go="order"><span class="qi">${ICONS.new}</span>حجز طلبية</button>
-    <button data-go="ar"><span class="qi">${ICONS.chart}</span>حسابات العملاء</button>
+    ${["accounts","admin"].includes(S.me.role)?`<button data-go="ar"><span class="qi">${ICONS.chart}</span>حسابات العملاء</button>`:`<button data-go="find"><span class="qi">${ICONS.search}</span>البحث</button>`}
     <button data-go="guide"><span class="qi">${ICONS.book}</span>دليل التشغيل</button>
     <button data-go="stock"><span class="qi">${ICONS.stock}</span>الرصيد</button>
     ${canSell?`<button data-go="new"><span class="qi">${ICONS.new}</span>طلب تشغيل</button>`:""}
@@ -1238,6 +1270,147 @@ async function fillPrio(){ const el=$("#prio"); if(!el) return;
       <div class="m">${s.kids.filter(k=>k.avail>=0.5).sort((a,b)=>b.avail-a.avail).slice(0,3).map(k=>esc(k.name)).join("، ")}${s.pin?" · مثبّت من المدير":""}</div></div><div class="a"><span class="num">${fmt(s.avail)}</span><small>كجم حر</small></div><span class="chev">‹</span></div>`).join("")
       :`<div class="state"><strong>مفيش أصناف عليها فائض كبير دلوقتي</strong></div>`;
   }catch(e){ el.innerHTML=`<div class="msg err">${esc(errText(e))}</div>`; } }
+
+/* ============ sales search hub (البحث) ============ */
+const FMODES=[["all","الكل"],["photo","بالصورة"],["color","باللون"],["mat","بالخامة"],["spec","بالصنف"],["code","بالكود"],["order","بالأوردر"],["cust","بالعميل"]];
+function findChips(active){ return `<div class="fchips" id="fchips">${FMODES.map(([k,l])=>`<button type="button" data-fm="${k}" aria-pressed="${active===k}">${k==="photo"?ICONS.camera:""}${l}</button>`).join("")}</div>`; }
+function bindFindChips(){ const c=$("#fchips"); if(!c) return; c.onclick=e=>{ const b=e.target.closest("[data-fm]"); if(!b) return; const k=b.dataset.fm; S.fnd=S.fnd||{q:"",mode:"all",tab:"",wh:"all",fam:"",need:""};
+  if(k==="photo"){ goTab("cfind"); return; } S.fnd.mode=k; if(S.tab!=="find") goTab("find"); else viewFind(); }; }
+const FIND_PH={all:"اكتب أي حاجة: صنف، خامة، لون، كود، رقم أوردر، عميل",color:"اسم اللون أو كوده أو Pantone (مثلاً 14-1209)",mat:"اسم الخامة أو كودها (5 أرقام)",spec:"اسم الصنف أو كوده (7 أرقام)",code:"أي كود: صنف، خامة، لون، أوردر، عميل",order:"رقم أمر التشغيل أو أمر الصباغة (مثلاً 793 أو ML-2240)",cust:"اسم العميل أو كوده"};
+async function viewFind(){
+  const v=$("#view"); S.fnd=S.fnd||{q:"",mode:"all",tab:"",wh:"all",fam:"",need:""}; const F=S.fnd;
+  v.innerHTML=header("البحث",refreshBtn())+`
+  <section class="card fhub">
+    <div class="fbox">${ICONS.search}<input type="search" id="fq" value="${esc(F.q)}" placeholder="${FIND_PH[F.mode]||FIND_PH.all}" autocomplete="off"><button type="button" class="fcam" id="fcam" aria-label="دوّر بالصورة" title="دوّر بالصورة">${ICONS.camera}</button></div>
+    ${findChips(F.mode)}
+    <div class="ffil"><div class="seg" id="fwh">${[["all","خام ومجهز"],["greige","خام"],["finished","مجهز"]].map(([k,l])=>`<button data-k="${k}" aria-pressed="${F.wh===k}">${l}</button>`).join("")}</div>
+      <label class="fneed"><span>محتاج كام كيلو؟</span><input type="number" id="fneed" min="0" inputmode="decimal" value="${esc(F.need)}" placeholder="مثلاً 500"></label></div>
+  </section>
+  <div id="fres"></div>`;
+  bindHeader(); bindFindChips();
+  $("#fcam").onclick=()=>goTab("cfind");
+  $("#rf").onclick=async()=>{ S.stock=null; S.fWos=null; S.dye=null; viewFind(); };
+  $("#fwh").onclick=e=>{ const b=e.target.closest("[data-k]"); if(!b) return; F.wh=b.dataset.k; $("#fwh").querySelectorAll("button").forEach(x=>x.setAttribute("aria-pressed",x===b)); draw(); };
+  $("#fneed").oninput=e=>{ F.need=e.target.value; draw(); };
+  let tmr; $("#fq").oninput=e=>{ F.q=e.target.value; clearTimeout(tmr); tmr=setTimeout(draw,180); };
+  $("#fres").innerHTML=`<div class="state">بيحمّل…</div>`;
+  try{ if(!S.stock) await loadStock(); await loadPrints(); }catch(e){ $("#fres").innerHTML=`<div class="msg err">${esc(errText(e))}</div>`; return; }
+  if(!S.fWos){ try{ S.fWos=await rpc("fx_work_orders",{p_open_only:true})||[]; }catch(e){ S.fWos=[]; } }
+  if(!S.fCust){ try{ S.fCust=await master("customers"); }catch(e){ S.fCust=[]; } }
+  if(S.dye===undefined||S.dye===null){ try{ await loadDye(); }catch(e){ S.dye=[]; } }
+  try{ await loadTCX(); }catch(e){}
+  draw(); setTimeout(()=>{ const i=$("#fq"); if(i&&!F.q) i.focus(); },50);
+  function draw(){ const el=$("#fres"); if(!el) return; const R=findRun(F); S.fR=R;
+    const tabs=[["spec","الأصناف",R.specs.length],["color","الألوان",R.colors.length],["order","الأوامر",new Set(R.wos.map(w=>w.wo_no)).size+R.dyes.length],["cust","العملاء",R.custs.length]];
+    const auto=R.kind==="order"&&(R.wos.length||R.dyes.length)?"order":R.kind==="cust"&&R.custs.length?"cust":R.specs.length?"spec":R.colors.length?"color":R.custs.length?"cust":(R.wos.length||R.dyes.length)?"order":"spec";
+    if(F.lastQ!==F.q){ F.tab=""; F.lastQ=F.q; }
+    let tab=F.tab&&tabs.find(t=>t[0]===F.tab)?F.tab:auto;
+    if(F.mode==="color") tab="color"; else if(F.mode==="order") tab="order"; else if(F.mode==="cust") tab="cust"; else if(F.mode==="spec"||F.mode==="mat") tab="spec";
+    if(!F.q.trim()&&F.mode==="all"){ el.innerHTML=findEmpty(); bindFindEmpty(); return; }
+    el.innerHTML=`<div class="ftabs" id="ftabs">${tabs.map(([k,l,n])=>`<button type="button" data-t="${k}" aria-pressed="${tab===k}">${l} <span class="num">${n}</span></button>`).join("")}</div>
+     ${R.hint?`<div class="fhint">${R.hint}</div>`:""}
+     <div id="flist">${findList(tab,R,F)}</div>`;
+    $("#ftabs").onclick=e=>{ const b=e.target.closest("[data-t]"); if(!b) return; F.tab=b.dataset.t; if(["spec","color","order","cust"].includes(F.mode)&&F.mode!==F.tab){ F.mode="all"; $("#fchips").outerHTML=findChips("all"); bindFindChips(); } draw(); };
+    bindFindList(R);
+  }
+}
+function findEmpty(){ const recent=(S.fRecent||[]).slice(0,6);
+  return `<section class="card pad fempty"><b>إزاي تدوّر؟</b>
+   <div class="fex">${[["1003111","كود صنف"],["10031","كود خامة"],["ميلتون كحلي","خامة + لون"],["14-1209","Pantone"],["ML-2240","أمر صباغة"],["793","أمر تشغيل"],["شيرتكس","عميل"]].map(([q,l])=>`<button type="button" class="pill" data-ex="${esc(q)}"><span class="num">${esc(q)}</span> <small>${l}</small></button>`).join("")}</div>
+   <button type="button" class="cf-cta" data-ex-cam><span class="mic">${ICONS.camera}</span><span class="grow"><b>أو صوّر قطعة القماش</b><small>ويطلعلك أقرب الألوان في المخزن</small></span><span class="chev">‹</span></button>
+   ${recent.length?`<div class="sub">آخر عمليات بحث:</div><div class="fex">${recent.map(q=>`<button type="button" class="pill" data-ex="${esc(q)}">${esc(q)}</button>`).join("")}</div>`:""}</section>`; }
+function bindFindEmpty(){ $("#fres").querySelectorAll("[data-ex]").forEach(b=>b.onclick=()=>{ S.fnd.q=b.dataset.ex; $("#fq").value=S.fnd.q; $("#fq").dispatchEvent(new Event("input")); });
+  const c=$("#fres [data-ex-cam]"); if(c) c.onclick=()=>goTab("cfind"); }
+function findRemember(q){ q=String(q||"").trim(); if(q.length<2) return; S.fRecent=[q,...(S.fRecent||[]).filter(x=>x!==q)].slice(0,10); }
+function findRun(F){
+  const q=String(F.q||"").trim(), nq=norm(q), toks=nq.split(" ").filter(Boolean), need=+F.need||0, isSales=S.me.role==="sales";
+  const R={specs:[],colors:[],wos:[],dyes:[],custs:[],hint:""};
+  const rows=S.stock.rows.map((r,i)=>({r,i})).filter(({r})=>r.av>=0.5&&(r.free||!isSales)&&(F.wh==="all"||(F.wh==="greige")===(r.w==="g")));
+  const matName=c=>((S.cat&&S.cat.mats[c])||{}).name||"";
+  const isSpec=/^\d{7}$/.test(q), isMat=/^\d{5}$/.test(q), isPant=/^\d{2}-\d{4}$/.test(q), isCust=/^\d{10,13}$/.test(q), isDyeNo=/^[a-z]{2,3}\s*-?\s*\d{3,5}$/i.test(q)||/^dy-?\d+$/i.test(q), isWo=/^\d{3,4}$/.test(q);
+  const md=F.mode; R.kind=(isWo||isDyeNo)?"order":isCust?"cust":(toks.length&&(S.fCust||[]).some(([c,n])=>norm(n)===nq))?"cust":"";
+  const rowKey=r=>norm([r.sname,r.spec,r.mat,matName(r.mat),r.fam,r.cn,r.ck,r.yarn].join(" "));
+  let sel=[];
+  if(md==="spec"||md==="mat"||md==="color"||md==="all"||md==="code"){
+    if(isSpec) sel=rows.filter(({r})=>r.spec===q);
+    else if(isMat) sel=rows.filter(({r})=>r.mat===q);
+    else if(isPant){ sel=rows.filter(({r})=>{ const t=S.stock.tcx[r.ck]; return t&&t[0]===q; }); if(!sel.length){ const p=(S.tcxList||[]).find(x=>x[0]===q); R.hint=`مفيش لون متربط بـ Pantone ${esc(q)} لسه. ${p?"بدوّر على أقرب لون ليه…":""}`; if(p){ const lab=CM.hexLab(p[2]); sel=rows.filter(({r})=>{ const ref=colorRef(r.ck,r.cn); return ref&&CM.de(lab,ref.lab)<8; }); } } }
+    else if(toks.length&&md!=="code") sel=rows.filter(({r})=>{ const k=rowKey(r); return toks.every(t=>k.includes(t)); });
+    else if(md==="code") sel=rows.filter(({r})=>norm(r.spec+" "+r.mat+" "+r.ck).includes(nq));
+  }
+  if(md==="color"&&!isPant&&toks.length){ sel=rows.filter(({r})=>toks.every(t=>norm(r.cn+" "+r.ck).includes(t))); }
+  // specs
+  const sm=new Map(); sel.forEach(({r,i})=>{ let s=sm.get(r.spec); if(!s){ s={spec:r.spec,name:r.sname,mat:r.mat,fam:r.fam,yarn:r.yarn,g:0,f:0,colors:new Set(),idx:[]}; sm.set(r.spec,s); } if(r.w==="g") s.g+=r.av; else s.f+=r.av; s.colors.add(r.ck+"|"+r.cn); s.idx.push(i); });
+  R.specs=[...sm.values()].map(s=>({...s,av:s.g+s.f})).filter(s=>!need||S.stock.rows.some((r,ii)=>s.idx.includes(ii)&&r.av>=need)||s.av>=need).sort((a,b)=>b.av-a.av);
+  // colours
+  const cm=new Map(); sel.forEach(({r,i})=>{ const k=r.ck+"\u0001"+r.cn; let c=cm.get(k); if(!c){ const ref=colorRef(r.ck,r.cn); c={key:k,ck:r.ck,cn:r.cn,ref:ref||{lab:[60,0,0],src:"name"},hasRef:!!ref,kg:0,rows:[],specs:new Set()}; cm.set(k,c); } c.kg+=r.av; c.rows.push(i); c.specs.add(r.spec); });
+  R.colors=[...cm.values()].filter(c=>!need||c.rows.some(i=>S.stock.rows[i].av>=need)).sort((a,b)=>b.kg-a.kg);
+  // orders
+  if(md==="order"||md==="all"||md==="code"){
+    if(q){ R.wos=(S.fWos||[]).filter(w=>isWo?String(w.wo_no)===q:(toks.length&&toks.every(t=>norm([w.wo_no,w.customer_name,w.spec_name,w.spec_code,w.color].join(" ")).includes(t))));
+      R.dyes=(S.dye||[]).filter(o=>isDyeNo?norm(String(o.ext||o.no).replace(/\s/g,"")).includes(nq.replace(/\s/g,"")):(isWo?false:(toks.length&&toks.every(t=>norm([o.ext,o.no,o.batch,o.cname,o.ccode,o.labdip,o.dh_name,...(o.parts||[]).map(p=>[p.cust_name,p.fabric,p.spec_name].join(" "))].join(" ")).includes(t))))).slice(0,60); }
+  }
+  // customers
+  if(md==="cust"||md==="all"||md==="code"){
+    if(q) R.custs=(S.fCust||[]).filter(([c,n])=>isCust?String(c)===q||String(c).endsWith(q):toks.every(t=>norm(c+" "+n).includes(t))).slice(0,40);
+  }
+  return R;
+}
+function findList(tab,R,F){
+  if(tab==="spec"){ if(!R.specs.length) return `<div class="state"><strong>مفيش أصناف متاحة بالبحث ده</strong>${F.need?`<div class="sub">جرّب تقلّل «محتاج كام كيلو»</div>`:""}</div>`;
+    return `<section class="card top-list">${R.specs.slice(0,80).map(s=>`<div class="row-i click" data-spec="${esc(s.spec)}" role="button" tabindex="0"><div class="mid"><div class="t">${esc(s.name)} ${cd(s.spec)}</div>
+      <div class="m">${esc(s.fam)} · ${s.g>=0.5?`خام <span class="num">${fmt(s.g)}</span>`:""}${s.g>=0.5&&s.f>=0.5?" · ":""}${s.f>=0.5?`مجهز <span class="num">${fmt(s.f)}</span>`:""} · <span class="num">${s.colors.size}</span> لون</div>${s.yarn?`<div class="m sub">${esc(s.yarn)}</div>`:""}</div>
+      <div class="a"><b class="num">${fmt(s.av)}</b><small> كجم</small></div><span class="chev">‹</span></div>`).join("")}</section>`; }
+  if(tab==="color"){ if(!R.colors.length) return `<div class="state"><strong>مفيش ألوان متاحة بالبحث ده</strong><div class="sub">جرّب «بالصورة» لو معاك قطعة القماش</div></div>`;
+    return `<div class="fcols">${R.colors.slice(0,80).map((c,k)=>`<button type="button" class="fcol" data-col="${k}"><span class="cf-sw lg" style="background:${c.hasRef?CM.hex(c.ref.lab):"repeating-linear-gradient(45deg,#ddd 0 6px,#fff 6px 12px)"}"></span><span class="grow"><b>${esc(c.cn||"بدون لون")}</b>${!c.ck.startsWith("N:")?` <span class="num sub">${esc(c.ck)}</span>`:""}<small class="sub"><span class="num">${c.specs.size}</span> صنف</small></span><span class="fq"><b class="num">${fmt(c.kg)}</b><small>كجم</small></span><span class="chev">‹</span></button>`).join("")}</div>`; }
+  if(tab==="order"){ if(!R.wos.length&&!R.dyes.length) return `<div class="state"><strong>مفيش أوامر بالرقم أو الاسم ده</strong></div>`;
+    const g=new Map(); R.wos.forEach(w=>{ let x=g.get(w.wo_no); if(!x){ x={no:w.wo_no,cust:w.customer_name,ws:[]}; g.set(w.wo_no,x); } x.ws.push(w); });
+    return `${g.size?`<div class="dsec">أوامر التشغيل</div><section class="card top-list">${[...g.values()].map(x=>{ const req=x.ws.reduce((a,w)=>a+(+w.qty_required),0), del=x.ws.reduce((a,w)=>a+(+w.qty_delivered||0),0); const st=[...new Set(x.ws.map(w=>WO_ST[w.status]||w.status))].join("، ");
+        return `<div class="row-i click" data-wo="${esc(x.no)}" role="button" tabindex="0"><div class="mid"><div class="t"><span class="num">#${esc(x.no)}</span> · ${esc(x.cust||"")}</div><div class="m">${esc([...new Set(x.ws.map(w=>w.spec_name))].join(" · "))}</div><div class="m">${st} · <span class="num">${x.ws.length}</span> بند</div></div><div class="a"><b class="num">${fmt(req-del)}</b><small> كجم باقي</small></div><span class="chev">‹</span></div>`; }).join("")}</section>`:""}
+     ${R.dyes.length?`<div class="dsec">أوامر الصباغة</div><section class="tklist">${R.dyes.map(o=>`<div class="row-i click dtk" data-ds="${esc(o.stage)}" data-dye="${o.id}" role="button" tabindex="0"><div class="mid"><div class="t"><span class="num codev">${esc(dTitle(o))}</span> <b>${esc(o.cname||(o.wash?"غسيل":""))}</b></div><div class="m">${dStChip(o.stage)} ${esc(o.dh_name||"")} · ${esc([...new Set((o.parts||[]).map(p=>p.cust_name).filter(Boolean))].join("، ")||"—")}</div></div><div class="a"><b class="num">${kg2(dSent(o))}</b><small> كجم</small></div><span class="chev">‹</span></div>`).join("")}</section>`:""}`; }
+  if(tab==="cust"){ if(!R.custs.length) return `<div class="state"><strong>مفيش عميل بالاسم ده</strong></div>`;
+    return `<section class="card top-list">${R.custs.map(([c,n])=>`<div class="row-i click" data-cust="${esc(c)}" role="button" tabindex="0"><span class="mic">${ICONS.user}</span><div class="mid"><div class="t">${esc(n)}</div><div class="m num">${esc(c)}</div></div><span class="chev">‹</span></div>`).join("")}</section>`; }
+  return "";
+}
+function bindFindList(R){ const el=$("#flist"); if(!el) return; const remember=()=>findRemember(S.fnd.q);
+  el.querySelectorAll("[data-spec]").forEach(b=>b.onclick=()=>{ remember(); const sp=b.dataset.spec, mc=(S.cat.specs[sp]||{}).mat||sp.slice(0,5); S.f={...FDEF,...pickKeep(S.f),wh:S.fnd.wh,mat:mc,fam:(S.cat.mats[mc]||{}).fam||"",spec:sp}; goTab("stock",true); });
+  el.querySelectorAll("[data-col]").forEach(b=>b.onclick=()=>{ remember(); S.cf=S.cf||{mode:"find",wh:"all",fam:"",min:0}; S.cf.lab=null; S.cf.all=R.colors.filter(c=>c.hasRef); cfColorSheet(R.colors[+b.dataset.col]); });
+  el.querySelectorAll("[data-wo]").forEach(b=>b.onclick=()=>{ remember(); const w=(S.fWos||[]).find(x=>String(x.wo_no)===b.dataset.wo); if(w) openWODetail(w); });
+  el.querySelectorAll("[data-dye]").forEach(b=>b.onclick=()=>{ remember(); openDye(+b.dataset.dye); });
+  el.querySelectorAll("[data-cust]").forEach(b=>b.onclick=()=>{ remember(); custCard(b.dataset.cust); });
+  el.querySelectorAll("[role=button]").forEach(b=>b.onkeydown=e=>{ if(e.key==="Enter") b.click(); });
+}
+async function custCard(code){
+  sheet(`<div class="state">بيحمّل كارت العميل…</div>`);
+  let d; try{ d=await rpc("fx_cust_card",{p_customer:code}); }catch(e){ sheet(`<div class="msg err">${esc(errText(e))}</div>`+sheetClose); return; }
+  if(!d){ sheet(`<div class="msg err">مش قادر أجيب بيانات العميل دلوقتي.</div>`+sheetClose); return; }
+  const a=d.ar, st=x=>WO_ST[x]||x;
+  const wg=new Map(); (d.wos||[]).forEach(w=>{ let x=wg.get(w.no); if(!x){ x={no:w.no,ws:[]}; wg.set(w.no,x); } x.ws.push(w); });
+  sheet(`<div class="cfd-h"><span class="logo lg" style="background:var(--c-violet)">${esc(String(d.name||"؟").trim().charAt(0))}</span><div class="mid"><h2>${esc(d.name||"")}</h2><div class="sub num">${esc(d.code)}</div></div></div>
+   ${a?`<div class="dsec">ملخص الحساب</div><div class="dstats"><div class="${a.bal>0?"":"okc"}"><span>الرصيد</span><b class="num">${fmt2(a.bal)}</b></div><div class="${a.overdue>0?"badc-b":""}"><span>متأخر عن الدفع</span><b class="num">${fmt2(a.overdue)}</b></div><div><span>حد الائتمان</span><b class="num">${a.limit!=null?fmt2(a.limit):"—"}</b></div><div><span>مدة السداد</span><b class="num">${a.pay_days!=null?a.pay_days+" يوم":"—"}</b></div></div>
+     ${a.limit&&a.bal>a.limit?`<div class="msg err">العميل عدّى حد الائتمان بـ <b class="num">${fmt2(a.bal-a.limit)}</b>. راجع الحسابات قبل الحجز.</div>`:""}${!a.entries?`<div class="sub">لسه مفيش قيود حسابات مسجلة للعميل ده.</div>`:a.last_pay?`<div class="sub">آخر دفعة ${dt(a.last_pay)}</div>`:""}`:""}
+   <div class="dsec">حجوزات مفتوحة <span class="sub">${(d.res||[]).length}</span></div>
+   ${(d.res||[]).length?`<div class="card">${d.res.map(r=>`<div class="item"><div class="item-top"><div class="item-title">${esc(r.sname||"")} ${cd(r.spec)} · ${esc(r.color||"")}</div><b class="num">${fmt2(r.qty)} كجم</b></div><div class="kv"><span>${WH_AR(r.wh==="greige"?"g":"f")}</span>${r.exp?`<span>بينتهي ${dt(r.exp)}</span>`:""}</div></div>`).join("")}</div>`:`<div class="sub">مفيش</div>`}
+   <div class="dsec">الطلبية فين؟ · أوامر التشغيل <span class="sub">${wg.size}</span></div>
+   ${wg.size?`<div class="card">${[...wg.values()].map(x=>`<div class="item"><div class="item-top"><div class="item-title"><span class="num">#${esc(x.no)}</span></div><span class="sub">${dt(x.ws[0].at)}</span></div>${x.ws.map(w=>`<div class="kv"><span class="chip st-${w.st}">${st(w.st)}</span><b>${esc(w.sname||"")}</b><span>${esc(w.color||"")}</span><span>اتسلّم <b class="num">${fmt(w.del)}</b> من <b class="num">${fmt(w.req)}</b></span></div>`).join("")}</div>`).join("")}</div>`:`<div class="sub">مفيش أوامر تشغيل مفتوحة</div>`}
+   <div class="dsec">في المصابغ <span class="sub">${(d.dye||[]).length}</span></div>
+   ${(d.dye||[]).length?`<div class="card">${d.dye.map(p=>`<div class="item"><div class="item-top"><div class="item-title"><span class="num">${esc(p.ext)}</span> · ${esc(p.color||"")}</div><span>${dStChip(p.stage)}</span></div><div class="kv"><span>${esc(p.dh||"")}</span><b>${esc(p.fabric||"")}</b><span><b class="num">${fmt2(p.sent)}</b> كجم</span>${+p.recv?`<span>اتسلّم <b class="num">${fmt2(p.recv)}</b></span>`:""}</div></div>`).join("")}</div>`:`<div class="sub">مفيش</div>`}
+   ${d.own&&+d.own.kg?`<div class="dsec">مخزون باسم العميل</div><div class="sub"><b class="num">${fmt2(d.own.kg)}</b> كجم في <span class="num">${d.own.lines}</span> سطر</div>`:""}
+   <div class="row">${S.me.preview?"":`<button class="btn" id="ccprice">طلب تسعير</button>`}<button class="btn" id="ccsend">${ICONS.send} ابعت لقسم</button><button class="btn grow" onclick="closeSheet()">قفل</button></div>`);
+  if($("#ccprice")) $("#ccprice").onclick=()=>priceReq({cust:d.name,custCode:d.code});
+  $("#ccsend").onclick=()=>openSend("general","",d.name);
+}
+function priceReq(o){ o=o||{};
+  sheet(`<h2>طلب تسعير من الحسابات</h2>${o.label?`<div class="kv"><b>${esc(o.label)}</b></div>`:""}
+   <label><span>العميل</span><input type="text" id="prc" value="${esc(o.cust||"")}" placeholder="اسم العميل"></label>
+   <label><span>الكمية المطلوبة (كجم)</span><input type="number" id="prq" min="0" inputmode="decimal" placeholder="مثلاً 500"></label>
+   <label><span>ملاحظات</span><textarea id="prn" rows="2" placeholder="مثلاً: العميل عايز سعر للكمية دي بالتسليم الأسبوع الجاي"></textarea></label>
+   <div id="prm"></div><div class="row"><button class="btn primary grow" id="prgo">ابعت للحسابات</button><button class="btn" onclick="closeSheet()">إلغاء</button></div>`);
+  $("#prgo").onclick=async()=>{ const q=$("#prq").value, c=$("#prc").value.trim(); const note=`طلب تسعير${o.label?": "+o.label:""}${c?" · العميل: "+c:""}${q?" · الكمية: "+q+" كجم":""}${$("#prn").value.trim()?" · "+$("#prn").value.trim():""}`;
+    const b=$("#prgo"); b.disabled=true;
+    try{ await rpc("fx_send",{p_kind:o.ref?"stock":"general",p_ref:o.ref||"",p_to_dept:"accounts",p_note:note}); closeSheet(); toast("طلب التسعير اتبعت للحسابات، والرد هيوصلك في التنبيهات"); }
+    catch(err){ b.disabled=false; $("#prm").innerHTML=`<div class="msg err">${esc(errText(err))}</div>`; } };
+}
 
 /* ============ color search by photo (البحث بالصورة) ============ */
 const CM={ /* sRGB <-> CIELAB (D65) and CIEDE2000 */
@@ -1301,7 +1474,7 @@ async function viewCFind(){
   const v=$("#view"); const canPrint=!S.me.preview&&["admin","dyeing","warehouse","quality","planning"].includes(S.me.role);
   S.cf=S.cf||{mode:"find",wh:"all",fam:"",min:0};
   if(!canPrint) S.cf.mode="find";
-  v.innerHTML=header("البحث بالصورة")+`
+  v.innerHTML=header("البحث بالصورة")+`<section class="card fhub">${findChips("photo")}</section>
   ${canPrint?`<div class="seg" id="cfmode"><button data-m="find" aria-pressed="${S.cf.mode==="find"}">${ICONS.search} دوّر على لون</button><button data-m="print" aria-pressed="${S.cf.mode==="print"}">${ICONS.camera} سجّل بصمة لون</button></div>`:""}
   <div id="cfprint"></div>
   <section class="card cf-cap">
@@ -1310,7 +1483,7 @@ async function viewCFind(){
     <div id="cfimg"></div>
   </section>
   <div id="cfres"></div>`;
-  bindHeader();
+  bindHeader(); bindFindChips();
   if($("#cfmode")) $("#cfmode").onclick=e=>{ const b=e.target.closest("[data-m]"); if(!b) return; S.cf.mode=b.dataset.m; S.cf.lab=null; S.cf.img=null; viewCFind(); };
   try{ if(!S.stock) await loadStock(); await loadPrints(); }catch(e){ $("#cfres").innerHTML=`<div class="msg err">${esc(errText(e))}</div>`; return; }
   if(S.cf.mode==="print") cfPrintPicker();
@@ -1380,10 +1553,11 @@ function cfColorSheet(g){ if(!g) return;
    ${fams.map(o=>`<div class="cfd-fam"><div class="cfd-fh"><b>${esc(o.f)}</b><span class="num sub">${fmt2(o.kg)} كجم</span></div>${o.rows.map(({i,r})=>`<button type="button" class="cfd-r" data-row="${i}"><span class="chip ${r.w}">${r.w==="g"?"خام":"مجهز"}</span><span class="grow"><b>${esc(r.sname)}</b> <span class="num sub">${esc(r.spec)}</span>${r.yarn?`<span class="cfd-y">${esc(r.yarn)}</span>`:""}</span><span class="cfd-q"><b class="num">${fmt2(r.av)}</b><small>كجم · <span class="num">${r.pcs}</span> توب</small></span><span class="chev">‹</span></button>`).join("")}</div>`).join("")}
    ${!g.ck.startsWith("N:")?`<div class="dsec">صور اللون</div><div id="cfgal"></div>`:""}
    ${alts.length?`<div class="dsec">ألوان بديلة قريبة</div><div class="cfd-alts">${alts.map(({x,d},k)=>`<button type="button" class="cfd-alt" data-alt="${k}"><span class="cf-sw" style="background:${CM.hex(x.ref.lab)}"></span><span class="grow">${esc(x.cn||"")}<small class="sub"> · فرق <span class="num">${d.toFixed(1)}</span></small></span><b class="num">${fmt(x.kg)}</b></button>`).join("")}</div>`:""}
-   <div class="row">${S.me.preview||!S.cf.lab?"":`<button class="btn" id="cfdok">${ICONS.check||"✓"} ده اللون</button>`}<button class="btn" id="cfdsh">${ICONS.share} شارك</button><button class="btn grow" onclick="closeSheet()">قفل</button></div>`);
+   <div class="row">${S.me.preview||!S.cf.lab?"":`<button class="btn" id="cfdok">${ICONS.check||"✓"} ده اللون</button>`}<button class="btn" id="cfdsh">${ICONS.share} شارك</button>${S.me.preview?"":`<button class="btn" id="cfdpr">طلب تسعير</button>`}<button class="btn grow" onclick="closeSheet()">قفل</button></div>`);
   $("#sheet").querySelectorAll("[data-row]").forEach(b=>b.onclick=()=>cfOpenRow(+b.dataset.row,g));
   $("#sheet").querySelectorAll("[data-alt]").forEach(b=>b.onclick=()=>cfColorSheet(alts[+b.dataset.alt].x));
   if($("#cfgal")) gallery($("#cfgal"),"color",g.ck,{caption:g.cn});
+  if($("#cfdpr")) $("#cfdpr").onclick=()=>priceReq({label:`اللون ${g.cn||""}${!g.ck.startsWith("N:")?" "+g.ck:""}`});
   if($("#cfdsh")) $("#cfdsh").onclick=()=>shareSheet("شارك اللون", shareText(rows.map(x=>x.r), `اللون ${g.cn||""}`));
   if($("#cfdok")) $("#cfdok").onclick=async()=>{ const b=$("#cfdok"); b.disabled=true; try{ await rpc("fx_color_print_add",{p_ckey:g.ck,p_l:+S.cf.lab[0].toFixed(2),p_a:+S.cf.lab[1].toFixed(2),p_b:+S.cf.lab[2].toFixed(2),p_source:"confirm",p_wb:!!S.cf.gain}); toast("اتسجل، والبحث الجاي هيبقى أدق"); await loadPrints(true); }catch(err){ b.disabled=false; toast(errText(err),true); } };
 }
@@ -2635,6 +2809,7 @@ async function openStockDetail(r){
   if($("#dgal")) gallery($("#dgal"),"color",r.ck,{caption:r.cn,onChange:()=>{ delete S.m.colors_lib; }});
   $("#sheet .sheet").insertAdjacentHTML("beforeend",`<button class="btn" id="ssend">${ICONS.send} ابعت الصنف ده لقسم</button>`);
   $("#ssend").onclick=()=>openSend("stock",`${r.w}|${r.spec}|${r.ck}`,`${r.sname} ${r.spec} · ${r.cn||""} · متاح ${fmt(Math.max(0,r.av))} كجم`);
+  if(!S.me.preview&&S.me.role!=="accounts"){ $("#sheet .sheet").insertAdjacentHTML("beforeend",`<button class="btn" id="sprice">طلب تسعير من الحسابات</button>`); $("#sprice").onclick=()=>priceReq({label:`${r.sname} ${r.spec} · ${r.cn||""} (${WH_AR(r.w)})`,ref:`${r.w}|${r.spec}|${r.ck}`}); }
 }
 function openResDetail(r){
   if(!r) return;
