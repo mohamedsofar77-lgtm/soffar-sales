@@ -781,6 +781,29 @@ button.kpi:hover,.quick button:hover,.fam-card:hover,.item.tkt:hover,.tklist .ro
 .cf-ok{align-self:flex-start}
 .cf-pl{max-height:300px;overflow:auto;display:flex;flex-direction:column}
 @media (min-width:1024px){ .cf-list{grid-template-columns:repeat(2,minmax(0,1fr))} }
+
+.sheet > *{flex-shrink:0}
+.btn svg{width:18px;height:18px;vertical-align:middle;flex:none}.btn{display:inline-flex;align-items:center;justify-content:center;gap:6px}
+.cf-g.click{cursor:pointer}
+.cf-g.click:focus-visible{outline:2px solid var(--indigo);outline-offset:2px}
+.cf-g .chev{font-size:1.3rem;color:var(--muted)}
+.cf-acts{gap:8px;flex-wrap:wrap}
+.cf-back{display:inline-flex;align-items:center;gap:6px;margin-bottom:10px;align-self:flex-start}
+.cf-back svg{width:16px;height:16px}
+.cfd-h{display:flex;gap:14px;align-items:flex-start}.cfd-h .mid{flex:1;min-width:0}.cfd-h h2{font-size:1.2rem;margin-bottom:2px}
+.cf-sw.xl{width:72px;height:72px;border-radius:14px;box-shadow:inset 0 0 0 1px rgba(0,0,0,.08)}
+.cfd-cmp{display:flex;align-items:center;gap:8px;margin-top:8px;flex-wrap:wrap}.cfd-cmp .cf-sw{width:22px;height:22px}
+.cfd-fam{border:1px solid var(--line);border-radius:12px;overflow:hidden;margin-bottom:10px}
+.cfd-fh{display:flex;justify-content:space-between;align-items:center;padding:8px 12px;background:var(--indigo-soft)}
+.cfd-r{display:flex;align-items:center;gap:10px;width:100%;border:0;border-top:1px solid var(--line);background:var(--surface);text-align:right;padding:10px 12px;cursor:pointer;color:var(--ink);font:inherit}
+.cfd-fh+.cfd-r{border-top:0}
+.cfd-r:hover{background:var(--bg)}
+.cfd-r .grow{flex:1;min-width:0}
+.cfd-y{display:block;font-size:12px;color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.cfd-q{display:flex;flex-direction:column;align-items:flex-end}.cfd-q small{font-size:11px;color:var(--muted)}
+.cfd-alts{display:flex;flex-direction:column;border:1px solid var(--line);border-radius:12px;overflow:hidden;margin-bottom:10px}
+.cfd-alt{display:flex;align-items:center;gap:10px;border:0;border-top:1px solid var(--line);background:var(--surface);padding:9px 12px;text-align:right;cursor:pointer;color:var(--ink);font:inherit}
+.cfd-alt:first-child{border-top:0}.cfd-alt .grow{flex:1}
 </style>
 </head>
 <body>
@@ -794,7 +817,7 @@ const DEV_KEY = "";
 const APP_URL = "https://mohamedsofar77-lgtm.github.io/soffar-sales/";
 // نسخة التدريب: لو حد فتح التطبيق من غير رابط، بيدخل على وضع المراجعة والتدريب (قراءة بس)
 const PREVIEW_KEY = "";
-const APP_VERSION = "20261126192735";
+const APP_VERSION = "20261126194357";
 // رابط الدخول: الموظف بيفتح الرابط اللي فيه #k=... مرة واحدة، والتطبيق بيفتكره على الموبايل
 const KEY = (()=>{ let k=""; const m=(location.hash||"").match(/k=([A-Za-z0-9]+)/);
   if(m){ k=m[1]; try{ localStorage.setItem("soffar_key",k); }catch(e){} try{ history.replaceState(null,"",location.pathname+location.search); }catch(e){} }
@@ -1313,7 +1336,7 @@ function cfAfterPick(fromCluster){ if(fromCluster){ const sw=$("#cfimg .cf-pick 
 function cfResults(){ const el=$("#cfres"); if(!el||!S.cf.lab) return;
   const groups=new Map();
   S.stock.rows.forEach((r,i)=>{ if(!r.free||r.av<0.5) return; if(S.cf.wh!=="all"&&(S.cf.wh==="greige")!==(r.w==="g")) return;
-    let g=groups.get(r.ck); if(!g){ const ref=colorRef(r.ck,r.cn); if(!ref) return; g={ck:r.ck,cn:r.cn,ref,de:CM.de(S.cf.lab,ref.lab),kg:0,rows:[]}; groups.set(r.ck,g); }
+    const gk=r.ck+"\u0001"+r.cn; let g=groups.get(gk); if(!g){ const ref=colorRef(r.ck,r.cn); if(!ref) return; g={key:gk,ck:r.ck,cn:r.cn,ref,de:CM.de(S.cf.lab,ref.lab),kg:0,rows:[]}; groups.set(gk,g); }
     g.kg+=r.av; g.rows.push(i); });
   const bk=d=>d<3?0:d<6?1:d<10?2:3; const all=[...groups.values()].filter(g=>g.de<16).sort((a,b)=>bk(a.de)-bk(b.de)||b.kg-a.kg);
   const fams=[...new Set(all.flatMap(g=>g.rows.map(i=>S.stock.rows[i].fam)))];
@@ -1323,19 +1346,46 @@ function cfResults(){ const el=$("#cfres"); if(!el||!S.cf.lab) return;
    <div class="cf-filt"><div class="seg" id="cfwh">${[["all","الكل"],["greige","خام"],["finished","مجهز"]].map(([k,l])=>`<button data-k="${k}" aria-pressed="${S.cf.wh===k}">${l}</button>`).join("")}</div>
    <label class="cf-min"><span>أقل كمية كجم</span><input type="number" id="cfmin" min="0" value="${+S.cf.min||""}" placeholder="0"></label></div>
    ${fams.length>1?`<div class="bsubs" id="cffam"><button data-f="" aria-pressed="${!S.cf.fam}">كل الأقمشة</button>${fams.map(f=>`<button data-f="${esc(f)}" aria-pressed="${S.cf.fam===f}">${esc(f)}</button>`).join("")}</div>`:""}
-   ${list.length?`<div class="cf-list">${list.map(g=>{ const [lv,cls]=cfLevel(g.de); const kg=g.rows.reduce((s,i)=>s+S.stock.rows[i].av,0); return `<section class="card cf-g">
+   ${list.length?`<div class="cf-list">${list.map((g,gi)=>{ const [lv,cls]=cfLevel(g.de); const kg=g.rows.reduce((s,i)=>s+S.stock.rows[i].av,0); return `<section class="card cf-g click" data-g="${gi}" role="button" tabindex="0" aria-label="تفاصيل اللون ${esc(g.cn||"")}">
      <div class="cf-gh"><span class="cf-sw lg" style="background:${CM.hex(g.ref.lab)}"></span><div class="mid"><div class="t"><b>${esc(g.cn||"بدون لون")}</b>${!g.ck.startsWith("N:")?` <span class="num sub">${esc(g.ck)}</span>`:""}</div>
        <div class="m"><span class="cf-lv ${cls}">${lv}</span> <span class="sub">فرق اللون <span class="num">${g.de.toFixed(1)}</span> · ${CF_SRC[g.ref.src]}${g.ref.tcx?` ${esc(g.ref.tcx)}`:""}</span></div></div>
-       <div class="a"><b class="num">${fmt(kg)}</b><small> كجم</small></div></div>
+       <div class="a"><b class="num">${fmt(kg)}</b><small> كجم</small></div><span class="chev">‹</span></div>
      <div class="cf-rows">${g.rows.sort((a,b)=>S.stock.rows[b].av-S.stock.rows[a].av).slice(0,6).map(i=>{ const r=S.stock.rows[i]; return `<button type="button" class="cf-r" data-row="${i}"><span class="chip ${r.w}">${r.w==="g"?"خام":"مجهز"}</span><span class="grow">${esc(r.sname)} <span class="num sub">${esc(r.spec)}</span></span><b class="num">${fmt2(r.av)}</b></button>`; }).join("")}${g.rows.length>6?`<div class="sub">+ ${g.rows.length-6} أصناف تانية</div>`:""}</div>
-     ${S.me.preview?"":`<button type="button" class="btn sm cf-ok" data-ok="${esc(g.ck)}">${ICONS.check||"✓"} ده اللون</button>`}</section>`; }).join("")}</div>`
+     <div class="row cf-acts"><button type="button" class="btn sm primary" data-det="${gi}">التفاصيل والخامات</button>${S.me.preview?"":`<button type="button" class="btn sm cf-ok" data-ok="${esc(g.ck)}">${ICONS.check||"✓"} ده اللون</button>`}</div></section>`; }).join("")}</div>`
    :`<div class="state"><strong>مفيش لون قريب في المخزن</strong><div class="sub">جرّب تلمس مكان تاني في الصورة، أو شيل الفلاتر.</div></div>`}
    ${noRef?`<div class="sub">${noRef} لون في المخزن لسه مالهوش بصمة ومش داخل في البحث. قسم الصباغة يقدر يصوّرهم من «سجّل بصمة لون».</div>`:""}`;
   $("#cfwh").onclick=e=>{ const b=e.target.closest("[data-k]"); if(!b) return; S.cf.wh=b.dataset.k; cfResults(); };
   if($("#cffam")) $("#cffam").onclick=e=>{ const b=e.target.closest("[data-f]"); if(!b) return; S.cf.fam=b.dataset.f; cfResults(); };
   $("#cfmin").onchange=e=>{ S.cf.min=+e.target.value||0; cfResults(); };
-  el.querySelectorAll("[data-row]").forEach(b=>b.onclick=()=>openStockDetail(S.stock.rows[+b.dataset.row]));
-  el.querySelectorAll("[data-ok]").forEach(b=>b.onclick=async()=>{ b.disabled=true; try{ await rpc("fx_color_print_add",{p_ckey:b.dataset.ok,p_l:+S.cf.lab[0].toFixed(2),p_a:+S.cf.lab[1].toFixed(2),p_b:+S.cf.lab[2].toFixed(2),p_source:"confirm",p_wb:!!S.cf.gain}); toast("اتسجل، والبحث الجاي هيبقى أدق"); await loadPrints(true); }catch(err){ b.disabled=false; toast(errText(err),true); } });
+  S.cf.list=list; S.cf.all=all;
+  el.querySelectorAll("[data-row]").forEach(b=>b.onclick=e=>{ e.stopPropagation(); const g=list[+b.closest("[data-g]").dataset.g]; cfOpenRow(+b.dataset.row,g); });
+  el.querySelectorAll("[data-g]").forEach(c=>{ const open=()=>cfColorSheet(list[+c.dataset.g]); c.onclick=e=>{ if(e.target.closest("[data-ok],[data-row]")) return; open(); }; c.onkeydown=e=>{ if(e.key==="Enter"||e.key===" "){ e.preventDefault(); open(); } }; });
+  el.querySelectorAll("[data-ok]").forEach(b=>b.onclick=async e=>{ e.stopPropagation(); b.disabled=true; try{ await rpc("fx_color_print_add",{p_ckey:b.dataset.ok,p_l:+S.cf.lab[0].toFixed(2),p_a:+S.cf.lab[1].toFixed(2),p_b:+S.cf.lab[2].toFixed(2),p_source:"confirm",p_wb:!!S.cf.gain}); toast("اتسجل، والبحث الجاي هيبقى أدق"); await loadPrints(true); }catch(err){ b.disabled=false; toast(errText(err),true); } });
+}
+
+async function cfOpenRow(i,g){ await openStockDetail(S.stock.rows[i]); const sh=$("#sheet .sheet"); if(!sh||!g) return;
+  if(!$("#cfback")) sh.insertAdjacentHTML("afterbegin",`<button type="button" class="btn sm cf-back" id="cfback">${ICONS.back}<span>رجوع لتفاصيل اللون ${esc(g.cn||"")}</span></button>`);
+  $("#cfback").onclick=()=>cfColorSheet(g); }
+function cfColorSheet(g){ if(!g) return;
+  const idx=S.stock.rows.map((r,i)=>i).filter(i=>{ const r=S.stock.rows[i]; return r.ck===g.ck&&r.cn===g.cn&&r.free&&r.av>=0.5; });
+  const rows=idx.map(i=>({i,r:S.stock.rows[i]})); const tot=rows.reduce((a,x)=>a+x.r.av,0), gk=rows.filter(x=>x.r.w==="g").reduce((a,x)=>a+x.r.av,0), pcs=rows.reduce((a,x)=>a+x.r.pcs,0);
+  const fams=[...new Set(rows.map(x=>x.r.fam))].map(f=>({f,rows:rows.filter(x=>x.r.fam===f).sort((a,b)=>b.r.av-a.r.av)})).map(o=>({...o,kg:o.rows.reduce((a,x)=>a+x.r.av,0)})).sort((a,b)=>b.kg-a.kg);
+  const [lv,cls]=S.cf.lab?cfLevel(g.de):["",""]; const tcx=S.stock.tcx&&S.stock.tcx[g.ck];
+  const alts=(S.cf.all||[]).filter(x=>x.key!==g.key).map(x=>({x,d:CM.de(g.ref.lab,x.ref.lab)})).filter(o=>o.d<8).sort((a,b)=>a.d-b.d).slice(0,6);
+  sheet(`<div class="cfd-h"><span class="cf-sw xl" style="background:${CM.hex(g.ref.lab)}"></span><div class="mid"><h2>${esc(g.cn||"بدون لون")}</h2>
+     <div class="sub">${!g.ck.startsWith("N:")?`كود المصبغة <span class="num">${esc(g.ck)}</span> · `:""}${CF_SRC[g.ref.src]}${tcx?` · Pantone <span class="num">${esc(tcx[0])}</span>`:""}</div>
+     ${S.cf.lab?`<div class="cfd-cmp"><span class="cf-sw" style="background:${CM.hex(S.cf.lab)}" title="صورة العميل"></span><span class="sub">صورة العميل</span><span class="cf-lv ${cls}">${lv}</span><span class="sub">فرق اللون <span class="num">${g.de.toFixed(1)}</span></span></div>`:""}</div></div>
+   <div class="dstats"><div class="okc"><span>المتاح للبيع</span><b class="num">${fmt2(tot)}</b></div><div><span>خام</span><b class="num">${fmt2(gk)}</b></div><div><span>مجهز</span><b class="num">${fmt2(tot-gk)}</b></div><div><span>الأتواب</span><b class="num">${pcs}</b></div></div>
+   <div class="dsec">الخامات اللي فيها اللون ده <span class="sub">${rows.length} صنف</span></div>
+   ${fams.map(o=>`<div class="cfd-fam"><div class="cfd-fh"><b>${esc(o.f)}</b><span class="num sub">${fmt2(o.kg)} كجم</span></div>${o.rows.map(({i,r})=>`<button type="button" class="cfd-r" data-row="${i}"><span class="chip ${r.w}">${r.w==="g"?"خام":"مجهز"}</span><span class="grow"><b>${esc(r.sname)}</b> <span class="num sub">${esc(r.spec)}</span>${r.yarn?`<span class="cfd-y">${esc(r.yarn)}</span>`:""}</span><span class="cfd-q"><b class="num">${fmt2(r.av)}</b><small>كجم · <span class="num">${r.pcs}</span> توب</small></span><span class="chev">‹</span></button>`).join("")}</div>`).join("")}
+   ${!g.ck.startsWith("N:")?`<div class="dsec">صور اللون</div><div id="cfgal"></div>`:""}
+   ${alts.length?`<div class="dsec">ألوان بديلة قريبة</div><div class="cfd-alts">${alts.map(({x,d},k)=>`<button type="button" class="cfd-alt" data-alt="${k}"><span class="cf-sw" style="background:${CM.hex(x.ref.lab)}"></span><span class="grow">${esc(x.cn||"")}<small class="sub"> · فرق <span class="num">${d.toFixed(1)}</span></small></span><b class="num">${fmt(x.kg)}</b></button>`).join("")}</div>`:""}
+   <div class="row">${S.me.preview||!S.cf.lab?"":`<button class="btn" id="cfdok">${ICONS.check||"✓"} ده اللون</button>`}<button class="btn" id="cfdsh">${ICONS.share} شارك</button><button class="btn grow" onclick="closeSheet()">قفل</button></div>`);
+  $("#sheet").querySelectorAll("[data-row]").forEach(b=>b.onclick=()=>cfOpenRow(+b.dataset.row,g));
+  $("#sheet").querySelectorAll("[data-alt]").forEach(b=>b.onclick=()=>cfColorSheet(alts[+b.dataset.alt].x));
+  if($("#cfgal")) gallery($("#cfgal"),"color",g.ck,{caption:g.cn});
+  if($("#cfdsh")) $("#cfdsh").onclick=()=>shareSheet("شارك اللون", shareText(rows.map(x=>x.r), `اللون ${g.cn||""}`));
+  if($("#cfdok")) $("#cfdok").onclick=async()=>{ const b=$("#cfdok"); b.disabled=true; try{ await rpc("fx_color_print_add",{p_ckey:g.ck,p_l:+S.cf.lab[0].toFixed(2),p_a:+S.cf.lab[1].toFixed(2),p_b:+S.cf.lab[2].toFixed(2),p_source:"confirm",p_wb:!!S.cf.gain}); toast("اتسجل، والبحث الجاي هيبقى أدق"); await loadPrints(true); }catch(err){ b.disabled=false; toast(errText(err),true); } };
 }
 function cfColorsList(){ const m=new Map(); S.stock.rows.forEach(r=>{ if(r.av<0.5) return; let x=m.get(r.ck); if(!x){ x={ck:r.ck,cn:r.cn,kg:0}; m.set(r.ck,x); } x.kg+=r.av; }); return [...m.values()].sort((a,b)=>b.kg-a.kg); }
 function cfPrintPicker(){ const el=$("#cfprint"); const all=cfColorsList(); const done=all.filter(x=>S.prints[x.ck]).length;
