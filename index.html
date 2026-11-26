@@ -324,6 +324,10 @@ tr.warnrow td{background:var(--warn-soft)}
 .dpg label{flex-direction:row;align-items:center;gap:6px;padding:7px 9px;border:1px solid var(--line);border-radius:9px;font-size:.86rem;color:var(--ink);background:var(--surface)}
 .dpg label.on{border-color:var(--indigo);background:var(--indigo-soft)}
 .drr{display:grid;grid-template-columns:minmax(0,2fr) minmax(0,1fr) minmax(0,1.3fr);gap:8px}
+.chip.dmiss{background:var(--warn-soft);color:var(--warn)}
+tr.dpi td{border-top:0;padding-top:0}
+.dpkv{display:flex;flex-wrap:wrap;gap:4px 14px;font-size:.8rem;color:var(--muted);padding:4px 0 8px}
+.dpkv b{color:var(--ink);font-weight:600}
 .dsteps{display:flex;flex-wrap:wrap;gap:4px}
 .dsteps span{font-size:.72rem;padding:2px 8px;border-radius:99px;border:1px solid var(--line);color:var(--muted)}
 .dsteps span.done{background:var(--indigo-soft);color:var(--indigo);border-color:transparent}
@@ -578,7 +582,7 @@ const DEV_KEY = "";
 const APP_URL = "https://mohamedsofar77-lgtm.github.io/soffar-sales/";
 // نسخة التدريب: لو حد فتح التطبيق من غير رابط، بيدخل على وضع المراجعة والتدريب (قراءة بس)
 const PREVIEW_KEY = "";
-const APP_VERSION = "20261126141243";
+const APP_VERSION = "20261126155752";
 // رابط الدخول: الموظف بيفتح الرابط اللي فيه #k=... مرة واحدة، والتطبيق بيفتكره على الموبايل
 const KEY = (()=>{ let k=""; const m=(location.hash||"").match(/k=([A-Za-z0-9]+)/);
   if(m){ k=m[1]; try{ localStorage.setItem("soffar_key",k); }catch(e){} try{ history.replaceState(null,"",location.pathname+location.search); }catch(e){} }
@@ -592,7 +596,7 @@ const RES_ST = {reserved:"محجوز", sold:"اتباع", cancelled:"ملغي", 
 const WO_ST = {requested:"طلب جديد", on_machine:"على المكن", at_quality:"في الجودة", greige_done:"في مخزن الخام", at_dyehouse:"في المصبغة", finished:"في مخزن المجهز", delivered:"اتسلّم", partial_return:"مرتجع جزئي", returned:"مرتجع", closed:"مقفول", cancelled:"ملغي"};
 const RETURN_REASONS = ["عيب صباغة","اختلاف لون","عيب نسيج","اختلاف وزن أو عرض","تأخير في التسليم","العميل لغى","كمية زيادة"];
 const ERR_AR = {
-  bad_stage:"الأمر في مرحلة مينفعش فيها الحركة دي.", dyehouse_required:"اختار المصبغة الأول.", already_received:"مينفعش تلغي أمر اتستلم منه.", already_imported:"الرصيد ده اتسجل قبل كده.",
+  bad_stage:"الأمر في مرحلة مينفعش فيها الحركة دي.", spec_required:"فيه جزء ناقص كود الصنف. كمّله من «تعديل» جنب الجزء قبل الاستلام.", dyehouse_required:"اختار المصبغة الأول.", already_received:"مينفعش تلغي أمر اتستلم منه.", already_imported:"الرصيد ده اتسجل قبل كده.",
   yarn_short:"رصيد اللوط في مخزن الغزل مش مكفّي.", over_tolerance:"الصرف أكتر من 110% من الكمية المطلوبة.", request_closed:"الطلب ده اتقفل خلاص.",
   over_issued:"المرتجع أكبر من اللي اتصرف.", wo_required:"اختار أمر الشغل.", party_required:"اختار الجهة اللي هيروح لها الغزل.", machine_required:"اكتب رقم المكنة.",
   no_lines:"ضيف سطر واحد على الأقل.", bad_lot:"اختار لوط موجود في مخزن الغزل.", lot_required:"اكتب رقم اللوط.", bad_item:"اختار الصنف من القائمة.",
@@ -3018,10 +3022,13 @@ const dSent = o => (o.parts||[]).reduce((a,p)=>a+(+p.sent||0),0);
 const dRecv = o => (o.parts||[]).reduce((a,p)=>a+(+p.recv||0),0);
 const dOut = o => dOpen(o) ? Math.max(0, dSent(o)-dRecv(o)-(o.parts||[]).reduce((a,p)=>a+(+p.rej||0),0)) : 0;
 const dLoss = (sent,recv) => sent>0 ? Math.round(10000*(sent-recv)/sent)/100 : null;
+const dMissSpec = o => (o.parts||[]).filter(p=>!p.spec).length;
+const dMissCust = o => (o.parts||[]).filter(p=>!p.cust).length;
+const dTitle = o => o.ext||o.no||"";
 const dStChip = s => `<span class="chip dst-${s}">${esc(DST[s]||s)}</span>`;
 async function loadDye(force){
   if(force||!S.dm) S.dm = await rpc("fx_dye_master");
-  S.dye = (await rpc("fx_dye_orders",{p_filter:"all"})||[]).map(o=>({...o, key:norm([o.no,o.batch,o.ccode,o.cname,o.dh_name,o.wo_no,...(o.parts||[]).flatMap(p=>[p.spec,p.spec_name,p.cust_name])].filter(Boolean).join(" "))}));
+  S.dye = (await rpc("fx_dye_orders",{p_filter:"all"})||[]).map(o=>({...o, miss:(o.parts||[]).filter(p=>!p.spec||(!p.cust&&!p.raw)).length+(o.parts||[]).filter(p=>!p.cust).length, key:norm([o.no,o.ext,o.batch,o.ccode,o.cname,o.labdip,o.pantone,o.dh_name,o.wo_no,...(o.parts||[]).flatMap(p=>[p.spec,p.spec_name,p.cust_name,p.fabric,p.alias,p.gref])].filter(Boolean).join(" "))}));
 }
 async function viewDye(){
   navRecord(); const v=$("#view");
@@ -3037,8 +3044,8 @@ async function viewDye(){
 function dOrders(box){
   const all=S.dye||[], open=all.filter(dOpen);
   const kgOut=open.reduce((a,o)=>a+dOut(o),0), ready=open.filter(o=>o.stage==="ready").length, late=open.filter(o=>o.overdue).length, req=open.filter(o=>o.stage==="requested").length;
-  const cnt=k=>k==="open"?open.length:k==="done"?all.filter(o=>o.stage==="received").length:k==="all"?all.length:all.filter(o=>o.stage===k).length;
-  const fl=[["open","المفتوح"],["requested","طلبات جديدة"],["at_dyehouse","في المصبغة"],["labdip","لاب دب"],["dyeing","بيتصبغ"],["finishing","تجهيز"],["ready","جاهز"],["partial","استلام جزئي"],["done","اتستلم"],["cancelled","ملغي"],["all","الكل"]];
+  const cnt=k=>k==="miss"?all.filter(o=>dOpen(o)&&(dMissSpec(o)||dMissCust(o))).length:k==="open"?open.length:k==="done"?all.filter(o=>o.stage==="received").length:k==="all"?all.length:all.filter(o=>o.stage===k).length;
+  const fl=[["open","المفتوح"],["requested","طلبات جديدة"],["at_dyehouse","في المصبغة"],["labdip","لاب دب"],["dyeing","بيتصبغ"],["finishing","تجهيز"],["ready","جاهز"],["partial","استلام جزئي"],["done","اتستلم"],["cancelled","ملغي"],["miss","ناقص بيانات"],["all","الكل"]];
   const dhs=[...new Map(all.filter(o=>o.dh).map(o=>[o.dh,o.dh_name||o.dh])).entries()];
   box.innerHTML = `<div class="row wrapbtns">${dCan("request")?`<button class="btn primary" id="dnew">+ ${dCan("manage")?"أمر صباغة":"طلب صباغة"}</button>`:""}</div>
     <div class="kpis">
@@ -3046,19 +3053,19 @@ function dOrders(box){
       <div class="kpi"><span>طلبات مستنية توزيع</span><b class="num">${req}</b><small>من التخطيط</small></div>
       <div class="kpi"><span>جاهز للاستلام</span><b class="num">${ready}</b><small>أمر</small></div>
       <div class="kpi"><span>متأخر</span><b class="num ${late?"badc":""}">${late}</b><small>عدّى ميعاد التسليم</small></div></div>
-    <div class="search">${ICONS.search}<input type="search" id="dq" placeholder="ابحث برقم الأمر أو الباتش أو اللون أو العميل أو الصنف" value="${esc(S.dQ)}"></div>
+    <div class="search">${ICONS.search}<input type="search" id="dq" placeholder="ابحث برقم الأمر (ML-2215) أو الباتش أو اللون أو العميل أو الصنف أو إذن الصرف" value="${esc(S.dQ)}"></div>
     <div class="bsubs" id="dfl">${fl.map(([k,l])=>`<button data-f="${k}" aria-pressed="${S.dF===k}">${l} <span class="num">${cnt(k)}</span></button>`).join("")}</div>
     ${dhs.length>1?`<label><span>المصبغة</span><select id="ddh"><option value="">كل المصابغ</option>${dhs.map(([c,n])=>`<option value="${esc(c)}" ${S.dDh===c?"selected":""}>${esc(n)}</option>`).join("")}</select></label>`:""}
     <div id="dlist" class="stack"></div>`;
   if($("#dnew")) $("#dnew").onclick=()=>dForm(null);
   const draw=()=>{
     const t=norm(S.dQ).split(" ").filter(Boolean);
-    const list=all.filter(o=>(S.dF==="open"?dOpen(o):S.dF==="done"?o.stage==="received":S.dF==="all"?true:o.stage===S.dF)&&(!S.dDh||o.dh===S.dDh)&&t.every(w=>o.key.includes(w)));
+    const list=all.filter(o=>(S.dF==="miss"?dOpen(o)&&(dMissSpec(o)||dMissCust(o)):S.dF==="open"?dOpen(o):S.dF==="done"?o.stage==="received":S.dF==="all"?true:o.stage===S.dF)&&(!S.dDh||o.dh===S.dDh)&&t.every(w=>o.key.includes(w)));
     if(!list.length){ $("#dlist").innerHTML=`<div class="state"><strong>مفيش أوامر</strong>${S.dF!=="all"?`<div class="sub">جرّب «الكل»</div>`:""}</div>`; return; }
     $("#dlist").innerHTML=`<section class="card top-list">${list.slice(0,200).map(o=>{ const s=dSent(o), r=dRecv(o), cust=[...new Set((o.parts||[]).map(p=>p.cust_name).filter(Boolean))];
       return `<div class="row-i click" data-id="${o.id}" role="button" tabindex="0"><div class="mid">
-        <div class="t"><span class="num codev">${esc(o.no||"")}</span> ${o.batch?`<span class="num" style="direction:ltr;unicode-bidi:isolate">${esc(o.batch)}</span> · `:""}<b>${esc(o.cname||(o.wash?"غسيل":"من غير لون"))}</b>${o.ccode?` <span class="sub num" style="direction:ltr;unicode-bidi:isolate">${esc(o.ccode)}</span>`:""}</div>
-        <div class="m">${dStChip(o.stage)} ${esc(o.dh_name||"لسه من غير مصبغة")} · ${cust.length?esc(cust.join("، ")):"—"} · ${(o.parts||[]).length} صنف${o.overdue?` · <span class="badc">متأخر</span>`:""}${o.opening?` <span class="chip s">رصيد أول</span>`:""}</div></div>
+        <div class="t"><span class="num codev">${esc(dTitle(o))}</span> ${o.batch?`<span class="num" style="direction:ltr;unicode-bidi:isolate">${esc(o.batch)}</span> · `:""}<b>${esc(o.cname||(o.wash?"غسيل":"من غير لون"))}</b>${o.ccode?` <span class="sub num" style="direction:ltr;unicode-bidi:isolate">${esc(o.ccode)}</span>`:""}</div>
+        <div class="m">${dStChip(o.stage)} ${esc(o.dh_name||"لسه من غير مصبغة")} · ${cust.length?esc(cust.join("، ")):"—"} · ${(o.parts||[]).length} صنف${o.overdue?` · <span class="badc">متأخر</span>`:""}${o.opening?` <span class="chip s">رصيد أول</span>`:""}${dMissSpec(o)?` <span class="chip dmiss">ناقص كود صنف ${dMissSpec(o)}</span>`:""}${dMissCust(o)?` <span class="chip dmiss">ناقص عميل</span>`:""}</div></div>
         <div class="a"><b class="num">${kg2(s)}</b><small> كجم</small>${r>0?`<div class="sub num">اتستلم ${kg2(r)}</div>`:""}</div><span class="chev">‹</span></div>`; }).join("")}</section>${list.length>200?`<div class="sub">بيعرض أول 200 من ${list.length}. استخدم البحث.</div>`:""}`;
     $("#dlist").querySelectorAll("[data-id]").forEach(r=>r.onclick=()=>openDye(+r.dataset.id));
   };
@@ -3079,20 +3086,26 @@ async function openDye(id){
   const s=dSent(o), r=dRecv(o), lo=r>0?dLoss(s,r):null;
   const procs=(o.procs||[]).filter(p=>{ const x=(S.dm.procs||[]).find(y=>y[0]===p); return !x||x[3]!=="value"; });
   const vals=o.vals||{}, done=new Set(o.done||[]);
-  sheet(`<div class="dhead"><h2>${esc(o.cname||(o.wash?"غسيل":"أمر صباغة"))} <span class="num codev">${esc(o.no||"")}</span></h2></div>
+  sheet(`<div class="dhead"><h2>${esc(o.cname||(o.wash?"غسيل":"أمر صباغة"))} <span class="num codev">${esc(dTitle(o))}</span></h2>${o.ext&&o.no?`<div class="sub">رقم البرنامج ${esc(o.no)}</div>`:""}</div>
     ${dSteps(o)}
     ${dl([["الحالة",dStChip(o.stage)+(o.overdue?` <span class="badc">متأخر</span>`:"")],["المصبغة",esc(o.dh_name||"")||`<span class="badc">لسه ماتحددتش</span>`],["رقم الباتش",o.batch?`<span class="num" style="direction:ltr;unicode-bidi:isolate">${esc(o.batch)}</span>`:""],
-      ["كود اللون",o.ccode?`<span class="num" style="direction:ltr;unicode-bidi:isolate">${esc(o.ccode)}</span>`:(o.wash?"غسيل بدون لون":"")],["أمر الشغل",o.wo_no?`<button class="linkbtn" id="dwo">أمر ${esc(o.wo_no)}</button>`:""],
-      ["اتبعت",o.sent_at?esc(new Date(o.sent_at).toLocaleDateString("ar-EG")):""],["ميعاد التسليم",o.expected_at?esc(new Date(o.expected_at).toLocaleDateString("ar-EG")):""],
+      ["رقم أمر التشغيل",o.ext?`<span class="num" style="direction:ltr;unicode-bidi:isolate">${esc(o.ext)}</span>`:""],["نوع اللون",esc(o.ctype||"")],
+      ["كود اللون",o.ccode?`<span class="num" style="direction:ltr;unicode-bidi:isolate">${esc(o.ccode)}</span>`:(o.wash?"غسيل بدون لون":"")],
+      ["رقم اللاب دب",o.labdip?`<span class="num" style="direction:ltr;unicode-bidi:isolate">${esc(o.labdip)}</span>${o.labdip_date?` <span class="sub">${esc(new Date(o.labdip_date).toLocaleDateString("ar-EG"))}</span>`:""}`:""],["Pantone",o.pantone?`<span class="num" style="direction:ltr;unicode-bidi:isolate">${esc(o.pantone)}</span>`:""],
+      ["أمر تجهيز مرجعي",esc((o.info||{}).ref_wo||"")],["تعليمات",esc((o.info||{}).instr||"")],["ملاحظات التجهيز",esc((o.info||{}).gnotes||"")],
+      ["الباقي حسب بيان المصبغة",(o.info||{}).stm_remaining!=null?`<span class="num">${kg2(o.info.stm_remaining)}</span> كجم`:""],["عمل الأمر",esc((o.info||{}).by||"")],["المسؤول في المصبغة",esc((o.info||{}).att||"")],["أمر الشغل",o.wo_no?`<button class="linkbtn" id="dwo">أمر ${esc(o.wo_no)}</button>`:""],
+      ["اتبعت",o.sent_at?esc(new Date(o.sent_at).toLocaleDateString("ar-EG")):((o.info||{}).date_raw?`<span class="badc">التاريخ في الأمر ${esc(o.info.date_raw)} محتاج تصحيح</span>`:"")],["ميعاد التسليم",o.expected_at?esc(new Date(o.expected_at).toLocaleDateString("ar-EG")):""],
       ["الوزن المطلوب",vals["23"]?esc(vals["23"])+" جم/م²":""],["العرض المطلوب",vals["24"]?esc(vals["24"])+" سم":""],
       ["الإجمالي",`<b class="num">${kg2(s)}</b> كجم مبعوت${r>0?` · <b class="num">${kg2(r)}</b> اتستلم · هالك <b class="num ${lo>0?"":"okc"}">${fmt2(lo)}%</b>`:""}`],["ملاحظة",esc(o.note||"")]])}
     <div class="row wrapbtns">${mg&&nx?`<button class="btn primary" id="dnx">${esc(DNEXT_L[nx]||DST[nx])}</button>`:""}${rc?`<button class="btn primary" id="drc">استلام في مخزن القماش</button>`:""}${mg&&dOpen(o)?`<button class="btn" id="ded">تعديل</button>`:""}</div>
     ${mg&&dOpen(o)?`<div class="row"><label class="grow"><span>انقل لمرحلة تانية</span><select id="dst"><option value="">— اختار —</option>${["assigned","at_dyehouse","labdip","labdip_ok","dyeing","finishing","ready","cancelled"].filter(x=>x!==o.stage).map(x=>`<option value="${x}">${esc(DST[x])}</option>`).join("")}</select></label><label class="grow"><span>ملاحظة</span><input type="text" id="dsn" placeholder="اختياري"></label></div><div id="dsm"></div>`:""}
-    <div class="dsec">الأصناف</div><div class="tbl"><table><thead><tr><th>جزء</th><th>الصنف</th><th>العميل</th><th>مبعوت</th><th>اتستلم</th><th>هالك</th><th>المسموح</th></tr></thead><tbody>
+    <div class="dsec">الأصناف${dMissSpec(o)||dMissCust(o)?` <span class="chip dmiss">فيه بيانات ناقصة</span>`:""}</div><div class="tbl"><table><thead><tr><th>جزء</th><th>الصنف</th><th>العميل</th><th>إذن الصرف</th><th>مبعوت</th><th>اتستلم</th><th>هالك</th><th>المسموح</th>${mg?"<th></th>":""}</tr></thead><tbody>
       ${(o.parts||[]).map(p=>{ const l=+p.recv>0?dLoss(+p.sent,+p.recv):null, over=l!=null&&p.allowed!=null&&l>+p.allowed;
-        return `<tr><td class="num">${esc(p.part)}</td><td>${esc(p.spec_name||"")} <span class="sub num">${esc(p.spec)}</span></td><td>${esc(p.cust_name||"")}${!p.cust&&p.raw?` <span class="badc">من غير كود</span>`:""}</td>
+        return `<tr><td class="num">${esc(p.part)}</td><td>${p.spec?`${esc(p.spec_name||"")} <span class="sub num">${esc(p.spec)}</span>`:`${esc(p.fabric||"")} <span class="badc">ناقص كود الصنف</span>${(p.info||{}).mat_hint?`<div class="sub">مقترح: ${esc(p.info.mat_hint)}</div>`:""}`}${p.spec&&p.fabric&&p.fabric!==p.spec_name?`<div class="sub">في الأمر: ${esc(p.fabric)}</div>`:""}</td>
+          <td>${esc(p.cust_name||p.alias||"")}${!p.cust?` <span class="badc">من غير كود</span>`:""}${p.alias&&p.cust?`<div class="sub">${esc(p.alias)}</div>`:""}</td><td class="num" style="font-size:.8rem">${esc(p.gref||"")}</td>
           <td class="num">${kg2(p.sent)}${p.rolls_sent?`<div class="sub">${p.rolls_sent} توب</div>`:""}</td><td class="num">${+p.recv?kg2(p.recv):"—"}${p.rolls_recv?`<div class="sub">${p.rolls_recv} توب</div>`:""}</td>
-          <td class="num ${over?"badc":""}">${l==null?"—":fmt2(l)+"%"}</td><td class="num">${p.allowed!=null?fmt2(p.allowed)+"%":"—"}</td></tr>`; }).join("")}
+          <td class="num ${over?"badc":""}">${l==null?"—":fmt2(l)+"%"}</td><td class="num">${p.allowed!=null?fmt2(p.allowed)+"%":"—"}</td>${mg?`<td><button class="linkbtn" data-pe="${p.id}">تعديل</button></td>`:""}</tr>
+          ${dPartInfo(p)}`; }).join("")}
     </tbody></table></div>
     <div class="dsec">المراحل المطلوبة${mg&&procs.length?` <span class="sub">علّم اللي خلص</span>`:""}</div>
     ${procs.length?`<div class="dpg" id="dpr">${procs.map(p=>`<label class="${done.has(p)?"on":""}"><input type="checkbox" data-p="${p}" ${done.has(p)?"checked":""} ${mg?"":"disabled"}> ${esc(dProcName(p))}</label>`).join("")}</div>`:`<div class="sub">${mg?"لسه ماتحددتش مراحل. دوس «تعديل» واختارها.":"لسه ماتحددتش مراحل."}</div>`}
@@ -3107,10 +3120,36 @@ async function openDye(id){
     if(st==="cancelled"&&!e.target.dataset.sure){ e.target.dataset.sure="1"; $("#dsm").innerHTML=`<div class="msg err">هتلغي الأمر؟ اختار «ملغي» تاني للتأكيد.</div>`; e.target.value=""; return; }
     try{ await rpc("fx_dye_stage",{p_id:o.id,p_stage:st,p_note:$("#dsn").value||null}); await reload("اتنقل لـ «"+DST[st]+"»"); }catch(err){ $("#dsm").innerHTML=`<div class="msg err">${esc(errText(err))}</div>`; e.target.value=""; } };
   if($("#ded")) $("#ded").onclick=()=>dForm(o);
+  document.querySelectorAll("#sheet [data-pe]").forEach(b=>b.onclick=()=>dPartEdit(o,(o.parts||[]).find(x=>String(x.id)===b.dataset.pe)));
   if($("#drc")) $("#drc").onclick=()=>dReceive(o);
   if($("#dpr")&&mg) $("#dpr").onchange=async e=>{ const c=e.target.closest("input"); if(!c) return; c.parentElement.classList.toggle("on",c.checked);
     const d=[...$("#dpr").querySelectorAll("input:checked")].map(x=>+x.dataset.p);
     try{ await rpc("fx_dye_procs",{p_id:o.id,p_done:d}); o.done=d; }catch(err){ toast(errText(err),true); } };
+}
+function dPartInfo(p){
+  const i=p.info||{}; const kv=[["الوزن",i.gsm],["العرض",i.width],["الغزل",i.yarn],["لوط الغزل",i.lot],["البوصة/الجوج",(i.dia||i.gauge)?`${i.dia||"-"} / ${i.gauge||"-"}`:""],["النساج",i.knitter],["الانكماش",(i.shr_min||i.shr_max)?`${i.shr_min||""} / ${i.shr_max||""}`:""],["مفتوح/مقفول",i.open],["خام/مجهز",i.state],["التجهيز",i.finish],["ملاحظة اللون",i.ccnote],["أمر شغل مقترح",(i.wo_hint||[]).join("، ")],["ملاحظات الإدخال",(i.notes||[]).join("، ")]].filter(x=>x[1]);
+  if(!kv.length) return "";
+  return `<tr class="dpi"><td></td><td colspan="8"><details><summary class="sub">مواصفات التجهيز</summary><div class="dpkv">${kv.map(([k,v])=>`<span><b>${esc(k)}:</b> ${esc(v)}</span>`).join("")}</div></details></td></tr>`;
+}
+async function dPartEdit(o,p){
+  if(!p) return;
+  try{ await Promise.all([ensureSpecs(),ensureCustomers()]); }catch(e){ return toast(errText(e),true); }
+  const hint=((p.info||{}).mat_hint||"").match(/\d{5}/g)||[];
+  const specs=hint.length?[...S.specs.filter(x=>hint.includes(String(x.code).slice(0,5))),...S.specs.filter(x=>!hint.includes(String(x.code).slice(0,5)))]:S.specs;
+  let spec=p.spec, cust=p.cust;
+  sheet(`<div class="sheet-h"><h3>تعديل جزء ${esc(p.part)} · ${esc(dTitle(o))}</h3></div>
+    ${p.fabric?`<div class="sub">الصنف في أمر التشغيل: <b>${esc(p.fabric)}</b>${(p.info||{}).mat_hint?` · مقترح ${esc(p.info.mat_hint)}`:""}</div>`:""}
+    ${p.alias?`<div class="sub">العميل في الأمر: <b>${esc(p.alias)}</b></div>`:""}
+    <label><span>كود الصنف</span><div id="pes"></div></label>
+    <label><span>العميل (فاضي = مخزون صفار)</span><div id="pec"></div></label>
+    <label><span>عدد الأتواب المبعوتة</span><input id="per" type="number" inputmode="numeric" value="${esc(p.rolls_sent||"")}"></label>
+    <div id="pem"></div><div class="row"><button class="btn primary grow" id="pego">احفظ</button><button class="btn" id="pex">رجوع</button></div>`);
+  picker($("#pes"), specs, x=>`${x.name||""} · ${x.code}`, hint.length?`ابدأ بـ ${hint.join(" أو ")}`:"اكتب الكود أو الاسم", x=>{ spec=x?x.code:null; }, null, spec?S.specs.find(x=>x.code===spec):null);
+  picker($("#pec"), S.customers, x=>`${x.name} · ${x.code}`, "اكتب اسم العميل أو كوده", x=>{ cust=x?x.code:null; }, null, cust?S.customers.find(x=>x.code===cust):null);
+  $("#pex").onclick=()=>openDye(o.id);
+  $("#pego").onclick=async e=>{ busyBtn(e.target,true);
+    try{ await rpc("fx_dye_part_set",{p_part:p.id,p_data:{spec:spec||"",cust:cust||"",rolls:$("#per").value}}); toast("اتحفظ"); await loadDye(); viewDye(); openDye(o.id); }
+    catch(err){ busyBtn(e.target,false); $("#pem").innerHTML=`<div class="msg err">${esc(errText(err))}</div>`; } };
 }
 async function dForm(o){
   const mg=dCan("manage"), isNew=!o;
@@ -3166,8 +3205,8 @@ function dReceive(o){
       ${st.map((x,i)=>{ const p=x.part, left=Math.max(0,+p.sent-(+p.recv||0));
         return `<div class="card pad stack" data-i="${i}"><div class="row" style="justify-content:space-between"><b>${esc(p.part)} · ${esc(p.spec_name||p.spec)}</b><span class="sub">باقي <span class="num">${kg2(left)}</span> من <span class="num">${kg2(p.sent)}</span> كجم</span></div>
           <div class="sub">${esc(p.cust_name||"مخزون صفار")}</div>
-          ${x.rolls.map((r,j)=>`<div class="drr" data-j="${j}"><label><span>${j?"":"وزن التوب (كجم)"}</span><input data-f="w" type="number" step="0.01" inputmode="decimal" value="${esc(r.w)}" placeholder="توب ${j+1}"></label><label><span>${j?"":"قطع"}</span><input data-f="n" type="number" inputmode="numeric" value="${esc(r.n)}"></label><label><span>${j?"":"المكان"}</span><input type="text" data-f="loc" value="${esc(r.loc)}"></label></div>`).join("")}
-          <div class="row"><button type="button" class="btn sm" data-add>+ توب</button><span class="sub" data-sum></span></div></div>`; }).join("")}
+          ${!p.spec?`<div class="msg err">الجزء ده ناقص كود الصنف، لازم قسم الصباغة يكمّله الأول قبل الاستلام.</div>`:""}${x.rolls.map((r,j)=>`<div class="drr" data-j="${j}" ${!p.spec?"hidden":""}><label><span>${j?"":"وزن التوب (كجم)"}</span><input data-f="w" type="number" step="0.01" inputmode="decimal" value="${esc(r.w)}" placeholder="توب ${j+1}"></label><label><span>${j?"":"قطع"}</span><input data-f="n" type="number" inputmode="numeric" value="${esc(r.n)}"></label><label><span>${j?"":"المكان"}</span><input type="text" data-f="loc" value="${esc(r.loc)}"></label></div>`).join("")}
+          <div class="row" ${!p.spec?"hidden":""}><button type="button" class="btn sm" data-add>+ توب</button><span class="sub" data-sum></span></div></div>`; }).join("")}
       <label class="row" style="flex-direction:row;gap:8px;align-items:center"><input type="checkbox" id="rfin"> <span>ده آخر استلام، اقفل الأمر</span></label>
       <label><span>ملاحظة</span><input type="text" id="rnt"></label>
       <div id="rm"></div><div class="row"><button class="btn primary grow" id="rgo">سجّل الاستلام</button><button class="btn" id="rx">رجوع</button></div>`);
@@ -3188,18 +3227,40 @@ function dReceive(o){
 }
 function dHouses(box){
   const all=S.dye||[]; const m=new Map();
-  (S.dm.dyehouses||[]).forEach(([c,n])=>m.set(c,{c,n,open:0,kg:0,late:0,ready:0,lab:0,done:0}));
+  (S.dm.dyehouses||[]).forEach(([c,n])=>m.set(c,{c,n,open:0,kg:0,late:0,ready:0,lab:0,done:0,miss:0}));
   all.forEach(o=>{ if(!o.dh) return; const h=m.get(o.dh)||(m.set(o.dh,{c:o.dh,n:o.dh_name||o.dh,open:0,kg:0,late:0,ready:0,lab:0,done:0}),m.get(o.dh));
-    if(dOpen(o)){ h.open++; h.kg+=dOut(o); if(o.overdue) h.late++; if(o.stage==="ready"||o.stage==="partial") h.ready++; if(o.stage==="labdip") h.lab++; } else if(o.stage==="received") h.done++; });
+    if(dOpen(o)){ h.open++; h.kg+=dOut(o); if(dMissSpec(o)||dMissCust(o)) h.miss++; if(o.overdue) h.late++; if(o.stage==="ready"||o.stage==="partial") h.ready++; if(o.stage==="labdip") h.lab++; } else if(o.stage==="received") h.done++; });
   const hs=[...m.values()].sort((a,b)=>b.kg-a.kg||a.n.localeCompare(b.n,"ar"));
   const unas=all.filter(o=>o.stage==="requested").length;
   box.innerHTML=`${unas?`<div class="msg">فيه ${unas} طلب من التخطيط مستني يتوزع على مصبغة. <button class="linkbtn" id="dgoreq">افتحهم</button></div>`:""}
     <div class="sub">الكمية عند كل مصبغة = اللي اتبعت في الأوامر المفتوحة ناقص اللي اتستلم.</div>
-    <div class="fgrid">${hs.filter(h=>h.open||h.done).map(h=>`<button class="card pad famc" data-dh="${esc(h.c)}"><b>${esc(h.n)}</b><span class="num" style="font-size:1.2rem;font-weight:800">${fmt(h.kg)}</span><small>كجم في ${h.open} أمر مفتوح</small>
-      <small>${h.lab?`${h.lab} لاب دب · `:""}${h.ready?`<span class="okc">${h.ready} جاهز</span> · `:""}${h.late?`<span class="badc">${h.late} متأخر</span> · `:""}${h.done} اتستلم</small></button>`).join("")||`<div class="state">مفيش حركة لسه</div>`}</div>
+    <div class="fgrid">${hs.filter(h=>h.open||h.done).map(h=>`<button class="card pad famc" data-dh="${esc(h.c)}"><b>${esc(h.n)}</b>${((S.dm.profiles||{})[h.c]||{}).prefix?`<small class="num">${esc(S.dm.profiles[h.c].prefix)}- · ${esc(S.dm.profiles[h.c].contact||"")}</small>`:""}<span class="num" style="font-size:1.2rem;font-weight:800">${fmt(h.kg)}</span><small>كجم في ${h.open} أمر مفتوح</small>
+      <small>${h.lab?`${h.lab} لاب دب · `:""}${h.ready?`<span class="okc">${h.ready} جاهز</span> · `:""}${h.late?`<span class="badc">${h.late} متأخر</span> · `:""}${h.done} اتستلم</small>${h.miss?`<small class="badc">${h.miss} أمر ناقص بيانات</small>`:""}</button>`).join("")||`<div class="state">مفيش حركة لسه</div>`}</div>
     ${hs.some(h=>!h.open&&!h.done)?`<div class="dsec">مصابغ مسجلة من غير أوامر</div><div class="sub">${hs.filter(h=>!h.open&&!h.done).map(h=>esc(h.n)).join("، ")}</div>`:""}`;
   if($("#dgoreq")) $("#dgoreq").onclick=()=>{ S.dTab="orders"; S.dF="requested"; S.dDh=""; viewDye(); };
-  box.querySelectorAll("[data-dh]").forEach(b=>b.onclick=()=>{ S.dTab="orders"; S.dF="open"; S.dDh=b.dataset.dh; viewDye(); });
+  box.querySelectorAll("[data-dh]").forEach(b=>b.onclick=()=>dHouseSheet(b.dataset.dh));
+}
+function dHouseSheet(code){
+  const all=(S.dye||[]).filter(o=>o.dh===code), pr=(S.dm.profiles||{})[code]||{}, nm=((S.dm.dyehouses||[]).find(x=>x[0]===code)||[])[1]||all[0]&&all[0].dh_name||code;
+  const open=all.filter(dOpen), kg=open.reduce((a,o)=>a+dOut(o),0), ms=open.filter(o=>dMissSpec(o)).length, mc=open.filter(o=>dMissCust(o)).length;
+  const custs={}; open.forEach(o=>(o.parts||[]).forEach(p=>{ const k=p.cust_name||p.alias||"—"; custs[k]=(custs[k]||0)+Math.max(0,(+p.sent||0)-(+p.recv||0)); }));
+  const mg=dCan("manage");
+  sheet(`<div class="dhead"><h2>${esc(nm)}</h2></div>
+    ${dl([["كود المورد",`<span class="num">${esc(code)}</span>`],["بادئة أوامر التشغيل",pr.prefix?`<span class="num">${esc(pr.prefix)}-</span>`:""],["المسؤول",esc(pr.contact||"")],["تليفون",esc(pr.phone||"")],["ملاحظات",esc(pr.note||"")],
+      ["عند المصبغة",`<b class="num">${kg2(kg)}</b> كجم في ${open.length} أمر مفتوح`],["ناقص بيانات",(ms||mc)?`<span class="badc">${ms} أمر ناقص كود صنف · ${mc} أمر ناقص عميل</span>`:"مفيش"]])}
+    <div class="dsec">الكمية عند المصبغة حسب العميل</div><div class="tbl"><table><tbody>${Object.entries(custs).sort((a,b)=>b[1]-a[1]).map(([k,v])=>`<tr><td>${esc(k)}</td><td class="num">${kg2(v)}</td></tr>`).join("")||`<tr><td>—</td></tr>`}</tbody></table></div>
+    <div class="row wrapbtns"><button class="btn primary" id="hgo">افتح أوامر المصبغة</button>${ms||mc?`<button class="btn" id="hmiss">الأوامر الناقصة</button>`:""}${mg?`<button class="btn" id="hed">تعديل بيانات المصبغة</button>`:""}</div>${sheetClose}`);
+  $("#hgo").onclick=()=>{ closeSheet(); S.dTab="orders"; S.dF="open"; S.dDh=code; viewDye(); };
+  if($("#hmiss")) $("#hmiss").onclick=()=>{ closeSheet(); S.dTab="orders"; S.dF="miss"; S.dDh=code; viewDye(); };
+  if($("#hed")) $("#hed").onclick=()=>{
+    sheet(`<div class="sheet-h"><h3>بيانات ${esc(nm)}</h3></div>
+      <div class="row"><label class="grow"><span>بادئة رقم الأمر</span><input type="text" id="hp" value="${esc(pr.prefix||"")}" placeholder="ML" style="direction:ltr"></label><label class="grow"><span>المسؤول</span><input type="text" id="hc" value="${esc(pr.contact||"")}"></label></div>
+      <label><span>تليفون</span><input type="text" id="hph" value="${esc(pr.phone||"")}" style="direction:ltr"></label>
+      <label><span>ملاحظات (طريقة أكواد الألوان واللاب دب…)</span><input type="text" id="hn" value="${esc(pr.note||"")}"></label>
+      <div id="hm"></div><div class="row"><button class="btn primary grow" id="hsv">احفظ</button><button class="btn" id="hx">رجوع</button></div>`);
+    $("#hx").onclick=()=>dHouseSheet(code);
+    $("#hsv").onclick=async()=>{ try{ await rpc("fx_dyehouse_save",{p_data:{code,prefix:$("#hp").value,contact:$("#hc").value,phone:$("#hph").value,note:$("#hn").value}}); toast("اتحفظ"); await loadDye(true); viewDye(); dHouseSheet(code); }
+      catch(e){ $("#hm").innerHTML=`<div class="msg err">${esc(errText(e))}</div>`; } }; };
 }
 async function dLossView(box){
   const mg=dCan("manage");
