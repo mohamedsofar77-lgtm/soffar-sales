@@ -6,11 +6,11 @@
 <meta name="theme-color" content="#22337a">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-title" content="مبيعات صفار">
+<meta name="apple-mobile-web-app-title" content="صفار جروب">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<title>مبيعات صفار</title>
+<title>صفار جروب</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600&family=Readex+Pro:wght@500;700&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&display=swap">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
 <style>
 :root{
@@ -569,6 +569,108 @@ details.card summary{padding:10px 14px;cursor:pointer}
 table.stmt td{vertical-align:top} table.stmt tr.dr td{color:var(--muted);font-style:italic} table.stmt tr.rj td,table.stmt tr.rv td{color:var(--muted);text-decoration:line-through} table.stmt tr.op td{font-weight:700}
 .eline{border:1px solid var(--line);box-shadow:none;display:flex;flex-direction:column;gap:8px}
 @media print{ body *{visibility:hidden!important} #arprint,#arprint *{visibility:visible!important} #arprint{position:absolute;inset:0 0 auto 0;box-shadow:none} .noprint{display:none!important} }
+
+/* ===== Soffar Group professional skin ===== */
+:root{
+  --bg:#f6f7f9; --surface:#fff; --ink:#0e1726; --muted:#5a6478; --line:#e3e6ec;
+  --indigo:#0f2a5f; --indigo-soft:#eef2f9; --greige:#8a6420; --greige-soft:#fbf4e6; --gold:#c9a15a;
+  --ok:#0b6b3a; --ok-soft:#e6f4ec; --warn:#7a5214; --warn-soft:#fbf1de; --bad:#9b1c1c;
+  --f-display:"IBM Plex Sans Arabic",system-ui,sans-serif; --radius:12px; --shadow:0 1px 2px rgba(14,23,38,.04);
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#0f131b; --surface:#171c26; --ink:#e8ebf2; --muted:#9aa3b5; --line:#2a3140;
+  --indigo:#9db4ea; --indigo-soft:#1d2840; --greige:#d9b878; --greige-soft:#2c2618; --gold:#c9a15a;
+  --ok:#6cc595; --ok-soft:#163023; --warn:#e8b768; --warn-soft:#33270f; --bad:#f2827b; --shadow:none}}
+:root[data-theme="dark"]{
+  --bg:#0f131b; --surface:#171c26; --ink:#e8ebf2; --muted:#9aa3b5; --line:#2a3140;
+  --indigo:#9db4ea; --indigo-soft:#1d2840; --greige:#d9b878; --greige-soft:#2c2618; --gold:#c9a15a;
+  --ok:#6cc595; --ok-soft:#163023; --warn:#e8b768; --warn-soft:#33270f; --bad:#f2827b; --shadow:none}
+body{font-size:14.5px}
+h1{font-weight:700}
+h2{font-weight:700;font-size:1rem}
+.wrap{gap:14px}
+.card,.spec,.kpi,.totals div,.quick button{border:1px solid var(--line) !important;box-shadow:none !important;border-radius:var(--radius) !important}
+.state{border-radius:var(--radius)}
+.hero{background:var(--surface);color:var(--ink);border:1px solid var(--line);border-radius:var(--radius);box-shadow:none;padding:0}
+.hero::after{display:none}
+.hero .appbar{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:10px 12px;border-bottom:1px solid var(--line)}
+.brandx{display:flex;align-items:center;gap:10px;min-width:0}
+.logo{width:36px;height:36px;border-radius:9px;background:#0f2a5f;color:#fff;display:grid;place-items:center;font-weight:700;font-size:18px;position:relative;flex:none}
+.logo::after{content:"";position:absolute;bottom:6px;width:14px;height:2px;border-radius:2px;background:var(--gold)}
+.logo.lg{width:52px;height:52px;border-radius:12px;font-size:24px}.logo.lg::after{bottom:9px;width:20px}
+.brandx .bnm{display:flex;flex-direction:column;line-height:1.2;background:none;border:0;padding:0;width:auto;height:auto}
+.brandx .bnm b{font-size:15px;color:var(--ink)}
+.brandx .bnm small{font-size:10px;color:var(--muted);letter-spacing:1px}
+.hero .hero-in{padding:12px 14px 14px;align-items:flex-end}
+.hero .ht{min-width:0}
+.hero h1{color:var(--ink);font-size:1.3rem}
+.hero .hello{color:var(--muted);font-size:.78rem;margin-top:2px}
+.hero .role{background:var(--indigo-soft);color:var(--indigo);border-radius:6px;margin:0;font-weight:600;flex:none}
+.icon-btn{width:38px;height:38px;border-radius:10px;background:var(--surface);color:var(--ink);border:1px solid var(--line)}
+.icon-btn svg{width:18px;height:18px}
+.hnav button{color:var(--muted)}
+.dev{border-radius:10px;font-size:.78rem;padding:8px 12px}
+.btn{border-radius:10px}
+.btn.primary{background:#0f2a5f;border-color:#0f2a5f;box-shadow:none}
+.seg{background:#eceef2;box-shadow:none;border-radius:10px;padding:3px;border:0}
+.seg button{border-radius:8px}
+.seg button[aria-pressed="true"]{background:var(--surface);color:var(--indigo);box-shadow:0 1px 2px rgba(14,23,38,.08)}
+.search input{border:1px solid var(--line) !important;box-shadow:none;border-radius:10px !important;height:44px}
+input[type=text],input[type=email],input[type=password],input[type=number],input[type=search],select,textarea,input[type=date]{border-radius:10px}
+.chip{border-radius:6px}
+nav.tabs{background:var(--surface);border-top:1px solid var(--line);padding:0 max(8px,env(safe-area-inset-left,0px)) env(safe-area-inset-bottom,0px);pointer-events:auto}
+nav.tabs .in{background:transparent;border-radius:0;box-shadow:none;padding:4px 0;gap:0}
+nav.tabs button{border-radius:0;padding:8px 2px 10px;position:relative;font-size:.72rem}
+nav.tabs button svg{width:21px;height:21px}
+nav.tabs button[aria-current="page"]{background:transparent;color:var(--indigo);font-weight:700}
+nav.tabs button[aria-current="page"]::before{content:"";position:absolute;top:-4px;left:50%;transform:translateX(-50%);width:28px;height:3px;border-radius:0 0 3px 3px;background:var(--indigo)}
+.wrap{padding-bottom:calc(88px + env(safe-area-inset-bottom,0px))}
+.kpi .dot{border-radius:8px}
+.quick button span.qi{border-radius:10px}
+/* home summary */
+.sumx{padding:0 !important;overflow:hidden}
+.sx-top{display:flex;justify-content:space-between;align-items:center;padding:14px 16px 0}
+.sx-v{display:flex;align-items:baseline;gap:6px;padding:6px 16px 0}
+.sx-v .num{font-size:2rem;font-weight:700;color:var(--indigo);letter-spacing:-.5px}
+.sx-v small{color:var(--muted)}
+.sx-bar{display:flex;gap:2px;height:6px;border-radius:3px;overflow:hidden;margin:10px 16px 14px;background:var(--indigo-soft)}
+.sx-bar .g{background:var(--gold)}.sx-bar .f{background:#0f2a5f}
+.sx-split{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));border-top:1px solid var(--line)}
+.sx-c{border:0;background:transparent;text-align:right;padding:12px 16px;display:flex;flex-direction:column;gap:2px;color:var(--ink)}
+.sx-c+.sx-c{border-right:1px solid var(--line)}
+.sx-c .k{font-size:.78rem;color:var(--muted);display:flex;align-items:center;gap:6px}
+.sx-c b{font-size:1.15rem}
+.sx-c small{font-size:.75rem;color:var(--muted)}
+.sq{display:inline-block;width:8px;height:8px;border-radius:2px}.sq.g{background:var(--gold)}.sq.f{background:#0f2a5f}
+/* more */
+.orgc{display:flex;align-items:center;gap:12px;padding:14px 16px}
+.orgc .mid{flex:1;min-width:0}
+.mi{width:100%;border:0;background:none;text-align:right;color:var(--ink);font:inherit;cursor:pointer}
+.mic{width:34px;height:34px;border-radius:9px;display:grid;place-items:center;background:var(--indigo-soft);color:var(--indigo);flex:none}
+.mic svg{width:18px;height:18px}
+/* tickets: work orders */
+#wlist{background:transparent !important;border:0 !important;display:flex;flex-direction:column;gap:10px}
+.item.tkt{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);position:relative;overflow:hidden;padding:14px 16px 12px 14px}
+.item.tkt::before{content:"";position:absolute;top:0;bottom:0;right:0;width:3px;background:#0f2a5f}
+.item.tkt[data-ws="at_dyehouse"]::before{background:#3f7cc4}
+.item.tkt[data-ws="requested"]::before{background:var(--gold)}
+.item.tkt[data-ws="at_quality"]::before{background:#7e22ce}
+.item.tkt[data-ws="finished"]::before,.item.tkt[data-ws="delivered"]::before{background:var(--ok)}
+.item.tkt[data-ws="returned"]::before,.item.tkt[data-ws="partial_return"]::before{background:var(--bad)}
+.tkp{position:relative;display:flex;align-items:center;gap:8px;padding-top:10px;margin-top:4px;border-top:1px dashed var(--line)}
+.tkp span{display:block;height:5px;border-radius:3px;background:#0f2a5f;flex:none;max-width:calc(100% - 44px)}
+.tkp::after{content:"";order:1;flex:1;height:5px;border-radius:3px;background:var(--indigo-soft)}
+.tkp b{order:2;font-size:.78rem;min-width:36px;text-align:left}
+.item.tkt[data-ws="at_dyehouse"] .tkp span{background:#3f7cc4}
+/* tickets: dyeing */
+.tklist{display:flex;flex-direction:column;gap:10px}
+.tklist .row-i.dtk{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:12px 16px 12px 12px;position:relative;overflow:hidden;display:flex;align-items:center;gap:12px}
+.tklist .row-i.dtk::before{content:"";position:absolute;top:0;bottom:0;right:0;width:3px;background:#3f7cc4}
+.tklist .row-i.dtk[data-ds="received"]::before{background:var(--ok)}
+.tklist .row-i.dtk[data-ds="requested"]::before,.tklist .row-i.dtk[data-ds="labdip"]::before{background:var(--gold)}
+.tklist .row-i.dtk .a{border-right:1px dashed var(--line);padding-right:12px}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .logo{background:#1d3a78}}
+:root[data-theme="dark"] .logo{background:#1d3a78}
 </style>
 </head>
 <body>
@@ -582,7 +684,7 @@ const DEV_KEY = "";
 const APP_URL = "https://mohamedsofar77-lgtm.github.io/soffar-sales/";
 // نسخة التدريب: لو حد فتح التطبيق من غير رابط، بيدخل على وضع المراجعة والتدريب (قراءة بس)
 const PREVIEW_KEY = "";
-const APP_VERSION = "20261126155752";
+const APP_VERSION = "20261126184320";
 // رابط الدخول: الموظف بيفتح الرابط اللي فيه #k=... مرة واحدة، والتطبيق بيفتكره على الموبايل
 const KEY = (()=>{ let k=""; const m=(location.hash||"").match(/k=([A-Za-z0-9]+)/);
   if(m){ k=m[1]; try{ localStorage.setItem("soffar_key",k); }catch(e){} try{ history.replaceState(null,"",location.pathname+location.search); }catch(e){} }
@@ -799,7 +901,7 @@ async function boot(){
 
 function renderLogin(msg){
   app.innerHTML = `<div class="login"><div class="stack" style="width:min(380px,100%)"><form class="card pad stack" id="lf">
-    <div><div class="brand">مبيعات صفار</div><div class="sub">رصيد الخام والمجهز والحجوزات</div></div>
+    <div><div class="brand">صفار جروب</div><div class="sub">رصيد الخام والمجهز والحجوزات</div></div>
     ${msg?`<div class="msg err">${esc(msg)}</div>`:""}
     <label><span>الإيميل</span><input type="email" id="lemail" autocomplete="username" required></label>
     <label><span>كلمة السر</span><input type="password" id="lpass" autocomplete="current-password" required></label>
@@ -822,7 +924,7 @@ function renderLogin(msg){
 
 function renderNoAccess(email){
   app.innerHTML = `<div class="login"><div class="card pad stack">
-    <div class="brand">مبيعات صفار</div>
+    <div class="brand">صفار جروب</div>
     <div class="msg err">الحساب <span class="num">${esc(email)}</span> لسه مالوش صلاحية على التطبيق. اطلب من المدير يضيفك من شاشة المستخدمين.</div>
     <button class="btn" id="out">خروج</button></div></div>`;
   $("#out").onclick = async()=>{ await sb.auth.signOut(); renderLogin(); };
@@ -830,15 +932,31 @@ function renderNoAccess(email){
 
 /* ============ shell ============ */
 function tabsFor(role){
-  const t = [["home","الرئيسية",ICONS.home],["stock","الرصيد",ICONS.stock],["res","الحجوزات",ICONS.res],["wo","التشغيل",ICONS.wo]];
-  if (role==="sales") t.splice(1,0,["order","حجز طلبية",ICONS.new]);
-  if (role==="accounts") t.splice(1,0,["ar","الحسابات",ICONS.chart]);
-  if (role==="warehouse"||role==="admin") t.push(["warehouse","مخزن القماش",ICONS.box]);
-  if (role==="warehouse"||role==="admin"||role==="planning") t.push(["yarn","مخزن الغزل",ICONS.yarn]);
-  if (role==="dyeing"||role==="admin"||role==="planning"||role==="warehouse") t.push(["dye","الصباغة",ICONS.dye]);
-  if (role==="quality") t.push(["warehouse","الجودة",ICONS.box]);
-  t.push(["basics","الأساسيات",ICONS.grid]);
-  return t;
+  const P={admin:["stock","wo","dye"],sales:["order","stock","res"],accounts:["ar","stock","res"],warehouse:["warehouse","yarn","dye"],planning:["wo","yarn","dye"],dyeing:["dye","wo","stock"],quality:["warehouse","stock","wo"]};
+  const prim=P[role]||["stock","res","wo"];
+  const lab={stock:"المخزون",wo:"التشغيل",dye:"الصباغة",order:"حجز طلبية",res:"الحجوزات",ar:"الحسابات",warehouse:role==="quality"?"الجودة":"المخزن",yarn:"الغزل"};
+  const ic={stock:ICONS.stock,wo:ICONS.wo,dye:ICONS.dye,order:ICONS.new,res:ICONS.res,ar:ICONS.chart,warehouse:ICONS.box,yarn:ICONS.yarn};
+  return [["home","الرئيسية",ICONS.home],...prim.map(k=>[k,lab[k],ic[k]]),["more","المزيد",ICONS.grid]];
+}
+function allSections(role){
+  const L=[], canSell=["sales","admin","planning"].includes(role);
+  L.push(["order","حجز طلبية",ICONS.new,"المبيعات والحسابات"],["res","الحجوزات",ICONS.res,"المبيعات والحسابات"],["ar","حسابات العملاء",ICONS.chart,"المبيعات والحسابات"]);
+  if(canSell) L.push(["new","طلب تشغيل جديد",ICONS.new,"الإنتاج"]);
+  L.push(["wo","أوامر التشغيل",ICONS.wo,"الإنتاج"],["plan","تقرير المتابعة",ICONS.wo,"الإنتاج"]);
+  if(["dyeing","admin","planning","warehouse"].includes(role)) L.push(["dye","الصباغة والتجهيز",ICONS.dye,"الإنتاج"]);
+  L.push(["stock","مخزون القماش",ICONS.stock,"المخازن"]);
+  if(role!=="sales") L.push(["warehouse",role==="quality"?"الجودة":"مخزن القماش · وارد وصرف",ICONS.box,"المخازن"]);
+  if(["warehouse","admin","planning"].includes(role)) L.push(["yarn","مخزن الغزل",ICONS.yarn,"المخازن"]);
+  L.push(["reports","التقارير",ICONS.chart,"المتابعة"],["inbox","التنبيهات والتحويلات",ICONS.bell,"المتابعة"],["basics","الأساسيات والتكويد",ICONS.grid,"الإعدادات"],["guide","دليل التشغيل",ICONS.book,"الإعدادات"]);
+  return L;
+}
+function markTab(k){ const bs=[...app.querySelectorAll("nav.tabs [data-tab]")]; const has=bs.some(x=>x.dataset.tab===k); bs.forEach(x=>{ if(x.dataset.tab===(has?k:"more")) x.setAttribute("aria-current","page"); else x.removeAttribute("aria-current"); }); }
+async function viewMore(){
+  const v=$("#view"); const L=allSections(S.me.role); const groups=[...new Set(L.map(x=>x[3]))];
+  v.innerHTML=header("كل الأقسام")+`<section class="card orgc"><span class="logo lg" aria-hidden="true">ص</span><div class="mid"><b>صفار جروب</b><div class="sub">مصنع تريكو دائري · نظام المبيعات والإنتاج</div></div><span class="chip f">${esc(S.me.department_name||ROLE_AR[S.me.realRole||S.me.role]||"")}</span></section>`
+   +groups.map(g=>`<div class="section-h"><h2>${g}</h2></div><section class="card top-list">${L.filter(x=>x[3]===g).map(([k,l,i])=>`<button type="button" class="row-i click mi" data-go="${k}"><span class="mic">${i}</span><div class="mid"><div class="t">${l}</div></div><span class="chev">‹</span></button>`).join("")}</section>`).join("");
+  bindHeader();
+  v.onclick=e=>{ const g=e.target.closest("[data-go]"); if(!g) return; const k=g.dataset.go; if(k==="plan"){ S.planCard=""; S.soId=null; } if(k==="ar") S.arCust=null; goTab(k); };
 }
 function renderShell(){
   app.innerHTML = `<div class="wrap" id="view"></div>
@@ -846,9 +964,9 @@ function renderShell(){
   <div id="sheet"></div>`;
   app.querySelectorAll("[data-tab]").forEach(b=>b.onclick=()=>{
     S.tab=b.dataset.tab; S.planCard=""; S.soId=null; S.arCust=null; if(S.tab==="stock"){ S.f.mat=""; S.f.spec=""; S.f.fam=""; }
-    app.querySelectorAll("[data-tab]").forEach(x=>{ if(x===b) x.setAttribute("aria-current","page"); else x.removeAttribute("aria-current"); });
+    markTab(S.tab);
     show(); });
-  show(); startPolling(); startUpdateCheck(); tickerStart();
+  markTab(S.tab); show(); startPolling(); startUpdateCheck(); tickerStart();
 }
 /* auto-update: the mobile version checks version.json and reloads itself when a newer build is published */
 function startUpdateCheck(){
@@ -866,13 +984,14 @@ function applyUpdate(v){
 }
 function greet(){ const h=new Date().getHours(); return h<12?"صباح الخير":"مساء الخير"; }
 function header(title, extra=""){
-  const today = new Date().toLocaleDateString("ar-EG",{weekday:"long",day:"numeric",month:"long"});
-  return `<header class="hero"><div class="hero-in">
-    <div><div class="hnav"><button type="button" id="navb" aria-label="الصفحة اللي قبلها" title="الصفحة اللي قبلها" ${NAV.i<=0?"disabled":""}>${ICONS.back}<span>رجوع</span></button><button type="button" id="navf" aria-label="الصفحة اللي بعدها" title="الصفحة اللي بعدها" ${NAV.i>=NAV.stack.length-1?"disabled":""}><span>قدّام</span>${ICONS.fwd}</button></div><div class="hello">${greet()}${S.me.dev?"":`، ${esc(S.me.full_name||"")}`} · ${today}</div><h1>${title}</h1>
+  const today = new Date().toLocaleDateString("ar-EG",{weekday:"long",day:"numeric",month:"long",year:"numeric"});
+  return `<header class="hero">
+    <div class="appbar"><div class="brandx"><span class="logo" aria-hidden="true">ص</span><span class="bnm"><b>صفار جروب</b><small dir="ltr">SOFFAR GROUP</small></span></div>
+    <div class="row">${extra}<button class="icon-btn bell" data-bell aria-label="التنبيهات" title="التنبيهات">${ICONS.bell}<span class="bell-n" hidden></span></button><button class="icon-btn" data-fb aria-label="ملاحظة على التطبيق" title="ملاحظة على التطبيق">${ICONS.note}</button>${S.me.owner&&IN_CLAUDE()?"":`<button class="icon-btn" id="logout" aria-label="خروج" title="خروج">${ICONS.out}</button>`}</div></div>
+    <div class="hero-in"><div class="ht"><div class="hnav"><button type="button" id="navb" aria-label="الصفحة اللي قبلها" title="الصفحة اللي قبلها" ${NAV.i<=0?"disabled":""}>${ICONS.back}<span>رجوع</span></button><button type="button" id="navf" aria-label="الصفحة اللي بعدها" title="الصفحة اللي بعدها" ${NAV.i>=NAV.stack.length-1?"disabled":""}><span>قدّام</span>${ICONS.fwd}</button></div><h1>${title}</h1><div class="hello">${today}${S.me.dev||!S.me.full_name?"":` · ${esc(S.me.full_name)}`}</div></div>
     <span class="role">${ICONS.user}${esc(S.me.department_name||ROLE_AR[S.me.realRole||S.me.role]||"")}${S.me.preview?" · مراجعة وتدريب":""}</span></div>
-    <div class="row">${extra}<button class="icon-btn bell" data-bell aria-label="التنبيهات" title="التنبيهات">${ICONS.bell}<span class="bell-n" hidden></span></button><button class="icon-btn" data-fb aria-label="ملاحظة على التطبيق" title="ملاحظة على التطبيق">${ICONS.note}</button>${S.me.owner&&IN_CLAUDE()?"":`<button class="icon-btn" id="logout" aria-label="خروج" title="خروج">${ICONS.out}</button>`}</div>
-  </div></header>
-  ${S.me.openTraining?`<div class="dev">نسخة التدريب: بتشوف بيانات المصنع الحقيقية وتقدر تجرب كل الشاشات، لكن مفيش حاجة بتتحفظ. عندك ملاحظة؟ دوس زرار الملاحظة فوق. ولو معاك حساب، دوس زرار الخروج وادخل بالإيميل. <button class="linkbtn" data-go-guide>افتح دليل التشغيل</button></div>`:S.me.preview?`<div class="dev">نسخة مراجعة وتدريب: تقدر تشوف كل الشاشات والبيانات الحقيقية وتجرب، لكن مفيش حاجة بتتحفظ. لو لقيت حاجة ناقصة دوس على زرار الملاحظة فوق.</div>`:S.me.owner?`<div class="dev">دخول برابط الإدارة الكامل. متبعتوش لحد، وابعت للموظفين روابط أقسامهم من الأساسيات ← الأقسام والروابط.</div>`:""}`;
+  </header>
+  ${S.me.openTraining?`<div class="dev">نسخة التدريب: بتشوف بيانات المصنع الحقيقية وتقدر تجرب كل الشاشات، لكن مفيش حاجة بتتحفظ. عندك ملاحظة؟ دوس زرار الملاحظة فوق. ولو معاك حساب، دوس زرار الخروج وادخل بالإيميل. <button class="linkbtn" data-go-guide>افتح دليل التشغيل</button></div>`:S.me.preview?`<div class="dev">نسخة مراجعة وتدريب: تقدر تشوف كل الشاشات والبيانات الحقيقية وتجرب، لكن مفيش حاجة بتتحفظ. لو لقيت حاجة ناقصة دوس على زرار الملاحظة فوق.</div>`:S.me.owner&&S.tab==="home"?`<div class="dev">دخول برابط الإدارة الكامل. متبعتوش لحد، وابعت للموظفين روابط أقسامهم من الأساسيات ← الأقسام والروابط.</div>`:""}`;
 }
 const refreshBtn = () => `<button class="icon-btn" id="rf" aria-label="تحديث" title="تحديث">${ICONS.refresh}</button>`;
 function busyBtn(b,on){ if(!b) return; b.disabled=on; b.classList.toggle("spin",on); }
@@ -884,7 +1003,7 @@ function bindHeader(){
   document.querySelectorAll("[data-go-guide]").forEach(x=>x.onclick=()=>goTab("guide"));
   paintBell();
 }
-function goTab(k,keep){ if(k==="stock"&&!keep){ S.f.mat=""; S.f.spec=""; S.f.fam=""; } S.tab=k; app.querySelectorAll("[data-tab]").forEach(x=>{ if(x.dataset.tab===k) x.setAttribute("aria-current","page"); else x.removeAttribute("aria-current"); }); show(); }
+function goTab(k,keep){ if(k==="stock"&&!keep){ S.f.mat=""; S.f.spec=""; S.f.fam=""; } S.tab=k; markTab(k); show(); }
 /* ---- back / forward between pages ---- */
 const NAV={stack:[],i:-1,restoring:false};
 function navSnap(){ const f=S.f||{}; return {tab:S.tab, pc:S.tab==="plan"?(S.planCard||""):"", so:S.tab==="plan"?(S.soId||""):"", ac:S.tab==="ar"?(S.arCust||""):"", fam:f.fam||"", mat:f.mat||"", spec:f.spec||"", bTab:S.tab==="basics"?(S.bTab||""):"", whTab:S.tab==="warehouse"?(S.whTab||""):"", yt:S.tab==="yarn"?(S.yTab||""):"", dt:S.tab==="dye"?(S.dTab||""):""}; }
@@ -900,16 +1019,23 @@ function navGo(d){ const j=NAV.i+d; if(j<0||j>=NAV.stack.length) return; NAV.i=j
 window.addEventListener("popstate",()=>{ if(!S.me) return;
   if($("#sheet")&&$("#sheet").innerHTML){ closeSheet(); try{ history.pushState({soffarNav:NAV.i},""); }catch(e){} return; }
   if(NAV.i>0) navGo(-1); });
-function show(){ navRecord(); const v=$("#view"); if(v) v.onclick=null; ({home:viewHome, guide:viewGuide, inbox:viewInbox, warehouse:viewWarehouse, reports:viewReports, stock:viewStock, plan:viewPlan, order:viewOrder, ar:viewAR, new:viewNew, yarn:viewYarn, dye:viewDye, res:viewRes, wo:viewWO, basics:viewBasics}[S.tab]||viewStock)(); window.scrollTo(0,0); }
+function show(){ navRecord(); try{ markTab(S.tab); }catch(e){} const v=$("#view"); if(v) v.onclick=null; ({home:viewHome, more:viewMore, guide:viewGuide, inbox:viewInbox, warehouse:viewWarehouse, reports:viewReports, stock:viewStock, plan:viewPlan, order:viewOrder, ar:viewAR, new:viewNew, yarn:viewYarn, dye:viewDye, res:viewRes, wo:viewWO, basics:viewBasics}[S.tab]||viewStock)(); window.scrollTo(0,0); }
 
 /* ============ home ============ */
 async function viewHome(){
   const v=$("#view");
   const canSell = ["sales","admin","planning"].includes(S.me.role);
-  v.innerHTML = header("مبيعات صفار", refreshBtn()) + `
+  v.innerHTML = header("لوحة المتابعة", refreshBtn()) + `
+  <section class="card sumx">
+    <div class="sx-top"><span class="sub">المخزون المتاح للبيع</span><span class="chip s" id="k0c">&nbsp;</span></div>
+    <div class="sx-v"><span class="num" id="k0">—</span><small>كجم</small></div>
+    <div class="sx-bar" aria-hidden="true"><span class="g" id="k0g"></span><span class="f" id="k0f"></span></div>
+    <div class="sx-split">
+      <button type="button" class="sx-c" data-go="stock" data-wh="greige"><span class="k"><i class="sq g"></i>خام <span class="num" id="k1p"></span></span><b class="num" id="k1">—</b><small id="k1s">&nbsp;</small></button>
+      <button type="button" class="sx-c" data-go="stock" data-wh="finished"><span class="k"><i class="sq f"></i>مجهز <span class="num" id="k2p"></span></span><b class="num" id="k2">—</b><small id="k2s">&nbsp;</small></button>
+    </div>
+  </section>
   <section class="kpis" id="kpis">
-    <button class="kpi t-g" data-go="stock" data-wh="greige"><span class="k"><span class="dot">${ICONS.stock}</span>خام متاح للبيع</span><span class="v"><span class="num" id="k1">—</span><small>كجم</small></span><span class="s" id="k1s">&nbsp;</span></button>
-    <button class="kpi t-f" data-go="stock" data-wh="finished"><span class="k"><span class="dot">${ICONS.stock}</span>مجهز متاح للبيع</span><span class="v"><span class="num" id="k2">—</span><small>كجم</small></span><span class="s" id="k2s">&nbsp;</span></button>
     <button class="kpi t-r" data-go="res"><span class="k"><span class="dot">${ICONS.lock}</span>حجوزات مفتوحة</span><span class="v"><span class="num" id="k3">—</span></span><span class="s" id="k3s">&nbsp;</span></button>
     <button class="kpi t-w" data-go="wo"><span class="k"><span class="dot">${ICONS.wo}</span>أوامر تشغيل مفتوحة</span><span class="v"><span class="num" id="k4">—</span></span><span class="s" id="k4s">&nbsp;</span></button>
   </section>
@@ -944,6 +1070,7 @@ async function viewHome(){
       let g=0,f=0,gc=0,fc=0; S.stock.rows.forEach(r=>{ if(!r.free||r.av<0.5) return; if(r.w==="g"){g+=r.av;gc++} else {f+=r.av;fc++} });
       $("#k1").textContent=fmt(g); $("#k1s").textContent=`${gc.toLocaleString("en-US")} صنف ولون`;
       $("#k2").textContent=fmt(f); $("#k2s").textContent=`${fc.toLocaleString("en-US")} صنف ولون`;
+      { const tot=g+f, pg=tot?Math.round(g/tot*100):0; $("#k0").textContent=fmt(tot); $("#k0c").textContent=`${(gc+fc).toLocaleString("en-US")} صنف ولون`; $("#k0g").style.width=pg+"%"; $("#k0f").style.width=(tot?100-pg:0)+"%"; $("#k1p").textContent=tot?`· ${pg}%`:""; $("#k2p").textContent=tot?`· ${100-pg}%`:""; }
       $("#k3").textContent=(res||[]).length.toLocaleString("en-US"); const soon=(res||[]).filter(r=>r.expires_at&&new Date(r.expires_at)-Date.now()<2*864e5).length;
       $("#k3s").textContent=`${fmt((res||[]).reduce((a,r)=>a+(+r.qty||0),0))} كجم محجوز`+(soon?` · ${soon} بينتهي قريب`:"");
       const req=(wos||[]).filter(w=>w.status==="requested").length;
@@ -2123,10 +2250,11 @@ async function viewWO(){
     $("#wloc").querySelectorAll("[data-c]").forEach(sp=>{ const k=sp.dataset.c; const v=k?cnt[k]||0:all; sp.textContent=v>=0.5?" "+fmt(v):""; });
     const rows=base.filter(w=>(!S.woLoc||w.status===S.woLoc)&&t.every(x=>norm([w.wo_no,w.customer_name,w.spec_name,w.spec_code,w.color].join(" ")).includes(x)));
     if(!rows.length){ $("#wlist").innerHTML=`<div class="state"><strong>مفيش أوامر هنا</strong></div>`; return; }
-    $("#wlist").innerHTML=rows.map(w=>{const left=(+w.qty_required)-(+w.qty_delivered||0); return `<div class="item" data-id="${w.id}">
+    $("#wlist").innerHTML=rows.map(w=>{const left=(+w.qty_required)-(+w.qty_delivered||0); const pct=(+w.qty_required)>0?Math.max(0,Math.min(100,Math.round((+w.qty_delivered||0)/(+w.qty_required)*100))):0; return `<div class="item tkt" data-ws="${esc(w.status)}" data-id="${w.id}">
       <div class="item-top"><div class="item-title"><span class="num">${esc(w.wo_no)}</span> · ${esc(w.customer_name||"")} ${cd(w.customer_code)}</div><span class="row" style="gap:6px">${w.overdue?`<span class="chip st-returned">متأخر</span>`:""}<span class="chip st-${w.status}">${WO_ST[w.status]||w.status}</span></span></div>
       <div class="kv"><b>${esc(w.spec_name||"")}</b><span class="num">${esc(w.spec_code)}</span><span>${esc(w.color||"")}</span>${w.due_date?`<span class="${w.overdue?"badc":""}">التسليم ${new Date(w.due_date).toLocaleDateString("ar-EG",{day:"numeric",month:"short"})}</span>`:""}${w.images?`<span>${ICONS.camera} ${w.images}</span>`:""}${w.warehouse_target?`<span class="chip ${w.warehouse_target==="greige"?"g":"f"}">${w.warehouse_target==="greige"?"يتسلم خام":"يتسلم مجهز"}</span>`:""}</div>
       <div class="kv"><span>المطلوب <b class="num">${fmt(w.qty_required)}</b></span><span>اتسلّم <b class="num">${fmt(w.qty_delivered)}</b></span><span>الباقي <b class="num">${fmt(left)}</b> كجم</span>${+w.qty_returned?`<span>مرتجع <b class="num badc">${fmt(w.qty_returned)}</b> كجم</span>`:""}${w.requested_by_name?`<span>${esc(w.requested_by_name)} · ${dt(w.created_at)}</span>`:`<span class="sub">${dt(w.created_at)}</span>`}</div>
+      <div class="tkp" role="img" aria-label="اتسلّم ${pct}%"><span style="width:${pct}%"></span><b class="num">${pct}%</b></div>
       ${w.note?`<div class="kv">${esc(w.note)}</div>`:""}
       ${(w.returns||[]).length?`<div class="ret">${w.returns.map(r=>`<div><b class="num">${fmt2(r.qty)}</b> كجم · ${esc(r.reason)}${r.note?` · ${esc(r.note)}`:""} <span class="sub">${dt(r.at)}</span></div>`).join("")}</div>`:""}
       ${canEdit?`<div class="actions"><select data-st aria-label="حالة الأمر">${Object.entries(WO_ST).filter(([k])=>!["partial_return","returned"].includes(k)||k===w.status).map(([k,l])=>`<option value="${k}" ${k===w.status?"selected":""}>${l}</option>`).join("")}</select>${(+w.qty_returned)<(+w.qty_required)-0.001?`<button class="btn sm danger" data-ret>تسجيل مرتجع</button>`:""}</div><div data-m></div>`:""}
@@ -3062,8 +3190,8 @@ function dOrders(box){
     const t=norm(S.dQ).split(" ").filter(Boolean);
     const list=all.filter(o=>(S.dF==="miss"?dOpen(o)&&(dMissSpec(o)||dMissCust(o)):S.dF==="open"?dOpen(o):S.dF==="done"?o.stage==="received":S.dF==="all"?true:o.stage===S.dF)&&(!S.dDh||o.dh===S.dDh)&&t.every(w=>o.key.includes(w)));
     if(!list.length){ $("#dlist").innerHTML=`<div class="state"><strong>مفيش أوامر</strong>${S.dF!=="all"?`<div class="sub">جرّب «الكل»</div>`:""}</div>`; return; }
-    $("#dlist").innerHTML=`<section class="card top-list">${list.slice(0,200).map(o=>{ const s=dSent(o), r=dRecv(o), cust=[...new Set((o.parts||[]).map(p=>p.cust_name).filter(Boolean))];
-      return `<div class="row-i click" data-id="${o.id}" role="button" tabindex="0"><div class="mid">
+    $("#dlist").innerHTML=`<section class="tklist">${list.slice(0,200).map(o=>{ const s=dSent(o), r=dRecv(o), cust=[...new Set((o.parts||[]).map(p=>p.cust_name).filter(Boolean))];
+      return `<div class="row-i click dtk" data-ds="${esc(o.stage)}" data-id="${o.id}" role="button" tabindex="0"><div class="mid">
         <div class="t"><span class="num codev">${esc(dTitle(o))}</span> ${o.batch?`<span class="num" style="direction:ltr;unicode-bidi:isolate">${esc(o.batch)}</span> · `:""}<b>${esc(o.cname||(o.wash?"غسيل":"من غير لون"))}</b>${o.ccode?` <span class="sub num" style="direction:ltr;unicode-bidi:isolate">${esc(o.ccode)}</span>`:""}</div>
         <div class="m">${dStChip(o.stage)} ${esc(o.dh_name||"لسه من غير مصبغة")} · ${cust.length?esc(cust.join("، ")):"—"} · ${(o.parts||[]).length} صنف${o.overdue?` · <span class="badc">متأخر</span>`:""}${o.opening?` <span class="chip s">رصيد أول</span>`:""}${dMissSpec(o)?` <span class="chip dmiss">ناقص كود صنف ${dMissSpec(o)}</span>`:""}${dMissCust(o)?` <span class="chip dmiss">ناقص عميل</span>`:""}</div></div>
         <div class="a"><b class="num">${kg2(s)}</b><small> كجم</small>${r>0?`<div class="sub num">اتستلم ${kg2(r)}</div>`:""}</div><span class="chev">‹</span></div>`; }).join("")}</section>${list.length>200?`<div class="sub">بيعرض أول 200 من ${list.length}. استخدم البحث.</div>`:""}`;
@@ -3947,7 +4075,7 @@ async function bDepts(box){
     const sv=e.target.closest("[data-save]"); if(sv){ const r=sv.closest(".dline"); try{ await rpc("fx_dept_save",{p_code:r.dataset.code,p_name:r.querySelector('[data-f="name"]').value,p_whatsapp:r.querySelector('[data-f="wa"]').value}); S.depts=null; toast("اتحفظ"); }catch(err){ toast(errText(err),true); } return; }
     const it=e.target.closest("[data-key]"); if(!it) return; const key=it.dataset.key;
     if(e.target.closest("[data-link]")){ try{ await navigator.clipboard.writeText(link(key)); toast("الرابط اتنسخ"); }catch(err){ waSheet(null, link(key)); } }
-    if(e.target.closest("[data-walink]")){ const k=keys.find(x=>x.key===key); waSheet(null, `رابط تطبيق مبيعات صفار (${k.dept_name}${k.label?" · "+k.label:""}):\n${link(key)}\nافتحه من الموبايل، ومن قايمة المتصفح اختار «إضافة إلى الشاشة الرئيسية».`); }
+    if(e.target.closest("[data-walink]")){ const k=keys.find(x=>x.key===key); waSheet(null, `رابط تطبيق صفار جروب (${k.dept_name}${k.label?" · "+k.label:""}):\n${link(key)}\nافتحه من الموبايل، ومن قايمة المتصفح اختار «إضافة إلى الشاشة الرئيسية».`); }
     if(e.target.closest("[data-toggle]")){ try{ await rpc("fx_key_toggle",{p_key:key}); bDepts(box); }catch(err){ toast(errText(err),true); } }
   };
   $("#kadd").onclick=async()=>{ try{ const x=await rpc("fx_key_create",{p_department:$("#kd").value,p_label:$("#kl").value}); toast("الرابط اتعمل"); await bDepts(box);
